@@ -3,1028 +3,983 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPY 0DTE Signal Matrix</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>SPY 0DTE · 信号矩阵</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #141820;
-    --bg2: #1a1f2a;
-    --bg3: #1f2535;
-    --border: #2a3345;
-    --border2: #37455a;
-    --text: #dde8f2;
-    --text2: #8fa4ba;
-    --text3: #546a80;
-    --green: #00c87a;
-    --green-dim: #00c87a22;
-    --green-mid: #00c87a44;
-    --red: #ff4757;
-    --red-dim: #ff475722;
-    --red-mid: #ff475744;
-    --amber: #f5a623;
-    --amber-dim: #f5a62322;
-    --blue: #4a9eff;
-    --blue-dim: #4a9eff22;
-    --purple: #a78bfa;
-    --purple-dim: #a78bfa22;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
-  }
+:root {
+  --paper: #f4f1eb;
+  --paper2: #ece8e0;
+  --paper3: #e3ded4;
+  --ink: #1a1815;
+  --ink2: #3d3830;
+  --ink3: #6b6358;
+  --ink4: #9c9488;
+  --ink5: #c4bdb2;
+  --vermillion: #c23b22;
+  --vermillion-dim: rgba(194,59,34,0.08);
+  --vermillion-mid: rgba(194,59,34,0.18);
+  --teal: #2d7a6f;
+  --teal-dim: rgba(45,122,111,0.08);
+  --teal-mid: rgba(45,122,111,0.18);
+  --indigo: #445a8a;
+  --indigo-dim: rgba(68,90,138,0.08);
+  --amber: #a67c2e;
+  --amber-dim: rgba(166,124,46,0.08);
+  --purple: #6b5a8a;
+  --purple-dim: rgba(107,90,138,0.08);
+  --cn: 'Noto Serif SC', serif;
+  --en: 'Source Serif 4', serif;
+  --ui: 'DM Sans', sans-serif;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+*{box-sizing:border-box;margin:0;padding:0}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--ui);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
 
-  /* Grid scanline effect */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px);
-    pointer-events: none;
-    z-index: 0;
-  }
+/* Subtle paper grain texture */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
 
-  .app {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 20px 60px;
-  }
+.app {
+  position:relative;z-index:1;
+  max-width:1000px;
+  margin:0 auto;
+  padding:0 28px 80px;
+}
 
-  /* ── Header ── */
-  header {
-    padding: 28px 0 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
+/* ── Header ── */
+header {
+  padding:36px 0 28px;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  border-bottom:1px solid var(--ink5);
+  gap:16px;flex-wrap:wrap;
+}
+.header-left { display:flex;align-items:flex-end;gap:20px; }
+.logo-seal {
+  width:44px;height:44px;
+  border:1.5px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--cn);font-size:22px;font-weight:700;
+  color:var(--ink);position:relative;
+  transform:rotate(-2deg);
+}
+.logo-seal::after {
+  content:'';position:absolute;inset:3px;
+  border:0.5px solid var(--ink4);
+}
+.header-title {
+  font-family:var(--cn);font-size:20px;font-weight:600;
+  color:var(--ink);letter-spacing:0.08em;line-height:1;
+}
+.header-sub {
+  font-family:var(--en);font-size:12px;font-weight:300;
+  color:var(--ink3);margin-top:5px;letter-spacing:0.15em;
+  font-style:italic;
+}
+.clock {
+  font-family:var(--ui);font-size:11px;
+  color:var(--ink4);letter-spacing:0.08em;
+  display:flex;align-items:center;gap:8px;
+}
+.clock-dot {
+  width:5px;height:5px;border-radius:50%;
+  background:var(--teal);
+  animation:pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
 
-  .header-left { display: flex; align-items: center; gap: 16px; }
+/* ── Tab Nav ── */
+.tab-nav {
+  display:flex;gap:0;margin-top:28px;border-bottom:1px solid var(--ink5);
+}
+.tab-btn {
+  font-family:var(--cn);font-size:14px;font-weight:400;
+  color:var(--ink4);background:none;border:none;
+  padding:10px 24px;cursor:pointer;position:relative;
+  letter-spacing:0.12em;transition:color 0.2s;
+}
+.tab-btn:hover { color:var(--ink2); }
+.tab-btn.active {
+  color:var(--ink);font-weight:500;
+}
+.tab-btn.active::after {
+  content:'';position:absolute;bottom:-1px;left:24px;right:24px;
+  height:2px;background:var(--ink);
+}
+.tab-panel { display:none;padding-top:24px; }
+.tab-panel.active { display:block;animation:fadeUp .3s ease; }
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-  .logo-mark {
-    width: 36px; height: 36px;
-    border: 1px solid var(--green);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: var(--green); font-weight: 600;
-    position: relative;
-  }
-  .logo-mark::before {
-    content: '';
-    position: absolute;
-    inset: 3px;
-    background: var(--green-dim);
-  }
+/* ── Section dividers ── */
+.sec-label {
+  font-family:var(--cn);font-size:11px;font-weight:400;
+  letter-spacing:0.2em;color:var(--ink4);
+  margin:28px 0 14px;
+  display:flex;align-items:center;gap:14px;
+}
+.sec-label::after {
+  content:'';flex:1;height:0.5px;
+  background:linear-gradient(90deg,var(--ink5),transparent);
+}
 
-  .header-title { font-size: 15px; font-weight: 500; letter-spacing: 0.12em; color: var(--text); text-transform: uppercase; }
-  .header-sub { font-size: 12px; color: var(--text2); margin-top: 3px; letter-spacing: 0.06em; }
+/* ── Mindset section ── */
+.ms-toggle {
+  background:transparent;
+  border:1px solid var(--ink5);
+  border-left:2px solid var(--ink);
+  padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;user-select:none;
+  transition:background .15s;
+  margin-bottom:4px;
+}
+.ms-toggle:hover { background:var(--paper2); }
+.ms-toggle-left { display:flex;align-items:center;gap:14px; }
+.ms-toggle-icon {
+  font-family:var(--cn);font-size:16px;color:var(--ink2);
+}
+.ms-toggle-title {
+  font-family:var(--cn);font-size:13px;font-weight:400;
+  letter-spacing:0.1em;color:var(--ink2);
+}
+.ms-badge {
+  font-family:var(--ui);font-size:10px;font-weight:500;
+  padding:2px 8px;border:1px solid var(--ink5);color:var(--ink4);
+}
+.ms-badge.complete { border-color:var(--teal);color:var(--teal); }
+.ms-chevron { font-size:12px;color:var(--ink4);transition:transform .25s; }
+.ms-chevron.open { transform:rotate(180deg); }
+.ms-panel { display:none;padding:12px 0; }
+.ms-panel.open { display:block;animation:fadeUp .25s ease; }
 
-  .live-badge {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; letter-spacing: 0.1em; color: var(--text2);
-    text-transform: uppercase;
-  }
-  .live-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--green);
-    animation: pulse 2s ease-in-out infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.ms-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
 
-  /* ── Section headers ── */
-  .section-label {
-    font-size: 11px; letter-spacing: 0.14em; color: var(--text3);
-    text-transform: uppercase; margin: 28px 0 12px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .section-label::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
+.ms-card {
+  border:0.5px solid var(--ink5);
+  padding:18px 20px;
+  background:var(--paper);
+}
+.ms-card-accent { border-left:2px solid var(--ink); }
+.ms-card-warm { border-left:2px solid var(--vermillion); }
 
-  /* ── Signal Controls ── */
-  .controls-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
-  }
+.ms-card-label {
+  font-family:var(--cn);font-size:10px;letter-spacing:0.18em;
+  color:var(--ink4);margin-bottom:6px;
+}
+.ms-card-title {
+  font-family:var(--en);font-size:14px;font-weight:600;
+  color:var(--ink);margin-bottom:14px;
+  font-style:italic;letter-spacing:0.02em;
+}
 
-  .control-group {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    padding: 14px 16px;
-  }
+.ms-rows { display:flex;flex-direction:column;gap:10px; }
+.ms-row { display:flex;gap:10px;align-items:flex-start; }
+.ms-dot { width:5px;height:5px;border-radius:50%;margin-top:6px;flex-shrink:0; }
+.dot-ink { background:var(--ink); }
+.dot-vermillion { background:var(--vermillion); }
+.dot-teal { background:var(--teal); }
+.dot-amber { background:var(--amber); }
+.ms-row-text {
+  font-family:var(--ui);font-size:13px;color:var(--ink3);line-height:1.7;
+}
+.ms-row-text strong { color:var(--ink);font-weight:500; }
 
-  .control-label {
-    font-size: 11px; letter-spacing: 0.12em; color: var(--text2);
-    text-transform: uppercase; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .control-label .indicator {
-    width: 6px; height: 6px; border-radius: 50%;
-  }
-  .ind-green { background: var(--green); }
-  .ind-red { background: var(--red); }
-  .ind-amber { background: var(--amber); }
-  .ind-blue { background: var(--blue); }
-  .ind-purple { background: var(--purple); }
+/* Traps */
+.ms-traps { display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px; }
+.ms-trap { border:0.5px solid var(--ink5);overflow:hidden;background:var(--paper); }
+.ms-trap-head { padding:9px 14px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--ink5); }
+.ms-trap-tag {
+  font-family:var(--ui);font-size:9px;font-weight:600;
+  letter-spacing:0.12em;padding:2px 7px;
+}
+.tag-teal { background:var(--teal-dim);color:var(--teal);border:0.5px solid var(--teal); }
+.tag-vermillion { background:var(--vermillion-dim);color:var(--vermillion);border:0.5px solid var(--vermillion); }
+.tag-amber { background:var(--amber-dim);color:var(--amber);border:0.5px solid var(--amber); }
+.ms-trap-name { font-family:var(--cn);font-size:12px;color:var(--ink2); }
+.ms-trap-body {
+  padding:12px 14px;font-family:var(--ui);font-size:12px;
+  color:var(--ink3);line-height:1.7;
+}
+.ms-trap-body strong { color:var(--ink);font-weight:500; }
 
-  .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+/* Rules */
+.ms-rules { display:flex;flex-direction:column;gap:6px;margin-top:6px; }
+.ms-rule {
+  display:flex;gap:12px;align-items:flex-start;
+  padding:8px 12px;border:0.5px solid var(--ink5);
+}
+.ms-rule-num {
+  font-family:var(--cn);font-size:14px;font-weight:300;
+  color:var(--ink5);flex-shrink:0;min-width:22px;
+}
+.ms-rule-text {
+  font-family:var(--ui);font-size:13px;color:var(--ink3);line-height:1.55;
+}
+.ms-rule-text strong { color:var(--ink);font-weight:500; }
 
-  .sig-btn {
-    font-family: var(--mono);
-    font-size: 13px; font-weight: 500;
-    padding: 8px 14px;
-    border: 1px solid var(--border2);
-    background: transparent;
-    color: var(--text2);
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-  }
-  .sig-btn:hover { border-color: var(--text3); color: var(--text); }
+/* Checklist */
+.ms-checks { display:flex;flex-direction:column;gap:6px;margin-top:6px; }
+.ms-chk {
+  display:flex;gap:12px;align-items:flex-start;
+  padding:10px 14px;border:0.5px solid var(--ink5);
+  cursor:pointer;transition:border-color .15s,background .15s;
+}
+.ms-chk:hover { background:var(--paper2); }
+.ms-chk.checked { border-color:var(--teal);background:var(--teal-dim); }
+.ms-chk-num {
+  font-family:var(--cn);font-size:14px;font-weight:300;
+  color:var(--ink5);flex-shrink:0;min-width:22px;
+}
+.ms-chk.checked .ms-chk-num { color:var(--teal); }
+.ms-chk-title { font-family:var(--cn);font-size:13px;color:var(--ink2);margin-bottom:2px; }
+.ms-chk.checked .ms-chk-title { color:var(--teal); }
+.ms-chk-sub { font-family:var(--ui);font-size:12px;color:var(--ink4);line-height:1.5; }
+.ms-verdict {
+  margin-top:10px;padding:9px 14px;
+  font-family:var(--cn);font-size:12px;letter-spacing:0.08em;
+  text-align:center;border:0.5px solid var(--ink5);color:var(--ink4);
+  transition:all .2s;
+}
+.ms-verdict.ready { border-color:var(--teal);color:var(--teal);background:var(--teal-dim); }
+.ms-verdict.partial { border-color:var(--amber);color:var(--amber);background:var(--amber-dim); }
 
-  .sig-btn.active-green { border-color: var(--green); background: var(--green-dim); color: var(--green); }
-  .sig-btn.active-red { border-color: var(--red); background: var(--red-dim); color: var(--red); }
-  .sig-btn.active-amber { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); }
-  .sig-btn.active-blue { border-color: var(--blue); background: var(--blue-dim); color: var(--blue); }
-  .sig-btn.active-neutral { border-color: var(--text2); background: rgba(108,125,143,0.12); color: var(--text); }
+/* ── Signal Controls ── */
+.ctrl-grid { display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px; }
+.ctrl-box { border:0.5px solid var(--ink5);padding:14px 16px;background:var(--paper); }
+.ctrl-label {
+  font-family:var(--cn);font-size:10px;letter-spacing:0.14em;
+  color:var(--ink4);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.ctrl-dot { width:5px;height:5px;border-radius:50%; }
+.btn-row { display:flex;gap:6px;flex-wrap:wrap; }
+.sig-btn {
+  font-family:var(--ui);font-size:12px;font-weight:500;
+  padding:7px 14px;border:0.5px solid var(--ink5);
+  background:transparent;color:var(--ink4);
+  cursor:pointer;transition:all .15s;letter-spacing:0.02em;
+}
+.sig-btn:hover { border-color:var(--ink3);color:var(--ink2); }
+.sig-btn.on-bull { border-color:var(--teal);background:var(--teal-dim);color:var(--teal); }
+.sig-btn.on-bear { border-color:var(--vermillion);background:var(--vermillion-dim);color:var(--vermillion); }
+.sig-btn.on-flat { border-color:var(--ink3);background:rgba(0,0,0,0.03);color:var(--ink2); }
 
-  /* ── Additional signals ── */
-  .aux-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 8px;
-    margin-bottom: 20px;
-  }
+/* ── Aux Signals ── */
+.aux-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:16px; }
+.aux-tile {
+  border:0.5px solid var(--ink5);padding:10px 12px;
+  cursor:pointer;transition:all .15s;user-select:none;
+}
+.aux-tile:hover { background:var(--paper2); }
+.aux-tile.on { border-color:var(--indigo);background:var(--indigo-dim); }
+.aux-name { font-family:var(--ui);font-size:10px;letter-spacing:0.1em;color:var(--ink4);text-transform:uppercase;margin-bottom:3px; }
+.aux-val { font-family:var(--ui);font-size:12px;color:var(--ink2);font-weight:500; }
+.aux-tile.on .aux-name,.aux-tile.on .aux-val { color:var(--indigo); }
 
-  .aux-item {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    padding: 10px 12px;
-    cursor: pointer;
-    transition: border-color 0.15s;
-    user-select: none;
-  }
-  .aux-item:hover { border-color: var(--border2); }
-  .aux-item.aux-on { border-color: var(--blue); background: var(--blue-dim); }
-  .aux-item .aux-name { font-size: 11px; color: var(--text2); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
-  .aux-item .aux-val { font-size: 13px; color: var(--text); font-weight: 500; }
-  .aux-item.aux-on .aux-name { color: var(--blue); }
-  .aux-item.aux-on .aux-val { color: var(--blue); }
+/* ── Signal Summary ── */
+.sig-sum {
+  display:flex;gap:14px;flex-wrap:wrap;
+  padding:10px 16px;border:0.5px solid var(--ink5);
+  background:var(--paper);margin-bottom:18px;
+}
+.sum-item { font-family:var(--ui);font-size:12px;display:flex;align-items:center;gap:6px; }
+.sum-k { color:var(--ink4); }
+.sum-v { font-weight:500; }
 
-  /* ── Analysis output ── */
-  .verdict-card {
-    border: 1px solid var(--border);
-    background: var(--bg2);
-    padding: 20px 22px;
-    margin-bottom: 12px;
-    transition: all 0.2s;
-    animation: fadeIn 0.3s ease;
-  }
-  @keyframes fadeIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
+/* ── Analysis Output ── */
+.verdict-card {
+  border:0.5px solid var(--ink5);
+  padding:22px 24px;margin-bottom:12px;
+  background:var(--paper);
+  animation:fadeUp .3s ease;
+}
+.verdict-card.vc-call { border-left:3px solid var(--teal); }
+.verdict-card.vc-put { border-left:3px solid var(--vermillion); }
+.verdict-card.vc-neutral { border-left:3px solid var(--amber); }
+.verdict-card.vc-wait { border-left:3px solid var(--ink5); }
 
-  .verdict-card.v-call { border-left: 3px solid var(--green); }
-  .verdict-card.v-put { border-left: 3px solid var(--red); }
-  .verdict-card.v-neutral { border-left: 3px solid var(--amber); }
-  .verdict-card.v-wait { border-left: 3px solid var(--text3); }
+.v-head { display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap; }
+.v-title { font-family:var(--cn);font-size:16px;font-weight:500; }
+.vc-call .v-title { color:var(--teal); }
+.vc-put .v-title { color:var(--vermillion); }
+.vc-neutral .v-title { color:var(--amber); }
+.vc-wait .v-title { color:var(--ink4); }
 
-  .verdict-header {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
-  }
+.q-badge {
+  font-family:var(--ui);font-size:10px;font-weight:500;
+  letter-spacing:0.1em;padding:3px 10px;text-transform:uppercase;
+  border:0.5px solid;
+}
+.q-hi { border-color:var(--teal);color:var(--teal);background:var(--teal-dim); }
+.q-mid { border-color:var(--amber);color:var(--amber);background:var(--amber-dim); }
+.q-lo { border-color:var(--ink5);color:var(--ink4); }
 
-  .verdict-title { font-size: 17px; font-weight: 600; }
-  .verdict-card.v-call .verdict-title { color: var(--green); }
-  .verdict-card.v-put .verdict-title { color: var(--red); }
-  .verdict-card.v-neutral .verdict-title { color: var(--amber); }
-  .verdict-card.v-wait .verdict-title { color: var(--text2); }
+.v-body { font-family:var(--ui);font-size:13px;color:var(--ink3);line-height:1.85;margin-bottom:14px; }
 
-  .quality-badge {
-    font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
-    padding: 4px 12px; text-transform: uppercase;
-  }
-  .q-high { background: var(--green-mid); color: var(--green); border: 1px solid var(--green); }
-  .q-mid { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); }
-  .q-low { background: rgba(108,125,143,0.1); color: var(--text2); border: 1px solid var(--border2); }
+/* Trade chips */
+.trade-row { display:flex;gap:6px;flex-wrap:wrap; }
+.chip {
+  font-family:var(--ui);font-size:11px;font-weight:500;
+  letter-spacing:0.06em;padding:5px 12px;
+  border:0.5px solid;display:flex;align-items:center;gap:6px;
+  text-transform:uppercase;
+}
+.chip-call { border-color:var(--teal);color:var(--teal);background:var(--teal-dim); }
+.chip-put { border-color:var(--vermillion);color:var(--vermillion);background:var(--vermillion-dim); }
+.chip-spread { border-color:var(--indigo);color:var(--indigo);background:var(--indigo-dim); }
+.chip-condor { border-color:var(--purple);color:var(--purple);background:var(--purple-dim); }
+.chip-butterfly { border-color:var(--amber);color:var(--amber);background:var(--amber-dim); }
+.chip-no { border-color:var(--ink5);color:var(--ink4);opacity:.6; }
 
-  .verdict-body { font-size: 14px; color: var(--text2); line-height: 1.85; font-family: var(--sans); margin-bottom: 14px; }
+/* Info cards */
+.info-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px; }
+.info-card { border:0.5px solid var(--ink5);padding:14px 16px;background:var(--paper); }
+.info-card-title { font-family:var(--cn);font-size:10px;letter-spacing:0.14em;color:var(--ink4);margin-bottom:10px; }
+.info-row { display:flex;justify-content:space-between;align-items:center;margin-bottom:7px; }
+.info-k { font-family:var(--ui);font-size:12px;color:var(--ink4); }
+.info-v { font-family:var(--ui);font-size:12px;color:var(--ink);font-weight:500; }
+.info-v.c-teal { color:var(--teal); }
+.info-v.c-vermillion { color:var(--vermillion); }
+.info-v.c-amber { color:var(--amber); }
 
-  /* ── Trade recommendations ── */
-  .trades-row {
-    display: flex; gap: 8px; flex-wrap: wrap;
-  }
+/* Abort */
+.abort-box {
+  border:0.5px solid var(--vermillion);border-left:2px solid var(--vermillion);
+  background:var(--vermillion-dim);padding:14px 18px;margin-bottom:12px;
+}
+.abort-title { font-family:var(--cn);font-size:10px;letter-spacing:0.14em;color:var(--vermillion);margin-bottom:8px; }
+.abort-item {
+  font-family:var(--ui);font-size:12px;color:var(--ink3);line-height:1.75;
+  display:flex;gap:8px;
+}
+.abort-item::before { content:'▸';color:var(--vermillion);flex-shrink:0; }
 
-  .trade-chip {
-    font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
-    padding: 6px 14px; text-transform: uppercase;
-    border: 1px solid;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .trade-chip .chip-icon { font-size: 13px; }
+/* ══════════════════════════════════════ */
+/* ── INTRADAY REFEREE LAYER ── */
+/* ══════════════════════════════════════ */
+.ref-inputs {
+  display:grid;grid-template-columns:repeat(5,1fr);gap:10px;
+  margin-bottom:16px;
+}
+.ref-input-box {
+  border:0.5px solid var(--ink5);padding:12px 14px;
+  background:var(--paper);transition:border-color .15s;
+}
+.ref-input-box:focus-within { border-color:var(--ink); }
+.ref-input-label {
+  font-family:var(--cn);font-size:10px;letter-spacing:0.12em;
+  color:var(--ink4);margin-bottom:6px;display:block;
+}
+.ref-input {
+  font-family:var(--ui);font-size:18px;font-weight:500;
+  color:var(--ink);background:transparent;border:none;
+  width:100%;outline:none;
+  border-bottom:1px solid var(--ink5);padding-bottom:4px;
+}
+.ref-input::placeholder { color:var(--ink5); }
 
-  .chip-call { border-color: var(--green); color: var(--green); background: var(--green-dim); }
-  .chip-put { border-color: var(--red); color: var(--red); background: var(--red-dim); }
-  .chip-spread { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
-  .chip-condor { border-color: var(--purple); color: var(--purple); background: var(--purple-dim); }
-  .chip-butterfly { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
-  .chip-avoid { border-color: var(--text3); color: var(--text2); background: transparent; opacity: 0.6; }
+/* Zone visualization */
+.zone-bar-wrap { margin-bottom:20px; }
+.zone-bar {
+  position:relative;height:40px;
+  background:var(--paper2);border:0.5px solid var(--ink5);
+  overflow:visible;margin:30px 0 28px;
+}
+.zone-marker {
+  position:absolute;top:-22px;
+  font-family:var(--ui);font-size:9px;letter-spacing:0.08em;
+  text-transform:uppercase;text-align:center;
+  transform:translateX(-50%);white-space:nowrap;
+}
+.zone-marker .zm-line {
+  width:1px;margin:2px auto 0;
+  background:var(--ink4);
+}
+.zone-marker .zm-dot {
+  width:7px;height:7px;border-radius:50%;
+  margin:0 auto;position:relative;
+}
+.zone-marker-label { padding-bottom:4px; }
 
-  /* ── Timing + levels section ── */
-  .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
+.zone-fill {
+  position:absolute;top:0;bottom:0;opacity:0.15;
+}
+.zone-fill-teal { background:var(--teal); }
+.zone-fill-vermillion { background:var(--vermillion); }
+.zone-fill-amber { background:var(--amber); }
 
-  .info-card {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    padding: 14px 16px;
-  }
-  .info-card-title { font-size: 11px; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 10px; }
-  .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .info-key { font-size: 13px; color: var(--text2); }
-  .info-val { font-size: 13px; color: var(--text); font-weight: 500; }
-  .info-val.good { color: var(--green); }
-  .info-val.bad { color: var(--red); }
-  .info-val.warn { color: var(--amber); }
+.zone-current {
+  position:absolute;top:-6px;bottom:-6px;width:2px;
+  background:var(--ink);transform:translateX(-50%);z-index:10;
+}
+.zone-current-label {
+  position:absolute;top:-24px;left:50%;transform:translateX(-50%);
+  font-family:var(--ui);font-size:11px;font-weight:600;
+  color:var(--ink);background:var(--paper);padding:0 4px;
+  white-space:nowrap;
+}
+.zone-label-bottom {
+  position:absolute;bottom:-20px;
+  font-family:var(--ui);font-size:9px;
+  color:var(--ink4);transform:translateX(-50%);
+  letter-spacing:0.06em;white-space:nowrap;
+}
 
-  /* ── Risk filters ── */
-  .risk-row {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    padding: 12px 16px;
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-  .risk-item { display: flex; align-items: center; gap: 6px; font-size: 13px; }
-  .risk-dot { width: 5px; height: 5px; border-radius: 50%; }
-  .risk-dot.ok { background: var(--green); }
-  .risk-dot.warn { background: var(--amber); }
-  .risk-dot.block { background: var(--red); }
+/* Referee verdict */
+.ref-verdict {
+  border:0.5px solid var(--ink5);
+  padding:24px 28px;margin-bottom:12px;
+  background:var(--paper);
+  animation:fadeUp .25s ease;
+}
+.ref-verdict.rv-go { border-left:3px solid var(--teal); }
+.ref-verdict.rv-wait { border-left:3px solid var(--amber); }
+.ref-verdict.rv-stop { border-left:3px solid var(--vermillion); }
+.ref-verdict.rv-idle { border-left:3px solid var(--ink5); }
 
-  /* ── Abort conditions ── */
-  .abort-box {
-    background: var(--red-dim);
-    border: 1px solid var(--red);
-    border-left: 3px solid var(--red);
-    padding: 14px 18px;
-    margin-bottom: 12px;
-  }
-  .abort-title { font-size: 11px; letter-spacing: 0.12em; color: var(--red); text-transform: uppercase; margin-bottom: 10px; }
-  .abort-item { font-size: 13px; color: var(--text2); font-family: var(--sans); line-height: 1.75; display: flex; gap: 8px; }
-  .abort-item::before { content: '▸'; color: var(--red); flex-shrink: 0; }
+.rv-status {
+  font-family:var(--cn);font-size:11px;letter-spacing:0.16em;
+  margin-bottom:8px;
+}
+.rv-go .rv-status { color:var(--teal); }
+.rv-wait .rv-status { color:var(--amber); }
+.rv-stop .rv-status { color:var(--vermillion); }
+.rv-idle .rv-status { color:var(--ink4); }
 
-  /* ── Footer ── */
-  footer {
-    margin-top: 40px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-    font-size: 11px;
-    color: var(--text3);
-    letter-spacing: 0.06em;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+.rv-title {
+  font-family:var(--cn);font-size:20px;font-weight:500;
+  margin-bottom:12px;line-height:1.4;
+}
+.rv-go .rv-title { color:var(--teal); }
+.rv-wait .rv-title { color:var(--amber); }
+.rv-stop .rv-title { color:var(--vermillion); }
+.rv-idle .rv-title { color:var(--ink4); }
 
-  /* ── Misc ── */
-  .separator { height: 1px; background: var(--border); margin: 20px 0; }
+.rv-body {
+  font-family:var(--ui);font-size:14px;color:var(--ink3);
+  line-height:1.85;margin-bottom:16px;
+}
+.rv-action {
+  font-family:var(--cn);font-size:13px;
+  padding:10px 16px;border:0.5px solid;
+  letter-spacing:0.06em;
+}
+.rv-go .rv-action { border-color:var(--teal);color:var(--teal);background:var(--teal-dim); }
+.rv-wait .rv-action { border-color:var(--amber);color:var(--amber);background:var(--amber-dim); }
+.rv-stop .rv-action { border-color:var(--vermillion);color:var(--vermillion);background:var(--vermillion-dim); }
 
-  .signal-summary {
-    display: flex; gap: 12px; flex-wrap: wrap;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    padding: 12px 16px;
-    margin-bottom: 20px;
-  }
-  .sum-item { font-size: 13px; display: flex; align-items: center; gap: 6px; }
-  .sum-label { color: var(--text3); }
-  .sum-val { font-weight: 500; }
+/* Timer warning */
+.open-guard {
+  border:1px solid var(--vermillion);background:var(--vermillion-dim);
+  padding:14px 20px;margin-bottom:16px;
+  display:none;text-align:center;
+  font-family:var(--cn);font-size:14px;color:var(--vermillion);
+  letter-spacing:0.1em;
+}
+.open-guard.active { display:block; }
 
-  @media (max-width: 600px) {
-    .info-grid { grid-template-columns: 1fr; }
-    .controls-grid { grid-template-columns: 1fr; }
-    .ms-grid-2 { grid-template-columns: 1fr; }
-    .ms-traps { grid-template-columns: 1fr; }
-  }
+/* ── Footer ── */
+footer {
+  margin-top:48px;padding-top:18px;
+  border-top:0.5px solid var(--ink5);
+  font-family:var(--ui);font-size:10px;color:var(--ink5);
+  letter-spacing:0.06em;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
 
-  /* ── Mindset Panel ── */
-  .mindset-toggle {
-    margin-top: 22px;
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-left: 3px solid var(--blue);
-    padding: 13px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.15s, border-color 0.15s;
-  }
-  .mindset-toggle:hover { background: var(--bg3); border-color: var(--blue); }
-  .mindset-toggle-left { display: flex; align-items: center; gap: 12px; }
-  .mindset-icon { font-size: 16px; color: var(--blue); }
-  .mindset-toggle-title { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; color: var(--text); }
-  .mindset-badge {
-    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
-    padding: 2px 8px; background: var(--blue-dim); color: var(--blue);
-    border: 1px solid var(--blue); border-radius: 20px;
-  }
-  .mindset-badge.complete { background: var(--green-dim); color: var(--green); border-color: var(--green); }
-  .mindset-chevron { font-size: 14px; color: var(--text2); transition: transform 0.25s; }
-  .mindset-chevron.open { transform: rotate(180deg); }
-
-  .mindset-panel {
-    display: none;
-    padding: 16px 0 4px;
-    animation: fadeIn 0.25s ease;
-  }
-  .mindset-panel.open { display: block; }
-
-  .ms-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .ms-card {
-    border: 1px solid var(--border);
-    padding: 16px 18px;
-  }
-  .ms-card-blue { background: #131a27; border-left: 2px solid var(--blue); }
-  .ms-card-amber { background: #1e1810; border-left: 2px solid var(--amber); }
-  .ms-card-dark { background: var(--bg2); }
-
-  .ms-card-label {
-    font-size: 10px; letter-spacing: 0.14em; color: var(--text3);
-    text-transform: uppercase; margin-bottom: 6px;
-  }
-  .ms-card-title {
-    font-size: 14px; font-weight: 600; color: var(--text);
-    margin-bottom: 14px; letter-spacing: 0.02em;
-  }
-
-  .ms-rows { display: flex; flex-direction: column; gap: 10px; }
-  .ms-row { display: flex; gap: 10px; align-items: flex-start; }
-  .ms-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-  .ms-dot-green { background: var(--green); }
-  .ms-dot-red { background: var(--red); }
-  .ms-dot-amber { background: var(--amber); }
-  .ms-dot-purple { background: var(--purple); }
-  .ms-row-text { font-size: 13px; color: var(--text2); line-height: 1.65; font-family: var(--sans); }
-  .ms-row-text strong { color: var(--text); font-weight: 500; }
-
-  /* Traps */
-  .ms-traps { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-  .ms-trap { background: var(--bg3); border: 1px solid var(--border); overflow: hidden; }
-  .ms-trap-header {
-    padding: 8px 14px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .ms-trap-green { background: var(--green-dim); border-bottom: 1px solid var(--green); }
-  .ms-trap-red { background: var(--red-dim); border-bottom: 1px solid var(--red); }
-  .ms-trap-amber { background: var(--amber-dim); border-bottom: 1px solid var(--amber); }
-  .ms-trap-tag {
-    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
-    padding: 2px 7px; border-radius: 2px;
-    font-family: var(--mono);
-  }
-  .ms-trap-green .ms-trap-tag { background: var(--green-mid); color: var(--green); }
-  .ms-trap-red .ms-trap-tag { background: var(--red-mid); color: var(--red); }
-  .ms-trap-amber .ms-trap-tag { background: rgba(245,166,35,0.25); color: var(--amber); }
-  .ms-trap-title { font-size: 13px; font-weight: 500; color: var(--text); }
-  .ms-trap-body {
-    padding: 12px 14px;
-    font-size: 12px; color: var(--text2); line-height: 1.7;
-    font-family: var(--sans);
-  }
-  .ms-trap-body strong { color: var(--text); font-weight: 500; }
-
-  /* Rules */
-  .ms-rules { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
-  .ms-rule {
-    display: flex; gap: 12px; align-items: flex-start;
-    padding: 8px 12px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-  }
-  .ms-rule-num {
-    font-size: 11px; font-weight: 600; color: var(--text3);
-    letter-spacing: 0.08em; flex-shrink: 0; margin-top: 1px;
-    font-family: var(--mono);
-  }
-  .ms-rule-text { font-size: 13px; color: var(--text2); line-height: 1.55; font-family: var(--sans); }
-  .ms-rule-text strong { color: var(--text); font-weight: 500; }
-
-  /* Checklist */
-  .ms-checklist { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
-  .ms-check-item {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 10px 12px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .ms-check-item:hover { border-color: var(--border2); }
-  .ms-check-item:has(.ms-checkbox:checked) {
-    border-color: var(--green);
-    background: var(--green-dim);
-  }
-  .ms-checkbox { display: none; }
-  .ms-check-content { display: flex; gap: 10px; align-items: flex-start; width: 100%; }
-  .ms-check-num {
-    font-size: 11px; font-weight: 600; color: var(--text3);
-    letter-spacing: 0.08em; flex-shrink: 0; margin-top: 2px;
-    font-family: var(--mono); min-width: 20px;
-  }
-  .ms-check-item:has(.ms-checkbox:checked) .ms-check-num { color: var(--green); }
-  .ms-check-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
-  .ms-check-sub { font-size: 12px; color: var(--text2); line-height: 1.55; font-family: var(--sans); }
-  .ms-check-item:has(.ms-checkbox:checked) .ms-check-title { color: var(--green); }
-
-  .ms-checklist-verdict {
-    margin-top: 10px;
-    padding: 9px 14px;
-    font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
-    text-align: center; font-family: var(--mono);
-    border: 1px solid;
-    transition: all 0.2s;
-  }
-  .ms-cv-wait { background: var(--bg3); border-color: var(--border); color: var(--text3); }
-  .ms-cv-partial { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
-  .ms-cv-ready { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+@media(max-width:700px) {
+  .ctrl-grid,.ms-grid,.info-grid { grid-template-columns:1fr; }
+  .ms-traps { grid-template-columns:1fr; }
+  .ref-inputs { grid-template-columns:1fr 1fr; }
+}
 </style>
 </head>
 <body>
 <div class="app">
 
-  <header>
-    <div class="header-left">
-      <div class="logo-mark">Σ</div>
-      <div>
-        <div class="header-title">SPY 0DTE Signal Matrix</div>
-        <div class="header-sub">EMA · GEX · DEX · Multi-Signal Analysis System</div>
-      </div>
+<header>
+  <div class="header-left">
+    <div class="logo-seal">矩</div>
+    <div>
+      <div class="header-title">信号矩阵</div>
+      <div class="header-sub">SPY 0DTE · Signal Matrix</div>
     </div>
-    <div class="live-badge">
-      <div class="live-dot"></div>
-      <span id="clock">--:--:-- ET</span>
-    </div>
-  </header>
+  </div>
+  <div class="clock">
+    <div class="clock-dot"></div>
+    <span id="clock">--:--:-- ET</span>
+  </div>
+</header>
 
-  <!-- ── Pre-Market Mindset ── -->
-  <div class="mindset-toggle" onclick="toggleMindset()" id="mindset-toggle">
-    <div class="mindset-toggle-left">
-      <span class="mindset-icon">⬡</span>
-      <span class="mindset-toggle-title">开盘前 — 做市商视角 · 心法与纪律</span>
-      <span class="mindset-badge" id="checklist-count">0 / 3</span>
+<!-- ── Tab Navigation ── -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('pre')" id="tab-pre">盘前</button>
+  <button class="tab-btn" onclick="switchTab('live')" id="tab-live">盘中</button>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB 1: PRE-MARKET -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel active" id="panel-pre">
+
+  <!-- Mindset Toggle -->
+  <div class="ms-toggle" onclick="toggleMs()" style="margin-top:20px;">
+    <div class="ms-toggle-left">
+      <span class="ms-toggle-icon">⬡</span>
+      <span class="ms-toggle-title">心法 · 纪律 · 做市商视角</span>
+      <span class="ms-badge" id="chk-badge">0 / 3</span>
     </div>
-    <span class="mindset-chevron" id="mindset-chevron">▾</span>
+    <span class="ms-chevron" id="ms-chev">▾</span>
   </div>
 
-  <div id="mindset-panel" class="mindset-panel">
+  <div id="ms-panel" class="ms-panel">
 
-    <!-- Row 1: Paradigm + Mindset side by side -->
-    <div class="ms-grid-2">
-
-      <div class="ms-card ms-card-blue">
-        <div class="ms-card-label">认知底层 · 谁在驱动价格</div>
+    <div class="ms-grid">
+      <div class="ms-card ms-card-accent">
+        <div class="ms-card-label">认知底层</div>
         <div class="ms-card-title">Dealer Hedging Moves the Market</div>
         <div class="ms-rows">
-          <div class="ms-row">
-            <div class="ms-dot ms-dot-green"></div>
-            <div class="ms-row-text"><strong>+GEX 环境</strong> — 做市商高抛低吸，行情被钉在 VWAP 附近。K线突破是陷阱，EMA 均线交叉是绞肉机。</div>
-          </div>
-          <div class="ms-row">
-            <div class="ms-dot ms-dot-red"></div>
-            <div class="ms-row-text"><strong>−GEX 环境</strong> — 做市商追涨杀跌，每一波下跌触发更猛烈抛售。技术支撑如废纸，底背离之后还有背离。</div>
-          </div>
-          <div class="ms-row">
-            <div class="ms-dot ms-dot-amber"></div>
-            <div class="ms-row-text"><strong>Gamma Flip</strong> — 市场物理法则的转折点。价格带量站稳/跌破 Flip 时，震荡逻辑瞬间切换成单边趋势，果断跟随。</div>
-          </div>
-          <div class="ms-row">
-            <div class="ms-dot ms-dot-purple"></div>
-            <div class="ms-row-text"><strong>核心问题</strong> — 不问"市场要去哪"，只问"做市商此刻被迫要做什么？"站在流动性一边，不站在情绪一边。</div>
-          </div>
+          <div class="ms-row"><div class="ms-dot dot-teal"></div><div class="ms-row-text"><strong>+GEX</strong> — 做市商高抛低吸，行情钉在 VWAP。K线突破是陷阱，均线交叉是绞肉机。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-vermillion"></div><div class="ms-row-text"><strong>−GEX</strong> — 做市商追涨杀跌，每一波下跌触发更猛烈抛售。底背离之后还有背离。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-amber"></div><div class="ms-row-text"><strong>Gamma Flip</strong> — 物理法则转折点。带量站稳/跌破时，震荡切换成单边，果断跟随。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-ink"></div><div class="ms-row-text"><strong>核心问题</strong> — 不问"市场去哪"，只问"做市商此刻被迫做什么？"</div></div>
         </div>
       </div>
-
-      <div class="ms-card ms-card-amber">
-        <div class="ms-card-label">心法 · Mindset</div>
+      <div class="ms-card ms-card-warm">
+        <div class="ms-card-label">心法</div>
         <div class="ms-card-title">第三人称视角 · 情绪隔离</div>
         <div class="ms-rows">
-          <div class="ms-row">
-            <div class="ms-dot ms-dot-amber"></div>
-            <div class="ms-row-text"><strong>多则惑，少则得。</strong> 慢下来比快更快。看不懂就不做，"知止可以不殆"。</div>
-          </div>
-          <div class="ms-row">
-            <div class="ms-dot ms-dot-amber"></div>
-            <div class="ms-row-text"><strong>情绪隔离。</strong> 我有交易，我有亏损，但我的亏损不拥有我。市场永远无法伤害一个不被情绪控制的人。</div>
-          </div>
-          <div class="ms-row">
-            <div class="ms-dot ms-dot-amber"></div>
-            <div class="ms-row-text"><strong>内求与觉察。</strong> 深呼吸，元思考。答案不在外部，在自己的系统里。</div>
-          </div>
-          <div class="ms-row">
-            <div class="ms-dot ms-dot-amber"></div>
-            <div class="ms-row-text"><strong>本质。</strong> Trading is all about discipline, mindset, and discipline. 管不住手，永远赚不到钱。</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Row 2: Traps full width -->
-    <div class="ms-card ms-card-dark" style="margin-top:10px;">
-      <div class="ms-card-label">三大陷阱识别</div>
-      <div class="ms-traps">
-        <div class="ms-trap">
-          <div class="ms-trap-header ms-trap-green">
-            <span class="ms-trap-tag">+GEX</span>
-            <span class="ms-trap-title">假突破陷阱</span>
-          </div>
-          <div class="ms-trap-body">放量突破 VWAP + MACD 金叉 → 极度看涨情绪。<br><strong>GEX 过滤：</strong>正 GEX 高值 + 逼近 Call Wall。<br><strong>操作：</strong>放弃追多。等动量耗尽后做空或卖 Call，押注价格被吸回 VWAP。</div>
-        </div>
-        <div class="ms-trap">
-          <div class="ms-trap-header ms-trap-red">
-            <span class="ms-trap-tag">−GEX</span>
-            <span class="ms-trap-title">支撑失效陷阱</span>
-          </div>
-          <div class="ms-trap-body">急速下跌触及 VWAP 或技术支撑 + MACD 底背离。<br><strong>GEX 过滤：</strong>GEX 深度负值 or 刚破 Gamma Flip。<br><strong>操作：</strong>绝不接飞刀。等反抽 VWAP 后做空，或做多波动率（VIX）。</div>
-        </div>
-        <div class="ms-trap">
-          <div class="ms-trap-header ms-trap-amber">
-            <span class="ms-trap-tag">FLIP</span>
-            <span class="ms-trap-title">均值回归失效陷阱</span>
-          </div>
-          <div class="ms-trap-body">VWAP 附近窄幅盘整 + MACD 粘合 → 看似无聊。<br><strong>GEX 过滤：</strong>价格正在逼近 Gamma Flip。<br><strong>操作：</strong>带量突破 Flip 后，抛弃震荡思维，果断跟随单边趋势。</div>
+          <div class="ms-row"><div class="ms-dot dot-vermillion"></div><div class="ms-row-text"><strong>多则惑，少则得。</strong> 慢下来比快更快。知止可以不殆。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-vermillion"></div><div class="ms-row-text"><strong>情绪隔离。</strong> 我有亏损，但亏损不拥有我。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-vermillion"></div><div class="ms-row-text"><strong>内求觉察。</strong> 深呼吸，元思考。答案在系统里。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-vermillion"></div><div class="ms-row-text"><strong>本质。</strong> Discipline, mindset, and discipline.</div></div>
         </div>
       </div>
     </div>
 
-    <!-- Row 3: Rules + Checklist side by side -->
-    <div class="ms-grid-2" style="margin-top:10px;">
+    <div class="ms-traps">
+      <div class="ms-trap">
+        <div class="ms-trap-head"><span class="ms-trap-tag tag-teal">+GEX</span><span class="ms-trap-name">假突破陷阱</span></div>
+        <div class="ms-trap-body">放量突破VWAP + MACD金叉 → 看涨情绪。<br><strong>过滤：</strong>正GEX高值 + 逼近Call Wall。<br><strong>操作：</strong>放弃追多，等动量耗尽做空。</div>
+      </div>
+      <div class="ms-trap">
+        <div class="ms-trap-head"><span class="ms-trap-tag tag-vermillion">−GEX</span><span class="ms-trap-name">支撑失效陷阱</span></div>
+        <div class="ms-trap-body">急跌触及VWAP或技术支撑 + MACD底背离。<br><strong>过滤：</strong>GEX深度负值 or 破Gamma Flip。<br><strong>操作：</strong>绝不接飞刀，等反抽做空。</div>
+      </div>
+      <div class="ms-trap">
+        <div class="ms-trap-head"><span class="ms-trap-tag tag-amber">FLIP</span><span class="ms-trap-name">均值回归失效</span></div>
+        <div class="ms-trap-body">VWAP附近窄幅盘整 + MACD粘合。<br><strong>过滤：</strong>价格逼近Gamma Flip。<br><strong>操作：</strong>带量突破后跟随单边趋势。</div>
+      </div>
+    </div>
 
-      <div class="ms-card ms-card-dark">
-        <div class="ms-card-label">硬性纪律 · Execution Rules</div>
+    <div class="ms-grid" style="margin-top:10px;">
+      <div class="ms-card">
+        <div class="ms-card-label">硬性纪律</div>
         <div class="ms-rules">
-          <div class="ms-rule"><span class="ms-rule-num">01</span><span class="ms-rule-text">每天交易量绝对不超过 <strong>5 笔</strong></span></div>
-          <div class="ms-rule"><span class="ms-rule-num">02</span><span class="ms-rule-text">开盘前 <strong>15 分钟</strong>绝不进场，看不懂就不做</span></div>
-          <div class="ms-rule"><span class="ms-rule-num">03</span><span class="ms-rule-text">今天没有清晰的结构，<strong>坚决不做</strong></span></div>
-          <div class="ms-rule"><span class="ms-rule-num">04</span><span class="ms-rule-text">所有交易不论盈亏，<strong>必须复盘记录</strong></span></div>
-          <div class="ms-rule"><span class="ms-rule-num">05</span><span class="ms-rule-text">EMA 是工具，<strong>GEX 是否决权</strong>。图表发出信号但 MM 对冲方向相反时，<strong>放弃这笔</strong></span></div>
+          <div class="ms-rule"><span class="ms-rule-num">壹</span><span class="ms-rule-text">每天不超过 <strong>5 笔</strong></span></div>
+          <div class="ms-rule"><span class="ms-rule-num">贰</span><span class="ms-rule-text">开盘 <strong>15 分钟</strong>内绝不进场</span></div>
+          <div class="ms-rule"><span class="ms-rule-num">叁</span><span class="ms-rule-text">没有结构，<strong>坚决不做</strong></span></div>
+          <div class="ms-rule"><span class="ms-rule-num">肆</span><span class="ms-rule-text">盈亏都 <strong>必须复盘</strong></span></div>
+          <div class="ms-rule"><span class="ms-rule-num">伍</span><span class="ms-rule-text"><strong>GEX 是否决权</strong>。图表与 MM 方向相反时，放弃</span></div>
         </div>
       </div>
-
-      <div class="ms-card ms-card-dark">
-        <div class="ms-card-label">开仓前三步核对 · Pre-Trade Checklist</div>
-        <div class="ms-checklist">
-          <label class="ms-check-item" onclick="updateChecklist()">
-            <input type="checkbox" class="ms-checkbox" id="chk1">
-            <div class="ms-check-content">
-              <div class="ms-check-num">01</div>
-              <div>
-                <div class="ms-check-title">确认底牌</div>
-                <div class="ms-check-sub">当前 GEX 正/负？Call Wall / Put Wall 在哪里？Gamma Flip 水平？</div>
-              </div>
-            </div>
-          </label>
-          <label class="ms-check-item" onclick="updateChecklist()">
-            <input type="checkbox" class="ms-checkbox" id="chk2">
-            <div class="ms-check-content">
-              <div class="ms-check-num">02</div>
-              <div>
-                <div class="ms-check-title">验证冲突</div>
-                <div class="ms-check-sub">MACD / VWAP 信号与 MM 当前 GEX 下强制对冲方向是否一致？</div>
-              </div>
-            </div>
-          </label>
-          <label class="ms-check-item" onclick="updateChecklist()">
-            <input type="checkbox" class="ms-checkbox" id="chk3">
-            <div class="ms-check-content">
-              <div class="ms-check-num">03</div>
-              <div>
-                <div class="ms-check-title">逆向思考</div>
-                <div class="ms-check-sub">我是站在散户情绪一边，还是做市商流动性一边？</div>
-              </div>
-            </div>
-          </label>
+      <div class="ms-card">
+        <div class="ms-card-label">开仓三步核对</div>
+        <div class="ms-checks">
+          <div class="ms-chk" onclick="toggleChk(this)" id="chk1">
+            <div class="ms-chk-num">壹</div>
+            <div><div class="ms-chk-title">确认底牌</div><div class="ms-chk-sub">GEX 正/负？Call Wall / Put Wall？Gamma Flip？</div></div>
+          </div>
+          <div class="ms-chk" onclick="toggleChk(this)" id="chk2">
+            <div class="ms-chk-num">贰</div>
+            <div><div class="ms-chk-title">验证冲突</div><div class="ms-chk-sub">信号与 MM 当前强制对冲方向是否一致？</div></div>
+          </div>
+          <div class="ms-chk" onclick="toggleChk(this)" id="chk3">
+            <div class="ms-chk-num">叁</div>
+            <div><div class="ms-chk-title">逆向思考</div><div class="ms-chk-sub">我站在散户一边，还是做市商流动性一边？</div></div>
+          </div>
         </div>
-        <div id="checklist-verdict" class="ms-checklist-verdict ms-cv-wait">等待核对完成...</div>
+        <div class="ms-verdict" id="chk-verdict">等待核对...</div>
       </div>
-
     </div>
-
   </div>
 
-  <!-- ── Primary Signals ── -->
-  <div class="section-label">Primary Signals</div>
+  <!-- Signal Matrix -->
+  <div class="sec-label">信号输入</div>
 
-  <div class="controls-grid">
-
-    <div class="control-group">
-      <div class="control-label"><span class="indicator ind-amber"></span>EMA Stack (9 / 20 / 50)</div>
-      <div class="btn-group">
-        <button class="sig-btn active-green" data-group="ema" data-val="bull" onclick="set('ema','bull',this)">9&gt;20&gt;50 多头</button>
-        <button class="sig-btn" data-group="ema" data-val="bear" onclick="set('ema','bear',this)">9&lt;20&lt;50 空头</button>
-        <button class="sig-btn" data-group="ema" data-val="flat" onclick="set('ema','flat',this)">纠缠压缩</button>
+  <div class="ctrl-grid">
+    <div class="ctrl-box">
+      <div class="ctrl-label"><span class="ctrl-dot" style="background:var(--amber)"></span>EMA（9 / 20 / 50）</div>
+      <div class="btn-row">
+        <button class="sig-btn on-bull" data-g="ema" data-v="bull" onclick="setSig('ema','bull',this)">9&gt;20&gt;50 多头</button>
+        <button class="sig-btn" data-g="ema" data-v="bear" onclick="setSig('ema','bear',this)">9&lt;20&lt;50 空头</button>
+        <button class="sig-btn" data-g="ema" data-v="flat" onclick="setSig('ema','flat',this)">纠缠</button>
       </div>
     </div>
-
-    <div class="control-group">
-      <div class="control-label"><span class="indicator ind-red"></span>GEX (Gamma Exposure)</div>
-      <div class="btn-group">
-        <button class="sig-btn" data-group="gex" data-val="pos" onclick="set('gex','pos',this)">+ Positive 稳定</button>
-        <button class="sig-btn active-red" data-group="gex" data-val="neg" onclick="set('gex','neg',this)">− Negative 放大</button>
+    <div class="ctrl-box">
+      <div class="ctrl-label"><span class="ctrl-dot" style="background:var(--vermillion)"></span>GEX</div>
+      <div class="btn-row">
+        <button class="sig-btn" data-g="gex" data-v="pos" onclick="setSig('gex','pos',this)">+ 正 · 稳定</button>
+        <button class="sig-btn on-bear" data-g="gex" data-v="neg" onclick="setSig('gex','neg',this)">− 负 · 放大</button>
       </div>
     </div>
-
-    <div class="control-group">
-      <div class="control-label"><span class="indicator ind-blue"></span>DEX (Delta Exposure)</div>
-      <div class="btn-group">
-        <button class="sig-btn active-green" data-group="dex" data-val="pos" onclick="set('dex','pos',this)">+ Positive 买方主导</button>
-        <button class="sig-btn" data-group="dex" data-val="neg" onclick="set('dex','neg',this)">− Negative 卖方主导</button>
+    <div class="ctrl-box">
+      <div class="ctrl-label"><span class="ctrl-dot" style="background:var(--indigo)"></span>DEX</div>
+      <div class="btn-row">
+        <button class="sig-btn on-bull" data-g="dex" data-v="pos" onclick="setSig('dex','pos',this)">+ 买方主导</button>
+        <button class="sig-btn" data-g="dex" data-v="neg" onclick="setSig('dex','neg',this)">− 卖方主导</button>
       </div>
     </div>
-
   </div>
 
-  <!-- ── Aux Signals ── -->
-  <div class="section-label">辅助信号 (点击切换)</div>
-
+  <div class="sec-label">辅助信号</div>
   <div class="aux-grid">
-    <div class="aux-item" id="aux-hvl" onclick="toggleAux('hvl',this)">
-      <div class="aux-name">Price vs HVL</div>
-      <div class="aux-val" id="aux-hvl-val">Below HVL ↓</div>
+    <div class="aux-tile" onclick="toggleAux(this,'hvl')"><div class="aux-name">Price vs HVL</div><div class="aux-val">Below HVL ↓</div></div>
+    <div class="aux-tile" onclick="toggleAux(this,'vix')"><div class="aux-name">VIX / IVR</div><div class="aux-val">High &gt; 20</div></div>
+    <div class="aux-tile" onclick="toggleAux(this,'vol')"><div class="aux-name">Volume</div><div class="aux-val">Climax / Spike</div></div>
+    <div class="aux-tile" onclick="toggleAux(this,'opex')"><div class="aux-name">OPEX Week</div><div class="aux-val">Monthly Expiry</div></div>
+    <div class="aux-tile" onclick="toggleAux(this,'dexvel')"><div class="aux-name">DEX Velocity</div><div class="aux-val">Decelerating</div></div>
+    <div class="aux-tile" onclick="toggleAux(this,'macro')"><div class="aux-name">Macro Event</div><div class="aux-val">CPI / FOMC / NFP</div></div>
+  </div>
+
+  <div class="sig-sum">
+    <div class="sum-item"><span class="sum-k">EMA</span><span class="sum-v" id="s-ema" style="color:var(--teal)">BULL</span></div>
+    <div class="sum-item"><span class="sum-k">GEX</span><span class="sum-v" id="s-gex" style="color:var(--vermillion)">− NEG</span></div>
+    <div class="sum-item"><span class="sum-k">DEX</span><span class="sum-v" id="s-dex" style="color:var(--teal)">+ POS</span></div>
+  </div>
+
+  <div class="sec-label">分析输出</div>
+  <div id="pre-output"></div>
+
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB 2: INTRADAY REFEREE -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-live">
+
+  <div class="open-guard" id="open-guard">
+    开盘保护期 · 把手离开键盘
+  </div>
+
+  <div class="sec-label">关键位输入</div>
+
+  <div class="ref-inputs">
+    <div class="ref-input-box">
+      <label class="ref-input-label">当前价格</label>
+      <input class="ref-input" id="inp-price" type="number" step="0.01" placeholder="740.55" oninput="calcZone()">
     </div>
-    <div class="aux-item" id="aux-vix" onclick="toggleAux('vix',this)">
-      <div class="aux-name">VIX / IVR</div>
-      <div class="aux-val" id="aux-vix-val">High &gt; 20</div>
+    <div class="ref-input-box">
+      <label class="ref-input-label">VWAP</label>
+      <input class="ref-input" id="inp-vwap" type="number" step="0.01" placeholder="741.20" oninput="calcZone()">
     </div>
-    <div class="aux-item" id="aux-vol" onclick="toggleAux('vol',this)">
-      <div class="aux-name">Volume</div>
-      <div class="aux-val" id="aux-vol-val">Climax / Spike</div>
+    <div class="ref-input-box">
+      <label class="ref-input-label">Call Wall</label>
+      <input class="ref-input" id="inp-cw" type="number" step="0.01" placeholder="745.00" oninput="calcZone()">
     </div>
-    <div class="aux-item" id="aux-opex" onclick="toggleAux('opex',this)">
-      <div class="aux-name">OPEX Week</div>
-      <div class="aux-val" id="aux-opex-val">Monthly Expiry</div>
+    <div class="ref-input-box">
+      <label class="ref-input-label">Put Wall</label>
+      <input class="ref-input" id="inp-pw" type="number" step="0.01" placeholder="738.00" oninput="calcZone()">
     </div>
-    <div class="aux-item" id="aux-dex-vel" onclick="toggleAux('dex-vel',this)">
-      <div class="aux-name">DEX Velocity</div>
-      <div class="aux-val" id="aux-dex-vel-val">Decelerating</div>
-    </div>
-    <div class="aux-item" id="aux-macro" onclick="toggleAux('macro',this)">
-      <div class="aux-name">Macro Event</div>
-      <div class="aux-val" id="aux-macro-val">CPI / FOMC / NFP</div>
+    <div class="ref-input-box">
+      <label class="ref-input-label">HVL</label>
+      <input class="ref-input" id="inp-hvl" type="number" step="0.01" placeholder="744.00" oninput="calcZone()">
     </div>
   </div>
 
-  <!-- ── Signal Summary Bar ── -->
-  <div class="signal-summary">
-    <div class="sum-item"><span class="sum-label">EMA:</span><span class="sum-val" id="sum-ema" style="color:var(--green)">9&gt;20&gt;50 BULL</span></div>
-    <div class="sum-item"><span class="sum-label">GEX:</span><span class="sum-val" id="sum-gex" style="color:var(--red)">− NEG</span></div>
-    <div class="sum-item"><span class="sum-label">DEX:</span><span class="sum-val" id="sum-dex" style="color:var(--green)">+ POS</span></div>
-    <div class="sum-item"><span class="sum-label">Aux:</span><span class="sum-val" id="sum-aux" style="color:var(--text2)">None active</span></div>
+  <div class="ctrl-grid" style="grid-template-columns:1fr 1fr;">
+    <div class="ctrl-box">
+      <div class="ctrl-label"><span class="ctrl-dot" style="background:var(--vermillion)"></span>GEX</div>
+      <div class="btn-row">
+        <button class="sig-btn" data-g="lgex" data-v="pos" onclick="setSig('lgex','pos',this)">+ 正</button>
+        <button class="sig-btn on-bear" data-g="lgex" data-v="neg" onclick="setSig('lgex','neg',this)">− 负</button>
+      </div>
+    </div>
+    <div class="ctrl-box">
+      <div class="ctrl-label"><span class="ctrl-dot" style="background:var(--indigo)"></span>DEX</div>
+      <div class="btn-row">
+        <button class="sig-btn on-bull" data-g="ldex" data-v="pos" onclick="setSig('ldex','pos',this)">+ 买方</button>
+        <button class="sig-btn" data-g="ldex" data-v="neg" onclick="setSig('ldex','neg',this)">− 卖方</button>
+      </div>
+    </div>
   </div>
 
-  <!-- ── Analysis Output ── -->
-  <div class="section-label">Analysis Output</div>
-  <div id="output"></div>
+  <!-- Zone Visualization -->
+  <div class="sec-label">价格区间 · 做市商行为</div>
+  <div id="zone-vis" style="margin-bottom:24px;"></div>
 
-  <footer>
-    <span>SPY 0DTE Signal Matrix · For reference only · Not financial advice</span>
-    <span id="footer-time"></span>
-  </footer>
+  <!-- Referee Output -->
+  <div id="ref-output"></div>
+
+</div>
+
+<footer>
+  <span>信号矩阵 · 仅供参考 · Not financial advice</span>
+  <span id="ft-time"></span>
+</footer>
 
 </div>
 
 <script>
-// ── Mindset Panel ──
-function toggleMindset() {
-  const panel = document.getElementById('mindset-panel');
-  const chevron = document.getElementById('mindset-chevron');
-  const isOpen = panel.classList.toggle('open');
-  chevron.classList.toggle('open', isOpen);
-}
+/* ══ Global State ══ */
+const S = { ema:'bull', gex:'neg', dex:'pos', lgex:'neg', ldex:'pos', aux:{} };
 
-function updateChecklist() {
-  // defer to next tick so checkbox state has updated
-  setTimeout(() => {
-    const c1 = document.getElementById('chk1').checked;
-    const c2 = document.getElementById('chk2').checked;
-    const c3 = document.getElementById('chk3').checked;
-    const count = [c1,c2,c3].filter(Boolean).length;
-    const badge = document.getElementById('checklist-count');
-    const verdict = document.getElementById('checklist-verdict');
-    badge.textContent = `${count} / 3`;
-
-    if (count === 3) {
-      badge.className = 'mindset-badge complete';
-      verdict.className = 'ms-checklist-verdict ms-cv-ready';
-      verdict.textContent = '✓ 三项确认完成 — 可以考虑开仓';
-    } else if (count > 0) {
-      badge.className = 'mindset-badge';
-      verdict.className = 'ms-checklist-verdict ms-cv-partial';
-      verdict.textContent = `${count}/3 已确认 — 继续核对剩余项`;
-    } else {
-      badge.className = 'mindset-badge';
-      verdict.className = 'ms-checklist-verdict ms-cv-wait';
-      verdict.textContent = '等待核对完成...';
-    }
-  }, 0);
-}
-
-// ── State ──
-const state = { ema:'bull', gex:'neg', dex:'pos', aux:{} };
-
-// ── Combos database ──
-const combos = {
-  bull_pos_pos: {
-    dir:'call', quality:'high',
-    title:'📈 真实多头行情 — Buy Call',
-    body:'EMA多头 + GEX正 + DEX正 三力同向。MMs做市对冲过程中买入支持上涨，散户同向追多，趋势自我强化。今天最适合做call，不要逆势做put。止损设在20EMA下方。',
-    trades:['call','call_spread'],
-    avoid:['put','iron_condor'],
-    timing:'全天有效，午盘回测EMA时加仓机会',
-    entry:'回调至20EMA或9EMA支撑位',
-    exit:'call wall或日内高点阻力',
-    abort:'价格跌破20EMA + DEX翻负'
-  },
-  bull_neg_pos: {
-    dir:'put', quality:'high',
-    title:'⚡ Trap Setup — Buy Put (你的核心系统)',
-    body:'EMA多头给散户信心追多；GEX负说明MMs不压制波动（先让它涨）；DEX正说明净Delta买入旺盛。三者叠加 = 开盘拉升大概率，但支撑是虚的。当价格接近call wall或DEX开始降温，是put最佳入场窗口。顺势逆散户。',
-    trades:['put','put_spread'],
-    avoid:['call','iron_condor'],
-    timing:'等开盘拉升后，9:45–11:00 AM 或下午反弹失败',
-    entry:'价格触及call wall后缩量，出现上影线/吞没K线',
-    exit:'put wall位置或价格回踩EMA支撑',
-    abort:'价格突破call wall不回头 + 成交量放大 → 立刻止损'
-  },
-  bull_pos_neg: {
-    dir:'put', quality:'mid',
-    title:'📉 EMA多头分化 — 轻仓Put',
-    body:'GEX正压制波动，DEX负说明资金净流出。价格可能在MMs压制下慢速向下回归均值。适合put spread而不是裸put，因为GEX正环境下跌通常是慢磨，时间价值损耗快。',
-    trades:['put_spread','butterfly'],
-    avoid:['naked_call','naked_put'],
-    timing:'午盘后效果更好，早盘流动性可能短暂支撑',
-    entry:'反弹至EMA阻力位后进入',
-    exit:'日内低点或支撑位附近',
-    abort:'价格重新站上9EMA + DEX翻正'
-  },
-  bull_neg_neg: {
-    dir:'put', quality:'mid',
-    title:'🔄 EMA多头 + 资金撤退',
-    body:'EMA结构多头但DEX负说明聪明钱在减仓或买put保护，GEX负会放大下行。这是趋势末段信号，但EMA仍是支撑。可轻仓put，但注意EMA支撑处可能反弹。',
-    trades:['put','put_spread'],
-    avoid:['iron_condor'],
-    timing:'等EMA明显向下弯曲后入场，不抢先',
-    entry:'价格跌破9EMA并回测失败',
-    exit:'20EMA或50EMA支撑区',
-    abort:'价格回收9EMA + DEX转正'
-  },
-  bear_neg_neg: {
-    dir:'put', quality:'high',
-    title:'🔻 真实空头行情 — Buy Put',
-    body:'EMA空头 + GEX负 + DEX负 三力同向做空。MMs对冲放大下跌，资金净流出，结构性熊市。Put是正确方向。GEX负环境下可能出现急跌spike，0DTE要快进快出，不要贪。',
-    trades:['put','put_spread'],
-    avoid:['call','iron_condor'],
-    timing:'开盘即可观察，反弹至EMA阻力后入场更优',
-    entry:'反弹至20EMA被压 或 跌破关键支撑',
-    exit:'put wall或next支撑区',
-    abort:'价格强势收复20EMA + GEX数据转正'
-  },
-  bear_pos_neg: {
-    dir:'put', quality:'mid',
-    title:'📌 空头结构 + GEX压制慢跌',
-    body:'EMA空头 + DEX负 = 方向做空，但GEX正会让MMs在下跌时买入支撑，导致慢磨而非急跌。适合put spread利用方向性同时控制theta损耗，或butterfly定点押注支撑位。',
-    trades:['put_spread','butterfly'],
-    avoid:['naked_put','iron_condor'],
-    timing:'全天均可，慢跌结构适合持有时间稍长',
-    entry:'反弹至EMA阻力或near-term high',
-    exit:'次级支撑或日内低点',
-    abort:'价格突破EMA + DEX翻正 + GEX不变'
-  },
-  bear_neg_pos: {
-    dir:'call', quality:'mid',
-    title:'🔄 EMA空头 + 资金逆向接盘',
-    body:'DEX正说明有资金在买Delta（底部接盘或反转押注），GEX负会放大任何反弹。这是反转早期信号。此时做put胜率低，等待确认。若价格突破20EMA是入场做call的机会。',
-    trades:['call','call_spread'],
-    avoid:['put'],
-    timing:'观望为主，等EMA排列反转确认',
-    entry:'突破20EMA + DEX持续正 + GEX依然负（反弹加速）',
-    exit:'次级阻力或前高',
-    abort:'DEX再次转负 + 价格跌回均线下方'
-  },
-  bear_pos_pos: {
-    dir:'neutral', quality:'low',
-    title:'🤔 信号分歧 — 建议观望',
-    body:'EMA空头但DEX和GEX都偏多，说明近期趋势向下但今天资金结构偏多。可能是短期反弹整理。信号互相矛盾，0DTE信号质量不足，不适合入场。等一个方向确认。',
-    trades:['iron_condor'],
-    avoid:['naked_call','naked_put'],
-    timing:'观望，等EMA或DEX其中之一确认方向',
-    entry:'不建议此条件下入场',
-    exit:'—',
-    abort:'—'
-  },
-  flat_neg_pos: {
-    dir:'neutral', quality:'low',
-    title:'🌀 EMA压缩 + 方向未定',
-    body:'EMA纠缠说明多空平衡，GEX负代表一旦突破方向会被放大，DEX正说明散户目前偏向追多。最危险的setup——突破向上可能是真涨也可能是更大trap。不建议此条件下入场0DTE，等待EMA明确排列。',
-    trades:['iron_condor'],
-    avoid:['naked_call','naked_put','butterfly'],
-    timing:'等待EMA明确方向后再用系统',
-    entry:'EMA排列完成后重新评估',
-    exit:'—',
-    abort:'直接观望'
-  },
-  flat_pos_neg: {
-    dir:'neutral', quality:'low',
-    title:'📌 低波动整理 — Iron Condor',
-    body:'EMA纠缠 + GEX正压制 + DEX负。价格在call/put wall区间小幅震荡，不会有大行情。时间价值损耗快，0DTE方向性期权不适合。若要交易，iron condor卖波动率是唯一有优势的策略。',
-    trades:['iron_condor'],
-    avoid:['naked_call','naked_put'],
-    timing:'全天均可，但注意收盘前gamma spike',
-    entry:'在call wall附近卖call，put wall附近卖put',
-    exit:'收盘前1小时平仓',
-    abort:'任意一侧被突破'
-  },
-  flat_pos_pos: {
-    dir:'call', quality:'low',
-    title:'📈 低波压缩 + 偏多',
-    body:'EMA纠缠但DEX正 + GEX正。资金偏多但没有方向性突破，GEX正压制波动，可能缓慢向上磨。call spread优于裸call，控制方向性同时限制theta损耗。',
-    trades:['call_spread','iron_condor'],
-    avoid:['naked_put'],
-    timing:'午盘后偏多倾向更明显',
-    entry:'回调不破支撑后',
-    exit:'call wall附近',
-    abort:'EMA排列下行 + DEX翻负'
-  },
-  flat_neg_neg: {
-    dir:'put', quality:'mid',
-    title:'⬇️ 压缩 + 可能向下突破',
-    body:'EMA纠缠但DEX负说明资金在做空保护，GEX负一旦突破会放大下行。可以小仓put，设好止损在压缩区上沿。如果往下突破且EMA快速排列空头，可以加仓。',
-    trades:['put','put_spread'],
-    avoid:['call','iron_condor'],
-    timing:'等待向下突破压缩区后入场',
-    entry:'价格跌破压缩区下沿',
-    exit:'次级支撑或put wall',
-    abort:'价格重回压缩区上沿 + DEX转正'
-  },
-};
-
-const tradeLabels = {
-  call: { label:'Buy Call', cls:'chip-call' },
-  put: { label:'Buy Put', cls:'chip-put' },
-  call_spread: { label:'Call Spread', cls:'chip-spread' },
-  put_spread: { label:'Put Spread', cls:'chip-spread' },
-  iron_condor: { label:'Iron Condor', cls:'chip-condor' },
-  butterfly: { label:'Butterfly', cls:'chip-butterfly' },
-  naked_call: { label:'Naked Call', cls:'chip-avoid' },
-  naked_put: { label:'Naked Put', cls:'chip-avoid' },
-};
-
-// ── Set signal ──
-function set(group, val, btn) {
-  state[group] = val;
-  document.querySelectorAll(`[data-group="${group}"]`).forEach(b => {
-    b.className = 'sig-btn';
+/* ══ Tabs ══ */
+function switchTab(t) {
+  ['pre','live'].forEach(k => {
+    document.getElementById('tab-'+k).classList.toggle('active', k===t);
+    document.getElementById('panel-'+k).classList.toggle('active', k===t);
   });
-  const colorMap = { bull:'active-green', bear:'active-red', flat:'active-neutral', pos:'active-green', neg:'active-red' };
-  btn.classList.add(colorMap[val] || 'active-neutral');
-  updateSummary();
-  render();
+  if (t==='live') calcZone();
 }
 
-function toggleAux(key, el) {
-  state.aux[key] = !state.aux[key];
-  el.classList.toggle('aux-on', state.aux[key]);
-  updateSummary();
-  render();
+/* ══ Mindset ══ */
+function toggleMs() {
+  document.getElementById('ms-panel').classList.toggle('open');
+  document.getElementById('ms-chev').classList.toggle('open');
+}
+function toggleChk(el) {
+  el.classList.toggle('checked');
+  const n = document.querySelectorAll('.ms-chk.checked').length;
+  const b = document.getElementById('chk-badge');
+  const v = document.getElementById('chk-verdict');
+  b.textContent = n+' / 3';
+  b.className = 'ms-badge' + (n===3?' complete':'');
+  if (n===3) { v.className='ms-verdict ready'; v.textContent='✓ 三项确认 — 可以开仓'; }
+  else if (n>0) { v.className='ms-verdict partial'; v.textContent=n+'/3 已确认'; }
+  else { v.className='ms-verdict'; v.textContent='等待核对...'; }
 }
 
-function updateSummary() {
-  const emaLabels = { bull:'9>20>50 BULL', bear:'9<20<50 BEAR', flat:'FLAT 纠缠' };
-  const emaColors = { bull:'var(--green)', bear:'var(--red)', flat:'var(--amber)' };
-  document.getElementById('sum-ema').textContent = emaLabels[state.ema];
-  document.getElementById('sum-ema').style.color = emaColors[state.ema];
-
-  document.getElementById('sum-gex').textContent = state.gex==='pos' ? '+ POS' : '− NEG';
-  document.getElementById('sum-gex').style.color = state.gex==='pos' ? 'var(--green)' : 'var(--red)';
-
-  document.getElementById('sum-dex').textContent = state.dex==='pos' ? '+ POS' : '− NEG';
-  document.getElementById('sum-dex').style.color = state.dex==='pos' ? 'var(--green)' : 'var(--red)';
-
-  const auxOn = Object.keys(state.aux).filter(k=>state.aux[k]);
-  document.getElementById('sum-aux').textContent = auxOn.length ? auxOn.join(', ').toUpperCase() : 'None active';
-  document.getElementById('sum-aux').style.color = auxOn.length ? 'var(--blue)' : 'var(--text2)';
+/* ══ Signal Buttons ══ */
+function setSig(g, v, btn) {
+  S[g] = v;
+  document.querySelectorAll(`[data-g="${g}"]`).forEach(b => b.className='sig-btn');
+  const cls = {bull:'on-bull',bear:'on-bear',flat:'on-flat',pos:'on-bull',neg:'on-bear'}[v]||'on-flat';
+  btn.classList.add(cls);
+  if (['ema','gex','dex'].includes(g)) { updateSum(); renderPre(); }
+  if (['lgex','ldex'].includes(g)) calcZone();
+}
+function toggleAux(el, key) {
+  S.aux[key] = !S.aux[key];
+  el.classList.toggle('on', S.aux[key]);
+  renderPre();
+}
+function updateSum() {
+  const el = {bull:['BULL','var(--teal)'],bear:['BEAR','var(--vermillion)'],flat:['FLAT','var(--ink3)']};
+  const [et,ec] = el[S.ema]; document.getElementById('s-ema').textContent=et; document.getElementById('s-ema').style.color=ec;
+  document.getElementById('s-gex').textContent = S.gex==='pos'?'+ POS':'− NEG';
+  document.getElementById('s-gex').style.color = S.gex==='pos'?'var(--teal)':'var(--vermillion)';
+  document.getElementById('s-dex').textContent = S.dex==='pos'?'+ POS':'− NEG';
+  document.getElementById('s-dex').style.color = S.dex==='pos'?'var(--teal)':'var(--vermillion)';
 }
 
-// ── Aux modifiers ──
-function getAuxNotes() {
-  const notes = [];
-  if (state.aux['hvl']) notes.push({ type:'warn', text:'价格低于HVL：处于Negative Transition Zone，做多需谨慎' });
-  if (state.aux['vix']) notes.push({ type:'warn', text:'VIX/IVR偏高：期权溢价贵，prefer spreads over naked options' });
-  if (state.aux['vol']) notes.push({ type:'block', text:'成交量异常放大：可能是机构进场或大消息，止损要宽，仓位要小' });
-  if (state.aux['opex']) notes.push({ type:'warn', text:'OPEX周：Max Pain引力强，价格可能被钉在特定strike，注意pin risk' });
-  if (state.aux['dex-vel']) notes.push({ type:'ok', text:'DEX减速：买方动能衰减，做put的最佳timing信号，比DEX本身更早' });
-  if (state.aux['macro']) notes.push({ type:'block', text:'⚠️ 宏观事件日（CPI/FOMC/NFP）：GEX结构可能被忽视，建议不交易或大幅缩仓' });
-  return notes;
-}
+/* ══ Pre-Market Combos ══ */
+const C = {
+  bull_pos_pos:{d:'call',q:'high',t:'📈 三力同向多头 — Buy Call',b:'EMA多头 + GEX正 + DEX正。MMs对冲买入支撑上涨，趋势自我强化。做call，止损20EMA下方。',tr:['call','call_spread'],no:['put','iron_condor'],tm:'全天有效，午盘回测EMA加仓',en:'回调至20EMA/9EMA支撑',ex:'Call Wall或日内高点',ab:'跌破20EMA + DEX翻负'},
+  bull_neg_pos:{d:'put',q:'high',t:'⚡ Trap Setup — Buy Put',b:'EMA多头给散户信心追多；GEX负MMs不压制波动；DEX正净买入旺盛。开盘拉升但支撑虚假。接近call wall + DEX降温时做put。',tr:['put','put_spread'],no:['call','iron_condor'],tm:'等拉升后 9:45–11:00 或午后反弹失败',en:'Call Wall附近缩量 + 上影线/吞没',ex:'Put Wall或EMA支撑',ab:'价格突破Call Wall不回头 + 放量 → 止损'},
+  bull_pos_neg:{d:'put',q:'mid',t:'📉 多头分化 — 轻仓 Put Spread',b:'GEX正压制波动，DEX负资金净流出。慢速向下回归均值。用spread不用裸put。',tr:['put_spread','butterfly'],no:['naked_call','naked_put'],tm:'午盘后效果更好',en:'反弹至EMA阻力位',ex:'日内低点或支撑',ab:'站上9EMA + DEX翻正'},
+  bull_neg_neg:{d:'put',q:'mid',t:'🔄 资金撤退 — Put',b:'EMA多头但聪明钱减仓，GEX负放大下行。趋势末段信号。',tr:['put','put_spread'],no:['iron_condor'],tm:'等EMA向下弯曲后入场',en:'跌破9EMA回测失败',ex:'20EMA或50EMA',ab:'回收9EMA + DEX转正'},
+  bear_neg_neg:{d:'put',q:'high',t:'🔻 三力同向空头 — Buy Put',b:'EMA空头 + GEX负 + DEX负。MMs放大下跌，结构性熊市。0DTE快进快出。',tr:['put','put_spread'],no:['call','iron_condor'],tm:'开盘观察，反弹至EMA阻力后入场',en:'反弹至20EMA被压 / 破关键支撑',ex:'Put Wall或次级支撑',ab:'强势收复20EMA + GEX转正'},
+  bear_pos_neg:{d:'put',q:'mid',t:'📌 空头 + GEX压制慢跌',b:'方向做空，但GEX正导致慢磨。Put spread或butterfly。',tr:['put_spread','butterfly'],no:['naked_put','iron_condor'],tm:'全天均可，慢跌适合稍长持有',en:'反弹至EMA阻力',ex:'次级支撑或日内低点',ab:'突破EMA + DEX翻正'},
+  bear_neg_pos:{d:'call',q:'mid',t:'🔄 资金接盘 — 等反转 Call',b:'DEX正有人买Delta，GEX负放大反弹。反转早期信号。突破20EMA做call。',tr:['call','call_spread'],no:['put'],tm:'观望为主，等EMA反转确认',en:'突破20EMA + DEX持续正',ex:'次级阻力或前高',ab:'DEX转负 + 跌回均线下'},
+  bear_pos_pos:{d:'neutral',q:'low',t:'🤔 信号分歧 — 观望',b:'EMA空头但GEX/DEX偏多。信号矛盾，不适合0DTE。',tr:['iron_condor'],no:['naked_call','naked_put'],tm:'观望，等确认',en:'不建议入场',ex:'—',ab:'—'},
+  flat_neg_pos:{d:'neutral',q:'low',t:'🌀 压缩 + 方向未定',b:'EMA纠缠，GEX负放大突破，DEX正散户偏多。最危险setup。',tr:['iron_condor'],no:['naked_call','naked_put'],tm:'等EMA明确后再用系统',en:'EMA排列完成后评估',ex:'—',ab:'直接观望'},
+  flat_pos_neg:{d:'neutral',q:'low',t:'📌 低波整理 — Iron Condor',b:'GEX正压制 + DEX负。窄幅震荡，0DTE方向性不适合。',tr:['iron_condor'],no:['naked_call','naked_put'],tm:'全天，注意收盘前gamma spike',en:'Call Wall卖call / Put Wall卖put',ex:'收盘前1小时平仓',ab:'任意一侧突破'},
+  flat_pos_pos:{d:'call',q:'low',t:'📈 低波偏多 — Call Spread',b:'资金偏多但无突破，GEX正压制。Call spread控损。',tr:['call_spread','iron_condor'],no:['naked_put'],tm:'午盘后偏多更明显',en:'回调不破支撑',ex:'Call Wall',ab:'EMA下行 + DEX翻负'},
+  flat_neg_neg:{d:'put',q:'mid',t:'⬇️ 压缩偏空 — 等突破 Put',b:'DEX负资金做空，GEX负一旦突破放大。小仓put等突破。',tr:['put','put_spread'],no:['call','iron_condor'],tm:'等向下突破压缩区',en:'跌破压缩区下沿',ex:'次级支撑或Put Wall',ab:'重回压缩区上沿 + DEX转正'},
+};
+const TL = {
+  call:{l:'Buy Call',c:'chip-call'},put:{l:'Buy Put',c:'chip-put'},
+  call_spread:{l:'Call Spread',c:'chip-spread'},put_spread:{l:'Put Spread',c:'chip-spread'},
+  iron_condor:{l:'Iron Condor',c:'chip-condor'},butterfly:{l:'Butterfly',c:'chip-butterfly'},
+  naked_call:{l:'Naked Call',c:'chip-no'},naked_put:{l:'Naked Put',c:'chip-no'},
+};
 
-// ── Render ──
-function render() {
-  const key = `${state.ema}_${state.gex}_${state.dex}`;
-  const c = combos[key];
-  const aux = getAuxNotes();
+function renderPre() {
+  const k = `${S.ema}_${S.gex}_${S.dex}`;
+  const c = C[k]; if(!c) return;
+  const dc = {call:'vc-call',put:'vc-put',neutral:'vc-neutral'}[c.d]||'vc-wait';
+  const qc = {high:'q-hi',mid:'q-mid',low:'q-lo'}[c.q];
+  const ql = {high:'高信号',mid:'中等',low:'低'}[c.q];
+  const chips = c.tr.map(t=>`<div class="chip ${TL[t].c}">✓ ${TL[t].l}</div>`).join('');
+  const nochips = c.no.map(t=>`<div class="chip chip-no">✗ ${TL[t].l}</div>`).join('');
 
-  if (!c) { document.getElementById('output').innerHTML = '<div class="verdict-card v-wait"><div class="verdict-title">组合分析中...</div></div>'; return; }
+  const auxNotes = [];
+  if(S.aux.hvl) auxNotes.push('价格低于HVL：Negative Transition Zone，做多谨慎');
+  if(S.aux.vix) auxNotes.push('VIX/IVR偏高：期权贵，prefer spreads');
+  if(S.aux.vol) auxNotes.push('成交量异常：止损要宽，仓位要小');
+  if(S.aux.opex) auxNotes.push('OPEX周：Max Pain引力强，注意pin risk');
+  if(S.aux.dexvel) auxNotes.push('DEX减速：买方动能衰减，put最佳timing');
+  if(S.aux.macro) auxNotes.push('⚠ 宏观事件日：建议不交易或大幅缩仓');
 
-  const dirClass = { call:'v-call', put:'v-put', neutral:'v-neutral' }[c.dir] || 'v-wait';
-  const qClass = { high:'q-high', mid:'q-mid', low:'q-low' }[c.quality];
-  const qText = { high:'高信号质量', mid:'中等质量', low:'信号质量低' }[c.quality];
-
-  const tradesHtml = c.trades.map(t => {
-    const tl = tradeLabels[t];
-    return `<div class="trade-chip ${tl.cls}"><span>✓</span>${tl.label}</div>`;
-  }).join('');
-  const avoidHtml = c.avoid.map(t => {
-    const tl = tradeLabels[t];
-    return `<div class="trade-chip chip-avoid"><span>✗</span>${tl.label}</div>`;
-  }).join('');
-
-  const auxHtml = aux.length ? aux.map(n => {
-    const colors = { ok:'var(--green)', warn:'var(--amber)', block:'var(--red)' };
-    return `<div class="abort-item" style="color:${colors[n.type]}">${n.text}</div>`;
-  }).join('') : '';
-
-  document.getElementById('output').innerHTML = `
-    <div class="verdict-card ${dirClass}">
-      <div class="verdict-header">
-        <div class="verdict-title">${c.title}</div>
-        <div class="quality-badge ${qClass}">${qText}</div>
+  document.getElementById('pre-output').innerHTML = `
+    <div class="verdict-card ${dc}">
+      <div class="v-head">
+        <div class="v-title">${c.t}</div>
+        <div class="q-badge ${qc}">${ql}</div>
       </div>
-      <div class="verdict-body">${c.body}</div>
-      <div class="trades-row">${tradesHtml}${avoidHtml ? '<div style="width:1px;background:var(--border);margin:0 4px"></div>'+avoidHtml : ''}</div>
+      <div class="v-body">${c.b}</div>
+      <div class="trade-row">${chips}${nochips?'<span style="width:1px;background:var(--ink5);margin:0 2px"></span>'+nochips:''}</div>
     </div>
-
     <div class="info-grid">
       <div class="info-card">
-        <div class="info-card-title">Timing & Entry</div>
-        <div class="info-row"><span class="info-key">最佳时段</span><span class="info-val">${c.timing}</span></div>
-        <div class="info-row"><span class="info-key">入场触发</span><span class="info-val">${c.entry}</span></div>
-        <div class="info-row"><span class="info-key">目标出场</span><span class="info-val warn">${c.exit}</span></div>
+        <div class="info-card-title">时机与入场</div>
+        <div class="info-row"><span class="info-k">最佳时段</span><span class="info-v">${c.tm}</span></div>
+        <div class="info-row"><span class="info-k">入场触发</span><span class="info-v">${c.en}</span></div>
+        <div class="info-row"><span class="info-k c-amber">目标出场</span><span class="info-v c-amber">${c.ex}</span></div>
       </div>
       <div class="info-card">
-        <div class="info-card-title">Abort Conditions</div>
-        <div class="abort-item">${c.abort}</div>
+        <div class="info-card-title">中止条件</div>
+        <div class="abort-item">${c.ab}</div>
       </div>
     </div>
-
-    ${aux.length ? `
-    <div class="abort-box">
-      <div class="abort-title">辅助信号修正</div>
-      ${auxHtml}
-    </div>` : ''}
+    ${auxNotes.length?`<div class="abort-box"><div class="abort-title">辅助信号修正</div>${auxNotes.map(n=>`<div class="abort-item">${n}</div>`).join('')}</div>`:''}
   `;
 }
 
-// ── Clock ──
-function updateClock() {
-  const now = new Date();
-  const et = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-  const pad = n => String(n).padStart(2,'0');
-  const timeStr = `${pad(et.getHours())}:${pad(et.getMinutes())}:${pad(et.getSeconds())} ET`;
-  document.getElementById('clock').textContent = timeStr;
-  document.getElementById('footer-time').textContent = `${et.toLocaleDateString('en-US')} · ${timeStr}`;
-}
-setInterval(updateClock, 1000);
-updateClock();
+/* ══ Intraday Referee ══ */
+function calcZone() {
+  const price = parseFloat(document.getElementById('inp-price').value);
+  const vwap = parseFloat(document.getElementById('inp-vwap').value);
+  const cw = parseFloat(document.getElementById('inp-cw').value);
+  const pw = parseFloat(document.getElementById('inp-pw').value);
+  const hvl = parseFloat(document.getElementById('inp-hvl').value);
+  const gex = S.lgex;
+  const dex = S.ldex;
 
-// ── Init ──
-render();
-updateSummary();
+  if ([price,vwap,cw,pw,hvl].some(isNaN)) {
+    document.getElementById('zone-vis').innerHTML = `<div style="text-align:center;color:var(--ink4);font-family:var(--cn);font-size:13px;padding:30px 0;">输入关键位后自动生成区间图</div>`;
+    document.getElementById('ref-output').innerHTML = '';
+    return;
+  }
+
+  // Build zone bar
+  const all = [price,vwap,cw,pw,hvl];
+  const mn = Math.min(...all); const mx = Math.max(...all);
+  const pad = (mx-mn)*0.15 || 1;
+  const lo = mn - pad; const hi = mx + pad;
+  const pct = v => ((v-lo)/(hi-lo)*100);
+
+  const markers = [
+    {v:pw, label:'PUT WALL', color:'var(--vermillion)', short:'PW'},
+    {v:hvl, label:'HVL', color:'var(--indigo)', short:'HVL'},
+    {v:vwap, label:'VWAP', color:'var(--amber)', short:'VWAP'},
+    {v:cw, label:'CALL WALL', color:'var(--teal)', short:'CW'},
+  ].sort((a,b)=>a.v-b.v);
+
+  let barHtml = `<div class="zone-bar">`;
+  // Zone fills
+  if (pw < vwap) barHtml += `<div class="zone-fill zone-fill-vermillion" style="left:${pct(pw)}%;right:${100-pct(vwap)}%"></div>`;
+  if (vwap < cw) barHtml += `<div class="zone-fill zone-fill-teal" style="left:${pct(vwap)}%;right:${100-pct(cw)}%"></div>`;
+
+  // Markers
+  markers.forEach(m => {
+    barHtml += `<div class="zone-marker" style="left:${pct(m.v)}%">
+      <div class="zone-marker-label" style="color:${m.color}">${m.label}</div>
+      <div class="zm-line" style="height:${m.v===hvl?'48px':'40px'};background:${m.color}"></div>
+    </div>`;
+    barHtml += `<div class="zone-label-bottom" style="left:${pct(m.v)}%;color:${m.color}">${m.v.toFixed(1)}</div>`;
+  });
+
+  // Current price
+  barHtml += `<div class="zone-current" style="left:${pct(price)}%">
+    <div class="zone-current-label">${price.toFixed(2)}</div>
+  </div>`;
+  barHtml += `</div>`;
+  document.getElementById('zone-vis').innerHTML = barHtml;
+
+  // ── Zone logic ──
+  const nearPct = 0.003; // 0.3% proximity threshold
+  const nearCW = Math.abs(price-cw)/price < nearPct;
+  const nearPW = Math.abs(price-pw)/price < nearPct;
+  const nearVWAP = Math.abs(price-vwap)/price < nearPct;
+  const aboveVWAP = price > vwap;
+  const belowVWAP = price < vwap;
+  const aboveHVL = price > hvl;
+  const belowHVL = price < hvl;
+
+  let verdict = {cls:'rv-idle',status:'待定',title:'输入数据分析中...',body:'',action:''};
+
+  // ── STOP conditions ──
+  if (nearVWAP && gex==='pos') {
+    verdict = {cls:'rv-stop',status:'禁止',title:'把手离开键盘',body:`价格在VWAP ±0.3% 区间（${vwap.toFixed(1)}），且GEX正。做市商双向压制，多空摩擦区。方向性期权无利润空间，时间价值快速损耗。任何方向的突破都会被MM对冲拉回。`,action:'操作：不做。等价格离开VWAP区间后重新评估。'};
+  }
+  // Near call wall + GEX neg + DEX pos = Trap setup
+  else if (nearCW && gex==='neg' && dex==='pos') {
+    verdict = {cls:'rv-go',status:'可以操作',title:'⚡ Trap Setup — Call Wall 做空窗口',body:`价格逼近Call Wall（${cw.toFixed(1)}），GEX负且DEX正。散户追高，做市商即将反向抛售对冲。观察是否出现上影线/吞没/缩量。确认后买Put。`,action:'操作：等确认K线后 Buy Put。止损设在Call Wall上方。'};
+  }
+  // Near call wall + GEX pos
+  else if (nearCW && gex==='pos') {
+    verdict = {cls:'rv-stop',status:'禁止',title:'Call Wall 阻力区 · 停手',body:`价格逼近Call Wall（${cw.toFixed(1)}），GEX正。做市商在这里大量抛售对冲，是结构性天花板。追多必死。但GEX正的环境下跌也不会太深。`,action:'操作：不做。等价格回落后找新入场位。'};
+  }
+  // Near put wall
+  else if (nearPW && gex==='pos') {
+    verdict = {cls:'rv-stop',status:'禁止',title:'Put Wall 支撑区 · 停手',body:`价格逼近Put Wall（${pw.toFixed(1)}），GEX正。做市商大量买入对冲，结构性地板。做空必死。`,action:'操作：不做put。如果企稳可考虑轻仓call。'};
+  }
+  else if (nearPW && gex==='neg') {
+    verdict = {cls:'rv-wait',status:'警戒',title:'Put Wall 危险区 · 可能击穿',body:`价格逼近Put Wall（${pw.toFixed(1)}）但GEX负。做市商追跌，Put Wall支撑力大幅减弱。如果放量跌破，下方没有刹车。`,action:'操作：观察。跌破Put Wall放量 → 跟随做Put。守住 → 轻仓Call反弹。'};
+  }
+  // Below VWAP + below HVL + GEX neg
+  else if (belowVWAP && belowHVL && gex==='neg') {
+    verdict = {cls:'rv-go',status:'可以操作',title:'弱势结构 — VWAP 反抽做空',body:`价格在VWAP（${vwap.toFixed(1)}）和HVL（${hvl.toFixed(1)}）下方，GEX负。弱势盘面，VWAP是阻力不是支撑。做市商追跌。${dex==='pos'?'DEX正说明有反弹买盘，等消耗完毕后做空更佳。':'DEX负确认卖压，方向做空。'}`,action:'操作：等反抽至VWAP附近受阻 → Buy Put。'};
+  }
+  // Above VWAP + above HVL + GEX neg + DEX pos
+  else if (aboveVWAP && aboveHVL && gex==='neg' && dex==='pos') {
+    verdict = {cls:'rv-wait',status:'警戒',title:'强势反弹中 — 但地基不稳',body:`价格在VWAP（${vwap.toFixed(1)}）和HVL（${hvl.toFixed(1)}）上方，GEX负+DEX正。做市商追涨买入推动反弹。但一旦DEX转弱，反转会极其凶猛。关注Call Wall距离。`,action:'操作：不追call。等接近Call Wall + 动量衰减 → Trap Setup做Put。'};
+  }
+  // Above VWAP + GEX pos
+  else if (aboveVWAP && gex==='pos') {
+    verdict = {cls:'rv-go',status:'可以操作',title:'VWAP 上方 + GEX稳定 — 可做Call',body:`价格站稳VWAP（${vwap.toFixed(1)}）上方，GEX正提供支撑。做市商在回调时买入对冲。可以做call，但注意Call Wall（${cw.toFixed(1)}）距离作为利润目标。`,action:'操作：回调不破VWAP时 Buy Call / Call Spread。目标Call Wall。'};
+  }
+  // Below VWAP + GEX pos
+  else if (belowVWAP && gex==='pos') {
+    verdict = {cls:'rv-wait',status:'等待',title:'VWAP 下方但有支撑 — 等企稳',body:`价格在VWAP（${vwap.toFixed(1)}）下方，但GEX正。做市商在下跌时买入对冲，提供缓冲。不会急跌但方向偏弱。`,action:'操作：等价格回到VWAP上方确认再做call。或在Put Wall附近轻仓call。'};
+  }
+  // Generic fallback
+  else {
+    const zone = aboveVWAP ? 'VWAP上方' : 'VWAP下方';
+    const hvlZ = aboveHVL ? 'HVL上方' : 'HVL下方';
+    verdict = {cls:'rv-wait',status:'评估中',title:`${zone} · ${hvlZ} · 综合判断`,body:`价格${price.toFixed(2)}处于${zone}、${hvlZ}。GEX${gex==='pos'?'正（稳定）':'负（放大）'}，DEX${dex==='pos'?'正（买方）':'负（卖方）'}。根据距离关键位的远近和盘面动量综合判断。`,action:'操作：等接近明确关键位后再做决策。'};
+  }
+
+  document.getElementById('ref-output').innerHTML = `
+    <div class="ref-verdict ${verdict.cls}">
+      <div class="rv-status">${verdict.status}</div>
+      <div class="rv-title">${verdict.title}</div>
+      <div class="rv-body">${verdict.body}</div>
+      <div class="rv-action">${verdict.action}</div>
+    </div>
+  `;
+}
+
+/* ══ Clock + Open Guard ══ */
+function tick() {
+  const now = new Date();
+  const et = new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const p = n => String(n).padStart(2,'0');
+  const t = `${p(et.getHours())}:${p(et.getMinutes())}:${p(et.getSeconds())} ET`;
+  document.getElementById('clock').textContent = t;
+  document.getElementById('ft-time').textContent = t;
+  // Open guard: 9:30-9:45 ET
+  const mins = et.getHours()*60+et.getMinutes();
+  const guard = document.getElementById('open-guard');
+  if (mins>=570 && mins<585) { guard.classList.add('active'); }
+  else { guard.classList.remove('active'); }
+}
+setInterval(tick,1000); tick();
+
+/* ══ Init ══ */
+updateSum(); renderPre(); calcZone();
 </script>
 </body>
 </html>
