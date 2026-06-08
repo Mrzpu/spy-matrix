@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPY 0DTE Signal Matrix</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --bg2: #111418;
+    --bg3: #181c22;
+    --border: #1e2530;
+    --border2: #2a3240;
+    --text: #c8d4e0;
+    --text2: #6b7d8f;
+    --text3: #3d4f60;
+    --green: #00c87a;
+    --green-dim: #00c87a22;
+    --green-mid: #00c87a44;
+    --red: #ff4757;
+    --red-dim: #ff475722;
+    --red-mid: #ff475744;
+    --amber: #f5a623;
+    --amber-dim: #f5a62322;
+    --blue: #4a9eff;
+    --blue-dim: #4a9eff22;
+    --purple: #a78bfa;
+    --purple-dim: #a78bfa22;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid scanline effect */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 28px 0 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 16px; }
+
+  .logo-mark {
+    width: 36px; height: 36px;
+    border: 1px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: var(--green); font-weight: 600;
+    position: relative;
+  }
+  .logo-mark::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: var(--green-dim);
+  }
+
+  .header-title { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; color: var(--text); text-transform: uppercase; }
+  .header-sub { font-size: 11px; color: var(--text2); margin-top: 2px; letter-spacing: 0.06em; }
+
+  .live-badge {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px; letter-spacing: 0.1em; color: var(--text2);
+    text-transform: uppercase;
+  }
+  .live-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── Section headers ── */
+  .section-label {
+    font-size: 10px; letter-spacing: 0.14em; color: var(--text3);
+    text-transform: uppercase; margin: 28px 0 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ── Signal Controls ── */
+  .controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .control-group {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+
+  .control-label {
+    font-size: 10px; letter-spacing: 0.12em; color: var(--text2);
+    text-transform: uppercase; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .control-label .indicator {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+  .ind-green { background: var(--green); }
+  .ind-red { background: var(--red); }
+  .ind-amber { background: var(--amber); }
+  .ind-blue { background: var(--blue); }
+  .ind-purple { background: var(--purple); }
+
+  .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .sig-btn {
+    font-family: var(--mono);
+    font-size: 11px; font-weight: 500;
+    padding: 6px 12px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .sig-btn:hover { border-color: var(--text3); color: var(--text); }
+
+  .sig-btn.active-green { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .sig-btn.active-red { border-color: var(--red); background: var(--red-dim); color: var(--red); }
+  .sig-btn.active-amber { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); }
+  .sig-btn.active-blue { border-color: var(--blue); background: var(--blue-dim); color: var(--blue); }
+  .sig-btn.active-neutral { border-color: var(--text2); background: rgba(108,125,143,0.12); color: var(--text); }
+
+  /* ── Additional signals ── */
+  .aux-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .aux-item {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    user-select: none;
+  }
+  .aux-item:hover { border-color: var(--border2); }
+  .aux-item.aux-on { border-color: var(--blue); background: var(--blue-dim); }
+  .aux-item .aux-name { font-size: 10px; color: var(--text2); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
+  .aux-item .aux-val { font-size: 12px; color: var(--text); font-weight: 500; }
+  .aux-item.aux-on .aux-name { color: var(--blue); }
+  .aux-item.aux-on .aux-val { color: var(--blue); }
+
+  /* ── Analysis output ── */
+  .verdict-card {
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    padding: 20px 22px;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
+
+  .verdict-card.v-call { border-left: 3px solid var(--green); }
+  .verdict-card.v-put { border-left: 3px solid var(--red); }
+  .verdict-card.v-neutral { border-left: 3px solid var(--amber); }
+  .verdict-card.v-wait { border-left: 3px solid var(--text3); }
+
+  .verdict-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
+  }
+
+  .verdict-title { font-size: 15px; font-weight: 600; }
+  .verdict-card.v-call .verdict-title { color: var(--green); }
+  .verdict-card.v-put .verdict-title { color: var(--red); }
+  .verdict-card.v-neutral .verdict-title { color: var(--amber); }
+  .verdict-card.v-wait .verdict-title { color: var(--text2); }
+
+  .quality-badge {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
+    padding: 3px 10px; text-transform: uppercase;
+  }
+  .q-high { background: var(--green-mid); color: var(--green); border: 1px solid var(--green); }
+  .q-mid { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); }
+  .q-low { background: rgba(108,125,143,0.1); color: var(--text2); border: 1px solid var(--border2); }
+
+  .verdict-body { font-size: 12px; color: var(--text2); line-height: 1.8; font-family: var(--sans); margin-bottom: 14px; }
+
+  /* ── Trade recommendations ── */
+  .trades-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .trade-chip {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+    padding: 5px 12px; text-transform: uppercase;
+    border: 1px solid;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .trade-chip .chip-icon { font-size: 12px; }
+
+  .chip-call { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+  .chip-put { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+  .chip-spread { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+  .chip-condor { border-color: var(--purple); color: var(--purple); background: var(--purple-dim); }
+  .chip-butterfly { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+  .chip-avoid { border-color: var(--text3); color: var(--text2); background: transparent; opacity: 0.6; }
+
+  /* ── Timing + levels section ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .info-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+  .info-card-title { font-size: 10px; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 10px; }
+  .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+  .info-key { font-size: 11px; color: var(--text2); }
+  .info-val { font-size: 11px; color: var(--text); font-weight: 500; }
+  .info-val.good { color: var(--green); }
+  .info-val.bad { color: var(--red); }
+  .info-val.warn { color: var(--amber); }
+
+  /* ── Risk filters ── */
+  .risk-row {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .risk-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+  .risk-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .risk-dot.ok { background: var(--green); }
+  .risk-dot.warn { background: var(--amber); }
+  .risk-dot.block { background: var(--red); }
+
+  /* ── Abort conditions ── */
+  .abort-box {
+    background: var(--red-dim);
+    border: 1px solid var(--red);
+    border-left: 3px solid var(--red);
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+  .abort-title { font-size: 10px; letter-spacing: 0.12em; color: var(--red); text-transform: uppercase; margin-bottom: 8px; }
+  .abort-item { font-size: 11px; color: var(--text2); font-family: var(--sans); line-height: 1.7; display: flex; gap: 8px; }
+  .abort-item::before { content: '▸'; color: var(--red); flex-shrink: 0; }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ── Misc ── */
+  .separator { height: 1px; background: var(--border); margin: 20px 0; }
+
+  .signal-summary {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    margin-bottom: 20px;
+  }
+  .sum-item { font-size: 11px; display: flex; align-items: center; gap: 6px; }
+  .sum-label { color: var(--text3); }
+  .sum-val { font-weight: 500; }
+
+  @media (max-width: 600px) {
+    .info-grid { grid-template-columns: 1fr; }
+    .controls-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="header-left">
+      <div class="logo-mark">Σ</div>
+      <div>
+        <div class="header-title">SPY 0DTE Signal Matrix</div>
+        <div class="header-sub">EMA · GEX · DEX · Multi-Signal Analysis System</div>
+      </div>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      <span id="clock">--:--:-- ET</span>
+    </div>
+  </header>
+
+  <!-- ── Primary Signals ── -->
+  <div class="section-label">Primary Signals</div>
+
+  <div class="controls-grid">
+
+    <div class="control-group">
+      <div class="control-label"><span class="indicator ind-amber"></span>EMA Stack (9 / 20 / 50)</div>
+      <div class="btn-group">
+        <button class="sig-btn active-green" data-group="ema" data-val="bull" onclick="set('ema','bull',this)">9&gt;20&gt;50 多头</button>
+        <button class="sig-btn" data-group="ema" data-val="bear" onclick="set('ema','bear',this)">9&lt;20&lt;50 空头</button>
+        <button class="sig-btn" data-group="ema" data-val="flat" onclick="set('ema','flat',this)">纠缠压缩</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <div class="control-label"><span class="indicator ind-red"></span>GEX (Gamma Exposure)</div>
+      <div class="btn-group">
+        <button class="sig-btn" data-group="gex" data-val="pos" onclick="set('gex','pos',this)">+ Positive 稳定</button>
+        <button class="sig-btn active-red" data-group="gex" data-val="neg" onclick="set('gex','neg',this)">− Negative 放大</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <div class="control-label"><span class="indicator ind-blue"></span>DEX (Delta Exposure)</div>
+      <div class="btn-group">
+        <button class="sig-btn active-green" data-group="dex" data-val="pos" onclick="set('dex','pos',this)">+ Positive 买方主导</button>
+        <button class="sig-btn" data-group="dex" data-val="neg" onclick="set('dex','neg',this)">− Negative 卖方主导</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Aux Signals ── -->
+  <div class="section-label">辅助信号 (点击切换)</div>
+
+  <div class="aux-grid">
+    <div class="aux-item" id="aux-hvl" onclick="toggleAux('hvl',this)">
+      <div class="aux-name">Price vs HVL</div>
+      <div class="aux-val" id="aux-hvl-val">Below HVL ↓</div>
+    </div>
+    <div class="aux-item" id="aux-vix" onclick="toggleAux('vix',this)">
+      <div class="aux-name">VIX / IVR</div>
+      <div class="aux-val" id="aux-vix-val">High &gt; 20</div>
+    </div>
+    <div class="aux-item" id="aux-vol" onclick="toggleAux('vol',this)">
+      <div class="aux-name">Volume</div>
+      <div class="aux-val" id="aux-vol-val">Climax / Spike</div>
+    </div>
+    <div class="aux-item" id="aux-opex" onclick="toggleAux('opex',this)">
+      <div class="aux-name">OPEX Week</div>
+      <div class="aux-val" id="aux-opex-val">Monthly Expiry</div>
+    </div>
+    <div class="aux-item" id="aux-dex-vel" onclick="toggleAux('dex-vel',this)">
+      <div class="aux-name">DEX Velocity</div>
+      <div class="aux-val" id="aux-dex-vel-val">Decelerating</div>
+    </div>
+    <div class="aux-item" id="aux-macro" onclick="toggleAux('macro',this)">
+      <div class="aux-name">Macro Event</div>
+      <div class="aux-val" id="aux-macro-val">CPI / FOMC / NFP</div>
+    </div>
+  </div>
+
+  <!-- ── Signal Summary Bar ── -->
+  <div class="signal-summary">
+    <div class="sum-item"><span class="sum-label">EMA:</span><span class="sum-val" id="sum-ema" style="color:var(--green)">9&gt;20&gt;50 BULL</span></div>
+    <div class="sum-item"><span class="sum-label">GEX:</span><span class="sum-val" id="sum-gex" style="color:var(--red)">− NEG</span></div>
+    <div class="sum-item"><span class="sum-label">DEX:</span><span class="sum-val" id="sum-dex" style="color:var(--green)">+ POS</span></div>
+    <div class="sum-item"><span class="sum-label">Aux:</span><span class="sum-val" id="sum-aux" style="color:var(--text2)">None active</span></div>
+  </div>
+
+  <!-- ── Analysis Output ── -->
+  <div class="section-label">Analysis Output</div>
+  <div id="output"></div>
+
+  <footer>
+    <span>SPY 0DTE Signal Matrix · For reference only · Not financial advice</span>
+    <span id="footer-time"></span>
+  </footer>
+
+</div>
+
+<script>
+// ── State ──
+const state = { ema:'bull', gex:'neg', dex:'pos', aux:{} };
+
+// ── Combos database ──
+const combos = {
+  bull_pos_pos: {
+    dir:'call', quality:'high',
+    title:'📈 真实多头行情 — Buy Call',
+    body:'EMA多头 + GEX正 + DEX正 三力同向。MMs做市对冲过程中买入支持上涨，散户同向追多，趋势自我强化。今天最适合做call，不要逆势做put。止损设在20EMA下方。',
+    trades:['call','call_spread'],
+    avoid:['put','iron_condor'],
+    timing:'全天有效，午盘回测EMA时加仓机会',
+    entry:'回调至20EMA或9EMA支撑位',
+    exit:'call wall或日内高点阻力',
+    abort:'价格跌破20EMA + DEX翻负'
+  },
+  bull_neg_pos: {
+    dir:'put', quality:'high',
+    title:'⚡ Trap Setup — Buy Put (你的核心系统)',
+    body:'EMA多头给散户信心追多；GEX负说明MMs不压制波动（先让它涨）；DEX正说明净Delta买入旺盛。三者叠加 = 开盘拉升大概率，但支撑是虚的。当价格接近call wall或DEX开始降温，是put最佳入场窗口。顺势逆散户。',
+    trades:['put','put_spread'],
+    avoid:['call','iron_condor'],
+    timing:'等开盘拉升后，9:45–11:00 AM 或下午反弹失败',
+    entry:'价格触及call wall后缩量，出现上影线/吞没K线',
+    exit:'put wall位置或价格回踩EMA支撑',
+    abort:'价格突破call wall不回头 + 成交量放大 → 立刻止损'
+  },
+  bull_pos_neg: {
+    dir:'put', quality:'mid',
+    title:'📉 EMA多头分化 — 轻仓Put',
+    body:'GEX正压制波动，DEX负说明资金净流出。价格可能在MMs压制下慢速向下回归均值。适合put spread而不是裸put，因为GEX正环境下跌通常是慢磨，时间价值损耗快。',
+    trades:['put_spread','butterfly'],
+    avoid:['naked_call','naked_put'],
+    timing:'午盘后效果更好，早盘流动性可能短暂支撑',
+    entry:'反弹至EMA阻力位后进入',
+    exit:'日内低点或支撑位附近',
+    abort:'价格重新站上9EMA + DEX翻正'
+  },
+  bull_neg_neg: {
+    dir:'put', quality:'mid',
+    title:'🔄 EMA多头 + 资金撤退',
+    body:'EMA结构多头但DEX负说明聪明钱在减仓或买put保护，GEX负会放大下行。这是趋势末段信号，但EMA仍是支撑。可轻仓put，但注意EMA支撑处可能反弹。',
+    trades:['put','put_spread'],
+    avoid:['iron_condor'],
+    timing:'等EMA明显向下弯曲后入场，不抢先',
+    entry:'价格跌破9EMA并回测失败',
+    exit:'20EMA或50EMA支撑区',
+    abort:'价格回收9EMA + DEX转正'
+  },
+  bear_neg_neg: {
+    dir:'put', quality:'high',
+    title:'🔻 真实空头行情 — Buy Put',
+    body:'EMA空头 + GEX负 + DEX负 三力同向做空。MMs对冲放大下跌，资金净流出，结构性熊市。Put是正确方向。GEX负环境下可能出现急跌spike，0DTE要快进快出，不要贪。',
+    trades:['put','put_spread'],
+    avoid:['call','iron_condor'],
+    timing:'开盘即可观察，反弹至EMA阻力后入场更优',
+    entry:'反弹至20EMA被压 或 跌破关键支撑',
+    exit:'put wall或next支撑区',
+    abort:'价格强势收复20EMA + GEX数据转正'
+  },
+  bear_pos_neg: {
+    dir:'put', quality:'mid',
+    title:'📌 空头结构 + GEX压制慢跌',
+    body:'EMA空头 + DEX负 = 方向做空，但GEX正会让MMs在下跌时买入支撑，导致慢磨而非急跌。适合put spread利用方向性同时控制theta损耗，或butterfly定点押注支撑位。',
+    trades:['put_spread','butterfly'],
+    avoid:['naked_put','iron_condor'],
+    timing:'全天均可，慢跌结构适合持有时间稍长',
+    entry:'反弹至EMA阻力或near-term high',
+    exit:'次级支撑或日内低点',
+    abort:'价格突破EMA + DEX翻正 + GEX不变'
+  },
+  bear_neg_pos: {
+    dir:'call', quality:'mid',
+    title:'🔄 EMA空头 + 资金逆向接盘',
+    body:'DEX正说明有资金在买Delta（底部接盘或反转押注），GEX负会放大任何反弹。这是反转早期信号。此时做put胜率低，等待确认。若价格突破20EMA是入场做call的机会。',
+    trades:['call','call_spread'],
+    avoid:['put'],
+    timing:'观望为主，等EMA排列反转确认',
+    entry:'突破20EMA + DEX持续正 + GEX依然负（反弹加速）',
+    exit:'次级阻力或前高',
+    abort:'DEX再次转负 + 价格跌回均线下方'
+  },
+  bear_pos_pos: {
+    dir:'neutral', quality:'low',
+    title:'🤔 信号分歧 — 建议观望',
+    body:'EMA空头但DEX和GEX都偏多，说明近期趋势向下但今天资金结构偏多。可能是短期反弹整理。信号互相矛盾，0DTE信号质量不足，不适合入场。等一个方向确认。',
+    trades:['iron_condor'],
+    avoid:['naked_call','naked_put'],
+    timing:'观望，等EMA或DEX其中之一确认方向',
+    entry:'不建议此条件下入场',
+    exit:'—',
+    abort:'—'
+  },
+  flat_neg_pos: {
+    dir:'neutral', quality:'low',
+    title:'🌀 EMA压缩 + 方向未定',
+    body:'EMA纠缠说明多空平衡，GEX负代表一旦突破方向会被放大，DEX正说明散户目前偏向追多。最危险的setup——突破向上可能是真涨也可能是更大trap。不建议此条件下入场0DTE，等待EMA明确排列。',
+    trades:['iron_condor'],
+    avoid:['naked_call','naked_put','butterfly'],
+    timing:'等待EMA明确方向后再用系统',
+    entry:'EMA排列完成后重新评估',
+    exit:'—',
+    abort:'直接观望'
+  },
+  flat_pos_neg: {
+    dir:'neutral', quality:'low',
+    title:'📌 低波动整理 — Iron Condor',
+    body:'EMA纠缠 + GEX正压制 + DEX负。价格在call/put wall区间小幅震荡，不会有大行情。时间价值损耗快，0DTE方向性期权不适合。若要交易，iron condor卖波动率是唯一有优势的策略。',
+    trades:['iron_condor'],
+    avoid:['naked_call','naked_put'],
+    timing:'全天均可，但注意收盘前gamma spike',
+    entry:'在call wall附近卖call，put wall附近卖put',
+    exit:'收盘前1小时平仓',
+    abort:'任意一侧被突破'
+  },
+  flat_pos_pos: {
+    dir:'call', quality:'low',
+    title:'📈 低波压缩 + 偏多',
+    body:'EMA纠缠但DEX正 + GEX正。资金偏多但没有方向性突破，GEX正压制波动，可能缓慢向上磨。call spread优于裸call，控制方向性同时限制theta损耗。',
+    trades:['call_spread','iron_condor'],
+    avoid:['naked_put'],
+    timing:'午盘后偏多倾向更明显',
+    entry:'回调不破支撑后',
+    exit:'call wall附近',
+    abort:'EMA排列下行 + DEX翻负'
+  },
+  flat_neg_neg: {
+    dir:'put', quality:'mid',
+    title:'⬇️ 压缩 + 可能向下突破',
+    body:'EMA纠缠但DEX负说明资金在做空保护，GEX负一旦突破会放大下行。可以小仓put，设好止损在压缩区上沿。如果往下突破且EMA快速排列空头，可以加仓。',
+    trades:['put','put_spread'],
+    avoid:['call','iron_condor'],
+    timing:'等待向下突破压缩区后入场',
+    entry:'价格跌破压缩区下沿',
+    exit:'次级支撑或put wall',
+    abort:'价格重回压缩区上沿 + DEX转正'
+  },
+};
+
+const tradeLabels = {
+  call: { label:'Buy Call', cls:'chip-call' },
+  put: { label:'Buy Put', cls:'chip-put' },
+  call_spread: { label:'Call Spread', cls:'chip-spread' },
+  put_spread: { label:'Put Spread', cls:'chip-spread' },
+  iron_condor: { label:'Iron Condor', cls:'chip-condor' },
+  butterfly: { label:'Butterfly', cls:'chip-butterfly' },
+  naked_call: { label:'Naked Call', cls:'chip-avoid' },
+  naked_put: { label:'Naked Put', cls:'chip-avoid' },
+};
+
+// ── Set signal ──
+function set(group, val, btn) {
+  state[group] = val;
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(b => {
+    b.className = 'sig-btn';
+  });
+  const colorMap = { bull:'active-green', bear:'active-red', flat:'active-neutral', pos:'active-green', neg:'active-red' };
+  btn.classList.add(colorMap[val] || 'active-neutral');
+  updateSummary();
+  render();
+}
+
+function toggleAux(key, el) {
+  state.aux[key] = !state.aux[key];
+  el.classList.toggle('aux-on', state.aux[key]);
+  updateSummary();
+  render();
+}
+
+function updateSummary() {
+  const emaLabels = { bull:'9>20>50 BULL', bear:'9<20<50 BEAR', flat:'FLAT 纠缠' };
+  const emaColors = { bull:'var(--green)', bear:'var(--red)', flat:'var(--amber)' };
+  document.getElementById('sum-ema').textContent = emaLabels[state.ema];
+  document.getElementById('sum-ema').style.color = emaColors[state.ema];
+
+  document.getElementById('sum-gex').textContent = state.gex==='pos' ? '+ POS' : '− NEG';
+  document.getElementById('sum-gex').style.color = state.gex==='pos' ? 'var(--green)' : 'var(--red)';
+
+  document.getElementById('sum-dex').textContent = state.dex==='pos' ? '+ POS' : '− NEG';
+  document.getElementById('sum-dex').style.color = state.dex==='pos' ? 'var(--green)' : 'var(--red)';
+
+  const auxOn = Object.keys(state.aux).filter(k=>state.aux[k]);
+  document.getElementById('sum-aux').textContent = auxOn.length ? auxOn.join(', ').toUpperCase() : 'None active';
+  document.getElementById('sum-aux').style.color = auxOn.length ? 'var(--blue)' : 'var(--text2)';
+}
+
+// ── Aux modifiers ──
+function getAuxNotes() {
+  const notes = [];
+  if (state.aux['hvl']) notes.push({ type:'warn', text:'价格低于HVL：处于Negative Transition Zone，做多需谨慎' });
+  if (state.aux['vix']) notes.push({ type:'warn', text:'VIX/IVR偏高：期权溢价贵，prefer spreads over naked options' });
+  if (state.aux['vol']) notes.push({ type:'block', text:'成交量异常放大：可能是机构进场或大消息，止损要宽，仓位要小' });
+  if (state.aux['opex']) notes.push({ type:'warn', text:'OPEX周：Max Pain引力强，价格可能被钉在特定strike，注意pin risk' });
+  if (state.aux['dex-vel']) notes.push({ type:'ok', text:'DEX减速：买方动能衰减，做put的最佳timing信号，比DEX本身更早' });
+  if (state.aux['macro']) notes.push({ type:'block', text:'⚠️ 宏观事件日（CPI/FOMC/NFP）：GEX结构可能被忽视，建议不交易或大幅缩仓' });
+  return notes;
+}
+
+// ── Render ──
+function render() {
+  const key = `${state.ema}_${state.gex}_${state.dex}`;
+  const c = combos[key];
+  const aux = getAuxNotes();
+
+  if (!c) { document.getElementById('output').innerHTML = '<div class="verdict-card v-wait"><div class="verdict-title">组合分析中...</div></div>'; return; }
+
+  const dirClass = { call:'v-call', put:'v-put', neutral:'v-neutral' }[c.dir] || 'v-wait';
+  const qClass = { high:'q-high', mid:'q-mid', low:'q-low' }[c.quality];
+  const qText = { high:'高信号质量', mid:'中等质量', low:'信号质量低' }[c.quality];
+
+  const tradesHtml = c.trades.map(t => {
+    const tl = tradeLabels[t];
+    return `<div class="trade-chip ${tl.cls}"><span>✓</span>${tl.label}</div>`;
+  }).join('');
+  const avoidHtml = c.avoid.map(t => {
+    const tl = tradeLabels[t];
+    return `<div class="trade-chip chip-avoid"><span>✗</span>${tl.label}</div>`;
+  }).join('');
+
+  const auxHtml = aux.length ? aux.map(n => {
+    const colors = { ok:'var(--green)', warn:'var(--amber)', block:'var(--red)' };
+    return `<div class="abort-item" style="color:${colors[n.type]}">${n.text}</div>`;
+  }).join('') : '';
+
+  document.getElementById('output').innerHTML = `
+    <div class="verdict-card ${dirClass}">
+      <div class="verdict-header">
+        <div class="verdict-title">${c.title}</div>
+        <div class="quality-badge ${qClass}">${qText}</div>
+      </div>
+      <div class="verdict-body">${c.body}</div>
+      <div class="trades-row">${tradesHtml}${avoidHtml ? '<div style="width:1px;background:var(--border);margin:0 4px"></div>'+avoidHtml : ''}</div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-title">Timing & Entry</div>
+        <div class="info-row"><span class="info-key">最佳时段</span><span class="info-val">${c.timing}</span></div>
+        <div class="info-row"><span class="info-key">入场触发</span><span class="info-val">${c.entry}</span></div>
+        <div class="info-row"><span class="info-key">目标出场</span><span class="info-val warn">${c.exit}</span></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Abort Conditions</div>
+        <div class="abort-item">${c.abort}</div>
+      </div>
+    </div>
+
+    ${aux.length ? `
+    <div class="abort-box">
+      <div class="abort-title">辅助信号修正</div>
+      ${auxHtml}
+    </div>` : ''}
+  `;
+}
+
+// ── Clock ──
+function updateClock() {
+  const now = new Date();
+  const et = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  const pad = n => String(n).padStart(2,'0');
+  const timeStr = `${pad(et.getHours())}:${pad(et.getMinutes())}:${pad(et.getSeconds())} ET`;
+  document.getElementById('clock').textContent = timeStr;
+  document.getElementById('footer-time').textContent = `${et.toLocaleDateString('en-US')} · ${timeStr}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── Init ──
+render();
+updateSummary();
+</script>
+</body>
+</html>
