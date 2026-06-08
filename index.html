@@ -7,14 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0c0f;
-    --bg2: #111418;
-    --bg3: #181c22;
-    --border: #1e2530;
-    --border2: #2a3240;
-    --text: #c8d4e0;
-    --text2: #6b7d8f;
-    --text3: #3d4f60;
+    --bg: #141820;
+    --bg2: #1a1f2a;
+    --bg3: #1f2535;
+    --border: #2a3345;
+    --border2: #37455a;
+    --text: #dde8f2;
+    --text2: #8fa4ba;
+    --text3: #546a80;
     --green: #00c87a;
     --green-dim: #00c87a22;
     --green-mid: #00c87a44;
@@ -86,12 +86,12 @@
     background: var(--green-dim);
   }
 
-  .header-title { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; color: var(--text); text-transform: uppercase; }
-  .header-sub { font-size: 11px; color: var(--text2); margin-top: 2px; letter-spacing: 0.06em; }
+  .header-title { font-size: 15px; font-weight: 500; letter-spacing: 0.12em; color: var(--text); text-transform: uppercase; }
+  .header-sub { font-size: 12px; color: var(--text2); margin-top: 3px; letter-spacing: 0.06em; }
 
   .live-badge {
     display: flex; align-items: center; gap: 6px;
-    font-size: 10px; letter-spacing: 0.1em; color: var(--text2);
+    font-size: 12px; letter-spacing: 0.1em; color: var(--text2);
     text-transform: uppercase;
   }
   .live-dot {
@@ -103,7 +103,7 @@
 
   /* ── Section headers ── */
   .section-label {
-    font-size: 10px; letter-spacing: 0.14em; color: var(--text3);
+    font-size: 11px; letter-spacing: 0.14em; color: var(--text3);
     text-transform: uppercase; margin: 28px 0 12px;
     display: flex; align-items: center; gap: 10px;
   }
@@ -126,7 +126,7 @@
   }
 
   .control-label {
-    font-size: 10px; letter-spacing: 0.12em; color: var(--text2);
+    font-size: 11px; letter-spacing: 0.12em; color: var(--text2);
     text-transform: uppercase; margin-bottom: 10px;
     display: flex; align-items: center; gap: 8px;
   }
@@ -143,8 +143,8 @@
 
   .sig-btn {
     font-family: var(--mono);
-    font-size: 11px; font-weight: 500;
-    padding: 6px 12px;
+    font-size: 13px; font-weight: 500;
+    padding: 8px 14px;
     border: 1px solid var(--border2);
     background: transparent;
     color: var(--text2);
@@ -179,8 +179,8 @@
   }
   .aux-item:hover { border-color: var(--border2); }
   .aux-item.aux-on { border-color: var(--blue); background: var(--blue-dim); }
-  .aux-item .aux-name { font-size: 10px; color: var(--text2); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
-  .aux-item .aux-val { font-size: 12px; color: var(--text); font-weight: 500; }
+  .aux-item .aux-name { font-size: 11px; color: var(--text2); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+  .aux-item .aux-val { font-size: 13px; color: var(--text); font-weight: 500; }
   .aux-item.aux-on .aux-name { color: var(--blue); }
   .aux-item.aux-on .aux-val { color: var(--blue); }
 
@@ -205,21 +205,21 @@
     gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
   }
 
-  .verdict-title { font-size: 15px; font-weight: 600; }
+  .verdict-title { font-size: 17px; font-weight: 600; }
   .verdict-card.v-call .verdict-title { color: var(--green); }
   .verdict-card.v-put .verdict-title { color: var(--red); }
   .verdict-card.v-neutral .verdict-title { color: var(--amber); }
   .verdict-card.v-wait .verdict-title { color: var(--text2); }
 
   .quality-badge {
-    font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
-    padding: 3px 10px; text-transform: uppercase;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+    padding: 4px 12px; text-transform: uppercase;
   }
   .q-high { background: var(--green-mid); color: var(--green); border: 1px solid var(--green); }
   .q-mid { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); }
   .q-low { background: rgba(108,125,143,0.1); color: var(--text2); border: 1px solid var(--border2); }
 
-  .verdict-body { font-size: 12px; color: var(--text2); line-height: 1.8; font-family: var(--sans); margin-bottom: 14px; }
+  .verdict-body { font-size: 14px; color: var(--text2); line-height: 1.85; font-family: var(--sans); margin-bottom: 14px; }
 
   /* ── Trade recommendations ── */
   .trades-row {
@@ -227,12 +227,12 @@
   }
 
   .trade-chip {
-    font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
-    padding: 5px 12px; text-transform: uppercase;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    padding: 6px 14px; text-transform: uppercase;
     border: 1px solid;
     display: flex; align-items: center; gap: 6px;
   }
-  .trade-chip .chip-icon { font-size: 12px; }
+  .trade-chip .chip-icon { font-size: 13px; }
 
   .chip-call { border-color: var(--green); color: var(--green); background: var(--green-dim); }
   .chip-put { border-color: var(--red); color: var(--red); background: var(--red-dim); }
@@ -254,10 +254,10 @@
     border: 1px solid var(--border);
     padding: 14px 16px;
   }
-  .info-card-title { font-size: 10px; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 10px; }
-  .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
-  .info-key { font-size: 11px; color: var(--text2); }
-  .info-val { font-size: 11px; color: var(--text); font-weight: 500; }
+  .info-card-title { font-size: 11px; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 10px; }
+  .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .info-key { font-size: 13px; color: var(--text2); }
+  .info-val { font-size: 13px; color: var(--text); font-weight: 500; }
   .info-val.good { color: var(--green); }
   .info-val.bad { color: var(--red); }
   .info-val.warn { color: var(--amber); }
@@ -273,7 +273,7 @@
     align-items: center;
     margin-bottom: 12px;
   }
-  .risk-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+  .risk-item { display: flex; align-items: center; gap: 6px; font-size: 13px; }
   .risk-dot { width: 5px; height: 5px; border-radius: 50%; }
   .risk-dot.ok { background: var(--green); }
   .risk-dot.warn { background: var(--amber); }
@@ -284,11 +284,11 @@
     background: var(--red-dim);
     border: 1px solid var(--red);
     border-left: 3px solid var(--red);
-    padding: 12px 16px;
+    padding: 14px 18px;
     margin-bottom: 12px;
   }
-  .abort-title { font-size: 10px; letter-spacing: 0.12em; color: var(--red); text-transform: uppercase; margin-bottom: 8px; }
-  .abort-item { font-size: 11px; color: var(--text2); font-family: var(--sans); line-height: 1.7; display: flex; gap: 8px; }
+  .abort-title { font-size: 11px; letter-spacing: 0.12em; color: var(--red); text-transform: uppercase; margin-bottom: 10px; }
+  .abort-item { font-size: 13px; color: var(--text2); font-family: var(--sans); line-height: 1.75; display: flex; gap: 8px; }
   .abort-item::before { content: '▸'; color: var(--red); flex-shrink: 0; }
 
   /* ── Footer ── */
@@ -296,7 +296,7 @@
     margin-top: 40px;
     padding-top: 16px;
     border-top: 1px solid var(--border);
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text3);
     letter-spacing: 0.06em;
     display: flex;
@@ -312,17 +312,167 @@
     display: flex; gap: 12px; flex-wrap: wrap;
     background: var(--bg3);
     border: 1px solid var(--border);
-    padding: 10px 14px;
+    padding: 12px 16px;
     margin-bottom: 20px;
   }
-  .sum-item { font-size: 11px; display: flex; align-items: center; gap: 6px; }
+  .sum-item { font-size: 13px; display: flex; align-items: center; gap: 6px; }
   .sum-label { color: var(--text3); }
   .sum-val { font-weight: 500; }
 
   @media (max-width: 600px) {
     .info-grid { grid-template-columns: 1fr; }
     .controls-grid { grid-template-columns: 1fr; }
+    .ms-grid-2 { grid-template-columns: 1fr; }
+    .ms-traps { grid-template-columns: 1fr; }
   }
+
+  /* ── Mindset Panel ── */
+  .mindset-toggle {
+    margin-top: 22px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--blue);
+    padding: 13px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .mindset-toggle:hover { background: var(--bg3); border-color: var(--blue); }
+  .mindset-toggle-left { display: flex; align-items: center; gap: 12px; }
+  .mindset-icon { font-size: 16px; color: var(--blue); }
+  .mindset-toggle-title { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; color: var(--text); }
+  .mindset-badge {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    padding: 2px 8px; background: var(--blue-dim); color: var(--blue);
+    border: 1px solid var(--blue); border-radius: 20px;
+  }
+  .mindset-badge.complete { background: var(--green-dim); color: var(--green); border-color: var(--green); }
+  .mindset-chevron { font-size: 14px; color: var(--text2); transition: transform 0.25s; }
+  .mindset-chevron.open { transform: rotate(180deg); }
+
+  .mindset-panel {
+    display: none;
+    padding: 16px 0 4px;
+    animation: fadeIn 0.25s ease;
+  }
+  .mindset-panel.open { display: block; }
+
+  .ms-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .ms-card {
+    border: 1px solid var(--border);
+    padding: 16px 18px;
+  }
+  .ms-card-blue { background: #131a27; border-left: 2px solid var(--blue); }
+  .ms-card-amber { background: #1e1810; border-left: 2px solid var(--amber); }
+  .ms-card-dark { background: var(--bg2); }
+
+  .ms-card-label {
+    font-size: 10px; letter-spacing: 0.14em; color: var(--text3);
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .ms-card-title {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    margin-bottom: 14px; letter-spacing: 0.02em;
+  }
+
+  .ms-rows { display: flex; flex-direction: column; gap: 10px; }
+  .ms-row { display: flex; gap: 10px; align-items: flex-start; }
+  .ms-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .ms-dot-green { background: var(--green); }
+  .ms-dot-red { background: var(--red); }
+  .ms-dot-amber { background: var(--amber); }
+  .ms-dot-purple { background: var(--purple); }
+  .ms-row-text { font-size: 13px; color: var(--text2); line-height: 1.65; font-family: var(--sans); }
+  .ms-row-text strong { color: var(--text); font-weight: 500; }
+
+  /* Traps */
+  .ms-traps { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .ms-trap { background: var(--bg3); border: 1px solid var(--border); overflow: hidden; }
+  .ms-trap-header {
+    padding: 8px 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ms-trap-green { background: var(--green-dim); border-bottom: 1px solid var(--green); }
+  .ms-trap-red { background: var(--red-dim); border-bottom: 1px solid var(--red); }
+  .ms-trap-amber { background: var(--amber-dim); border-bottom: 1px solid var(--amber); }
+  .ms-trap-tag {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+    padding: 2px 7px; border-radius: 2px;
+    font-family: var(--mono);
+  }
+  .ms-trap-green .ms-trap-tag { background: var(--green-mid); color: var(--green); }
+  .ms-trap-red .ms-trap-tag { background: var(--red-mid); color: var(--red); }
+  .ms-trap-amber .ms-trap-tag { background: rgba(245,166,35,0.25); color: var(--amber); }
+  .ms-trap-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .ms-trap-body {
+    padding: 12px 14px;
+    font-size: 12px; color: var(--text2); line-height: 1.7;
+    font-family: var(--sans);
+  }
+  .ms-trap-body strong { color: var(--text); font-weight: 500; }
+
+  /* Rules */
+  .ms-rules { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .ms-rule {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 8px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+  }
+  .ms-rule-num {
+    font-size: 11px; font-weight: 600; color: var(--text3);
+    letter-spacing: 0.08em; flex-shrink: 0; margin-top: 1px;
+    font-family: var(--mono);
+  }
+  .ms-rule-text { font-size: 13px; color: var(--text2); line-height: 1.55; font-family: var(--sans); }
+  .ms-rule-text strong { color: var(--text); font-weight: 500; }
+
+  /* Checklist */
+  .ms-checklist { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .ms-check-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .ms-check-item:hover { border-color: var(--border2); }
+  .ms-check-item:has(.ms-checkbox:checked) {
+    border-color: var(--green);
+    background: var(--green-dim);
+  }
+  .ms-checkbox { display: none; }
+  .ms-check-content { display: flex; gap: 10px; align-items: flex-start; width: 100%; }
+  .ms-check-num {
+    font-size: 11px; font-weight: 600; color: var(--text3);
+    letter-spacing: 0.08em; flex-shrink: 0; margin-top: 2px;
+    font-family: var(--mono); min-width: 20px;
+  }
+  .ms-check-item:has(.ms-checkbox:checked) .ms-check-num { color: var(--green); }
+  .ms-check-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .ms-check-sub { font-size: 12px; color: var(--text2); line-height: 1.55; font-family: var(--sans); }
+  .ms-check-item:has(.ms-checkbox:checked) .ms-check-title { color: var(--green); }
+
+  .ms-checklist-verdict {
+    margin-top: 10px;
+    padding: 9px 14px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    text-align: center; font-family: var(--mono);
+    border: 1px solid;
+    transition: all 0.2s;
+  }
+  .ms-cv-wait { background: var(--bg3); border-color: var(--border); color: var(--text3); }
+  .ms-cv-partial { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
+  .ms-cv-ready { background: var(--green-dim); border-color: var(--green); color: var(--green); }
 </style>
 </head>
 <body>
@@ -341,6 +491,152 @@
       <span id="clock">--:--:-- ET</span>
     </div>
   </header>
+
+  <!-- ── Pre-Market Mindset ── -->
+  <div class="mindset-toggle" onclick="toggleMindset()" id="mindset-toggle">
+    <div class="mindset-toggle-left">
+      <span class="mindset-icon">⬡</span>
+      <span class="mindset-toggle-title">开盘前 — 做市商视角 · 心法与纪律</span>
+      <span class="mindset-badge" id="checklist-count">0 / 3</span>
+    </div>
+    <span class="mindset-chevron" id="mindset-chevron">▾</span>
+  </div>
+
+  <div id="mindset-panel" class="mindset-panel">
+
+    <!-- Row 1: Paradigm + Mindset side by side -->
+    <div class="ms-grid-2">
+
+      <div class="ms-card ms-card-blue">
+        <div class="ms-card-label">认知底层 · 谁在驱动价格</div>
+        <div class="ms-card-title">Dealer Hedging Moves the Market</div>
+        <div class="ms-rows">
+          <div class="ms-row">
+            <div class="ms-dot ms-dot-green"></div>
+            <div class="ms-row-text"><strong>+GEX 环境</strong> — 做市商高抛低吸，行情被钉在 VWAP 附近。K线突破是陷阱，EMA 均线交叉是绞肉机。</div>
+          </div>
+          <div class="ms-row">
+            <div class="ms-dot ms-dot-red"></div>
+            <div class="ms-row-text"><strong>−GEX 环境</strong> — 做市商追涨杀跌，每一波下跌触发更猛烈抛售。技术支撑如废纸，底背离之后还有背离。</div>
+          </div>
+          <div class="ms-row">
+            <div class="ms-dot ms-dot-amber"></div>
+            <div class="ms-row-text"><strong>Gamma Flip</strong> — 市场物理法则的转折点。价格带量站稳/跌破 Flip 时，震荡逻辑瞬间切换成单边趋势，果断跟随。</div>
+          </div>
+          <div class="ms-row">
+            <div class="ms-dot ms-dot-purple"></div>
+            <div class="ms-row-text"><strong>核心问题</strong> — 不问"市场要去哪"，只问"做市商此刻被迫要做什么？"站在流动性一边，不站在情绪一边。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ms-card ms-card-amber">
+        <div class="ms-card-label">心法 · Mindset</div>
+        <div class="ms-card-title">第三人称视角 · 情绪隔离</div>
+        <div class="ms-rows">
+          <div class="ms-row">
+            <div class="ms-dot ms-dot-amber"></div>
+            <div class="ms-row-text"><strong>多则惑，少则得。</strong> 慢下来比快更快。看不懂就不做，"知止可以不殆"。</div>
+          </div>
+          <div class="ms-row">
+            <div class="ms-dot ms-dot-amber"></div>
+            <div class="ms-row-text"><strong>情绪隔离。</strong> 我有交易，我有亏损，但我的亏损不拥有我。市场永远无法伤害一个不被情绪控制的人。</div>
+          </div>
+          <div class="ms-row">
+            <div class="ms-dot ms-dot-amber"></div>
+            <div class="ms-row-text"><strong>内求与觉察。</strong> 深呼吸，元思考。答案不在外部，在自己的系统里。</div>
+          </div>
+          <div class="ms-row">
+            <div class="ms-dot ms-dot-amber"></div>
+            <div class="ms-row-text"><strong>本质。</strong> Trading is all about discipline, mindset, and discipline. 管不住手，永远赚不到钱。</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Row 2: Traps full width -->
+    <div class="ms-card ms-card-dark" style="margin-top:10px;">
+      <div class="ms-card-label">三大陷阱识别</div>
+      <div class="ms-traps">
+        <div class="ms-trap">
+          <div class="ms-trap-header ms-trap-green">
+            <span class="ms-trap-tag">+GEX</span>
+            <span class="ms-trap-title">假突破陷阱</span>
+          </div>
+          <div class="ms-trap-body">放量突破 VWAP + MACD 金叉 → 极度看涨情绪。<br><strong>GEX 过滤：</strong>正 GEX 高值 + 逼近 Call Wall。<br><strong>操作：</strong>放弃追多。等动量耗尽后做空或卖 Call，押注价格被吸回 VWAP。</div>
+        </div>
+        <div class="ms-trap">
+          <div class="ms-trap-header ms-trap-red">
+            <span class="ms-trap-tag">−GEX</span>
+            <span class="ms-trap-title">支撑失效陷阱</span>
+          </div>
+          <div class="ms-trap-body">急速下跌触及 VWAP 或技术支撑 + MACD 底背离。<br><strong>GEX 过滤：</strong>GEX 深度负值 or 刚破 Gamma Flip。<br><strong>操作：</strong>绝不接飞刀。等反抽 VWAP 后做空，或做多波动率（VIX）。</div>
+        </div>
+        <div class="ms-trap">
+          <div class="ms-trap-header ms-trap-amber">
+            <span class="ms-trap-tag">FLIP</span>
+            <span class="ms-trap-title">均值回归失效陷阱</span>
+          </div>
+          <div class="ms-trap-body">VWAP 附近窄幅盘整 + MACD 粘合 → 看似无聊。<br><strong>GEX 过滤：</strong>价格正在逼近 Gamma Flip。<br><strong>操作：</strong>带量突破 Flip 后，抛弃震荡思维，果断跟随单边趋势。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: Rules + Checklist side by side -->
+    <div class="ms-grid-2" style="margin-top:10px;">
+
+      <div class="ms-card ms-card-dark">
+        <div class="ms-card-label">硬性纪律 · Execution Rules</div>
+        <div class="ms-rules">
+          <div class="ms-rule"><span class="ms-rule-num">01</span><span class="ms-rule-text">每天交易量绝对不超过 <strong>5 笔</strong></span></div>
+          <div class="ms-rule"><span class="ms-rule-num">02</span><span class="ms-rule-text">开盘前 <strong>15 分钟</strong>绝不进场，看不懂就不做</span></div>
+          <div class="ms-rule"><span class="ms-rule-num">03</span><span class="ms-rule-text">今天没有清晰的结构，<strong>坚决不做</strong></span></div>
+          <div class="ms-rule"><span class="ms-rule-num">04</span><span class="ms-rule-text">所有交易不论盈亏，<strong>必须复盘记录</strong></span></div>
+          <div class="ms-rule"><span class="ms-rule-num">05</span><span class="ms-rule-text">EMA 是工具，<strong>GEX 是否决权</strong>。图表发出信号但 MM 对冲方向相反时，<strong>放弃这笔</strong></span></div>
+        </div>
+      </div>
+
+      <div class="ms-card ms-card-dark">
+        <div class="ms-card-label">开仓前三步核对 · Pre-Trade Checklist</div>
+        <div class="ms-checklist">
+          <label class="ms-check-item" onclick="updateChecklist()">
+            <input type="checkbox" class="ms-checkbox" id="chk1">
+            <div class="ms-check-content">
+              <div class="ms-check-num">01</div>
+              <div>
+                <div class="ms-check-title">确认底牌</div>
+                <div class="ms-check-sub">当前 GEX 正/负？Call Wall / Put Wall 在哪里？Gamma Flip 水平？</div>
+              </div>
+            </div>
+          </label>
+          <label class="ms-check-item" onclick="updateChecklist()">
+            <input type="checkbox" class="ms-checkbox" id="chk2">
+            <div class="ms-check-content">
+              <div class="ms-check-num">02</div>
+              <div>
+                <div class="ms-check-title">验证冲突</div>
+                <div class="ms-check-sub">MACD / VWAP 信号与 MM 当前 GEX 下强制对冲方向是否一致？</div>
+              </div>
+            </div>
+          </label>
+          <label class="ms-check-item" onclick="updateChecklist()">
+            <input type="checkbox" class="ms-checkbox" id="chk3">
+            <div class="ms-check-content">
+              <div class="ms-check-num">03</div>
+              <div>
+                <div class="ms-check-title">逆向思考</div>
+                <div class="ms-check-sub">我是站在散户情绪一边，还是做市商流动性一边？</div>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div id="checklist-verdict" class="ms-checklist-verdict ms-cv-wait">等待核对完成...</div>
+      </div>
+
+    </div>
+
+  </div>
 
   <!-- ── Primary Signals ── -->
   <div class="section-label">Primary Signals</div>
@@ -424,6 +720,41 @@
 </div>
 
 <script>
+// ── Mindset Panel ──
+function toggleMindset() {
+  const panel = document.getElementById('mindset-panel');
+  const chevron = document.getElementById('mindset-chevron');
+  const isOpen = panel.classList.toggle('open');
+  chevron.classList.toggle('open', isOpen);
+}
+
+function updateChecklist() {
+  // defer to next tick so checkbox state has updated
+  setTimeout(() => {
+    const c1 = document.getElementById('chk1').checked;
+    const c2 = document.getElementById('chk2').checked;
+    const c3 = document.getElementById('chk3').checked;
+    const count = [c1,c2,c3].filter(Boolean).length;
+    const badge = document.getElementById('checklist-count');
+    const verdict = document.getElementById('checklist-verdict');
+    badge.textContent = `${count} / 3`;
+
+    if (count === 3) {
+      badge.className = 'mindset-badge complete';
+      verdict.className = 'ms-checklist-verdict ms-cv-ready';
+      verdict.textContent = '✓ 三项确认完成 — 可以考虑开仓';
+    } else if (count > 0) {
+      badge.className = 'mindset-badge';
+      verdict.className = 'ms-checklist-verdict ms-cv-partial';
+      verdict.textContent = `${count}/3 已确认 — 继续核对剩余项`;
+    } else {
+      badge.className = 'mindset-badge';
+      verdict.className = 'ms-checklist-verdict ms-cv-wait';
+      verdict.textContent = '等待核对完成...';
+    }
+  }, 0);
+}
+
 // ── State ──
 const state = { ema:'bull', gex:'neg', dex:'pos', aux:{} };
 
