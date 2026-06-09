@@ -76,7 +76,7 @@ body::before {
 #ridge-far  { animation:ridgeBreath 26s ease-in-out infinite; }
 #ridge-near { animation:ridgeBreath 34s ease-in-out infinite reverse; }
 @keyframes ridgeBreath{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-#sun-group { transition:transform 60s linear; }
+#sun-group { /* transition managed by JS — instant first paint, 60s drift after */ }
 @media (prefers-reduced-motion: reduce){
   #ridge-far,#ridge-near{animation:none}
 }
@@ -1826,25 +1826,36 @@ loadUsers();
 if (currentUser) switchUser();
 
 /* ══ 日月 — color encodes the trading session ══ */
+let sunInitialized = false;
 function updateSun(et) {
   const sg = document.getElementById('sun-group');
   const core = document.getElementById('sun-core');
   const glow = document.getElementById('sun-glow');
   if (!sg) return;
+
+  // First positioning must be instant — no 60s transition flight across the screen
+  if (!sunInitialized) {
+    sg.style.transition = 'none';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      sg.style.transition = 'transform 60s linear';
+    }));
+    sunInitialized = true;
+  }
+
   const mins = et.getHours()*60 + et.getMinutes();
 
   // Night: pale moon (20:00–05:30)
   if (mins >= 1200 || mins < 330) {
-    sg.setAttribute('transform','translate(1180,80)');
+    sg.setAttribute('transform','translate(1180,110)');
     core.setAttribute('fill','#8ba4b8'); core.setAttribute('opacity','0.20'); core.setAttribute('r','14');
     glow.setAttribute('r','38'); glow.setAttribute('opacity','0.4');
     return;
   }
-  // Arc: 05:30 → 20:00
+  // Arc: 05:30 → 20:00 — peak kept low enough that glow never clips viewBox top
   const dayStart = 330, dayEnd = 1200;
   let t = Math.max(0, Math.min(1, (mins - dayStart) / (dayEnd - dayStart)));
   const x = 110 + t * 1220;
-  const y = 60 + 200 * Math.pow(2*t - 1, 2);
+  const y = 95 + 175 * Math.pow(2*t - 1, 2);
   sg.setAttribute('transform', `translate(${x.toFixed(0)},${y.toFixed(0)})`);
 
   // Session color phases (Robinhood-style temporal encoding)
