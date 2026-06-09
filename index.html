@@ -488,6 +488,92 @@ header {
 }
 .open-guard.active { display:block; }
 
+/* ── Entry Checklist ── */
+.entry-section { margin-top:24px; }
+.entry-dir-row {
+  display:flex;gap:6px;margin-bottom:14px;
+}
+.entry-dir-btn {
+  font-family:var(--cn);font-size:13px;font-weight:400;
+  padding:8px 18px;border:0.5px solid var(--ink5);
+  background:transparent;color:var(--ink4);
+  cursor:pointer;transition:all .15s;letter-spacing:0.1em;
+}
+.entry-dir-btn:hover { background:var(--paper2); }
+.entry-dir-btn.dir-put { border-color:var(--vermillion);background:var(--vermillion-dim);color:var(--vermillion); }
+.entry-dir-btn.dir-call { border-color:var(--teal);background:var(--teal-dim);color:var(--teal); }
+
+.entry-checks { display:flex;flex-direction:column;gap:6px; }
+.eck {
+  display:flex;gap:14px;align-items:flex-start;
+  padding:11px 14px;border:0.5px solid var(--ink5);
+  cursor:pointer;transition:all .15s;user-select:none;
+}
+.eck:hover { background:var(--paper2); }
+.eck.eck-on { border-color:var(--teal);background:var(--teal-dim); }
+.eck.eck-on.eck-mode-put { border-color:var(--vermillion);background:var(--vermillion-dim); }
+.eck-num {
+  font-family:var(--cn);font-size:13px;font-weight:300;
+  color:var(--ink5);flex-shrink:0;min-width:18px;margin-top:1px;
+}
+.eck.eck-on .eck-num { color:var(--teal); }
+.eck.eck-on.eck-mode-put .eck-num { color:var(--vermillion); }
+.eck-content { flex:1; }
+.eck-title {
+  font-family:var(--cn);font-size:13px;color:var(--ink2);margin-bottom:2px;
+}
+.eck.eck-on .eck-title { color:var(--teal); }
+.eck.eck-on.eck-mode-put .eck-title { color:var(--vermillion); }
+.eck-sub {
+  font-family:var(--ui);font-size:11px;color:var(--ink4);line-height:1.5;
+}
+.eck-circle {
+  width:16px;height:16px;border-radius:50%;
+  border:1.5px solid var(--ink5);flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:transparent;transition:all .15s;
+}
+.eck.eck-on .eck-circle {
+  border-color:var(--teal);color:var(--teal);background:var(--teal-dim);
+}
+.eck.eck-on.eck-mode-put .eck-circle {
+  border-color:var(--vermillion);color:var(--vermillion);background:var(--vermillion-dim);
+}
+
+.entry-score {
+  margin-top:12px;padding:14px 18px;
+  border:0.5px solid var(--ink5);
+  display:flex;align-items:center;justify-content:space-between;
+  transition:all .2s;
+}
+.entry-score.es-ready { border-color:var(--teal);border-left:3px solid var(--teal); }
+.entry-score.es-ready.es-put { border-color:var(--vermillion);border-left:3px solid var(--vermillion); }
+.entry-score.es-wait { border-color:var(--amber);border-left:3px solid var(--amber); }
+.entry-score.es-idle { border-color:var(--ink5); }
+.es-left { display:flex;align-items:center;gap:12px; }
+.es-count {
+  font-family:var(--cn);font-size:22px;font-weight:500;
+}
+.es-ready .es-count { color:var(--teal); }
+.es-ready.es-put .es-count { color:var(--vermillion); }
+.es-wait .es-count { color:var(--amber); }
+.es-idle .es-count { color:var(--ink5); }
+.es-text {
+  font-family:var(--cn);font-size:13px;letter-spacing:0.06em;
+}
+.es-ready .es-text { color:var(--teal); }
+.es-ready.es-put .es-text { color:var(--vermillion); }
+.es-wait .es-text { color:var(--amber); }
+.es-idle .es-text { color:var(--ink4); }
+.es-label {
+  font-family:var(--ui);font-size:10px;letter-spacing:0.1em;
+  text-transform:uppercase;padding:3px 10px;border:0.5px solid;
+}
+.es-ready .es-label { border-color:var(--teal);color:var(--teal);background:var(--teal-dim); }
+.es-ready.es-put .es-label { border-color:var(--vermillion);color:var(--vermillion);background:var(--vermillion-dim); }
+.es-wait .es-label { border-color:var(--amber);color:var(--amber);background:var(--amber-dim); }
+.es-idle .es-label { border-color:var(--ink5);color:var(--ink4); }
+
 /* ── Footer ── */
 footer {
   margin-top:48px;padding-top:18px;
@@ -720,6 +806,19 @@ footer {
 
   <!-- Referee Output -->
   <div id="ref-output"></div>
+
+  <!-- Entry Checklist -->
+  <div class="entry-section">
+    <div class="sec-label">入场确认 · Entry Checklist</div>
+
+    <div class="entry-dir-row">
+      <button class="entry-dir-btn dir-put" id="dir-put-btn" onclick="setEntryDir('put')">做 Put</button>
+      <button class="entry-dir-btn" id="dir-call-btn" onclick="setEntryDir('call')">做 Call</button>
+    </div>
+
+    <div id="entry-checks-container"></div>
+    <div id="entry-score"></div>
+  </div>
 
 </div>
 
@@ -962,6 +1061,94 @@ function calcZone() {
   `;
 }
 
+/* ══ Entry Checklist ══ */
+let entryDir = 'put';
+const entryState = {};
+
+const entryItems = {
+  put: [
+    {id:'p1', n:'壹', t:'盘前模型确认做 Put', s:'Pre-market signal matrix 方向已确认'},
+    {id:'p2', n:'贰', t:'开盘后价格有过拉升', s:'MM诱多，散户已入场追高，put变便宜'},
+    {id:'p3', n:'叁', t:'接近阻力位', s:'价格逼近 Call Wall / VWAP / HVL 阻力区'},
+    {id:'p4', n:'肆', t:'上涨量能收缩', s:'rally成交量在递减，买盘动力衰竭'},
+    {id:'p5', n:'伍', t:'K线出现拒绝信号', s:'上影线 / 吞没 / doji / 假突破回落'},
+    {id:'p6', n:'陆', t:'15m MACD 零轴下方', s:'MACD在零轴下 = rally只是诱多，不是反转。不需要回VWAP也能确认'},
+    {id:'p7', n:'柒', t:'DEX 动量减速', s:'DEX正在减弱或已转负，买方动能衰竭'},
+    {id:'p8', n:'捌', t:'已过开盘15分钟', s:'流动性已建立，GEX/DEX数据可靠'},
+  ],
+  call: [
+    {id:'c1', n:'壹', t:'盘前模型确认做 Call', s:'Pre-market signal matrix 方向已确认'},
+    {id:'c2', n:'贰', t:'开盘后价格有过回调', s:'MM诱空，弱手已被洗出，call变便宜'},
+    {id:'c3', n:'叁', t:'接近支撑位', s:'价格逼近 Put Wall / VWAP / EMA 支撑区'},
+    {id:'c4', n:'肆', t:'下跌量能收缩', s:'抛售成交量在递减，卖压衰竭'},
+    {id:'c5', n:'伍', t:'K线出现支撑信号', s:'下影线 / 锤子线 / 吞没 / 假跌破反弹'},
+    {id:'c6', n:'陆', t:'15m MACD 零轴上方', s:'MACD在零轴上 = 回调只是洗盘，趋势未变'},
+    {id:'c7', n:'柒', t:'DEX 动量在增加', s:'DEX正在增强，买方持续进场'},
+    {id:'c8', n:'捌', t:'已过开盘15分钟', s:'流动性已建立，GEX/DEX数据可靠'},
+  ]
+};
+
+function setEntryDir(dir) {
+  entryDir = dir;
+  Object.keys(entryState).forEach(k => delete entryState[k]);
+  document.getElementById('dir-put-btn').className = 'entry-dir-btn' + (dir==='put'?' dir-put':'');
+  document.getElementById('dir-call-btn').className = 'entry-dir-btn' + (dir==='call'?' dir-call':'');
+  renderEntryChecks();
+}
+
+function toggleEntry(id) {
+  entryState[id] = !entryState[id];
+  renderEntryChecks();
+}
+
+function renderEntryChecks() {
+  const items = entryItems[entryDir];
+  const modeClass = entryDir==='put' ? 'eck-mode-put' : '';
+
+  const checksHtml = items.map(item => {
+    const on = entryState[item.id];
+    return `<div class="eck ${on?'eck-on':''} ${on?modeClass:''}" onclick="toggleEntry('${item.id}')">
+      <div class="eck-circle">${on?'✓':''}</div>
+      <div class="eck-content">
+        <div class="eck-title">${item.t}</div>
+        <div class="eck-sub">${item.s}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('entry-checks-container').innerHTML = `<div class="entry-checks">${checksHtml}</div>`;
+
+  // Score
+  const count = items.filter(i => entryState[i.id]).length;
+  const total = items.length;
+  let cls, label, text;
+
+  if (count >= 5) {
+    cls = 'entry-score es-ready' + (entryDir==='put'?' es-put':'');
+    label = '入场信号确认';
+    const dirLabel = entryDir==='put' ? 'Put' : 'Call';
+    text = `${count} 项确认 — 可以入场 ${dirLabel}`;
+  } else if (count >= 3) {
+    cls = 'entry-score es-wait';
+    label = '接近确认';
+    text = `${count} 项确认 — 再等 ${5-count} 个信号`;
+  } else {
+    cls = 'entry-score es-idle';
+    label = '等待中';
+    text = count > 0 ? `${count} 项确认 — 条件不足，继续观察` : '逐项确认后系统给出判断';
+  }
+
+  document.getElementById('entry-score').innerHTML = `
+    <div class="${cls}">
+      <div class="es-left">
+        <div class="es-count">${count} / ${total}</div>
+        <div class="es-text">${text}</div>
+      </div>
+      <div class="es-label">${label}</div>
+    </div>
+  `;
+}
+
 /* ══ Clock + Open Guard ══ */
 function tick() {
   const now = new Date();
@@ -979,7 +1166,7 @@ function tick() {
 setInterval(tick,1000); tick();
 
 /* ══ Init ══ */
-updateSum(); renderPre(); calcZone();
+updateSum(); renderPre(); calcZone(); renderEntryChecks();
 </script>
 </body>
 </html>

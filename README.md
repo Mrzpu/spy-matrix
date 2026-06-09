@@ -118,6 +118,64 @@ Intraday:    Price approaching Call Wall + DEX decelerating
 
 ---
 
+## Entry Checklist / 入场确认
+
+The model tells you **what to do today** (strategic). The entry checklist tells you **when to pull the trigger** (tactical). These are two separate decisions.
+
+The checklist lives in the intraday tab, below the referee verdict. Select Put or Call direction, then confirm conditions one by one. **5 or more confirmed = entry signal.**
+
+### Put Entry Checklist
+
+| # | Condition | Why it matters |
+|---|-----------|----------------|
+| 壹 | 盘前模型确认做 Put | Strategic direction must be set first |
+| 贰 | 开盘后价格有过拉升 | MMs induce longs first — this makes puts cheaper and creates profit space |
+| 叁 | 接近阻力位 (Call Wall / VWAP / HVL) | MM hedging pressure is strongest at these levels |
+| 肆 | 上涨量能收缩 | Rally is running out of fuel — buyers exhausted |
+| 伍 | K线出现拒绝信号 (上影线 / 吞没 / doji) | Price is failing to hold highs — visible rejection |
+| 陆 | 15m MACD 在零轴下方 | Key insight: if MACD is below zero, the rally is a trap regardless of whether price reaches VWAP. Price doesn't need to touch VWAP for the setup to be valid. |
+| 柒 | DEX 动量减速 | Earliest timing signal — buy-side momentum fading before price turns |
+| 捌 | 已过开盘15分钟 | Liquidity established, GEX/DEX data is reliable |
+
+### Call Entry Checklist
+
+| # | Condition | Why it matters |
+|---|-----------|----------------|
+| 壹 | 盘前模型确认做 Call | Strategic direction confirmed |
+| 贰 | 开盘后价格有过回调 | MMs induce shorts first — calls become cheaper |
+| 叁 | 接近支撑位 (Put Wall / VWAP / EMA) | MM buying support is strongest here |
+| 肆 | 下跌量能收缩 | Selling pressure exhausted |
+| 伍 | K线出现支撑信号 (下影线 / 锤子 / 吞没) | Price holding lows — visible support |
+| 陆 | 15m MACD 在零轴上方 | Pullback is a wash, not a reversal |
+| 柒 | DEX 动量在增加 | Buy-side momentum building |
+| 捌 | 已过开盘15分钟 | Liquidity established |
+
+### Scoring
+
+| Count | State | Action |
+|-------|-------|--------|
+| 5–8 confirmed | **入场信号确认** (green/red) | Entry is valid. Execute. |
+| 3–4 confirmed | **接近确认** (amber) | Almost there. Wait for 1-2 more. |
+| 0–2 confirmed | **等待中** (gray) | Conditions not met. Keep watching. |
+
+### Critical: Model ≠ Immediate Entry
+
+The model says "put day" at 6:30 AM Pacific. That does NOT mean buy puts at 6:31 AM. The flow is:
+
+```
+6:30 AM  →  Model: "today is a put day"
+6:30 AM  →  You: go back to sleep or drink coffee
+9:30 ET  →  Market opens. Watch. Don't touch.
+9:45 ET  →  Opening guard lifts. Start observing.
+10:15 ET →  Price rallies, approaches Call Wall, volume shrinks...
+10:15 ET →  Open entry checklist. Start confirming items.
+10:22 ET →  6/8 confirmed → Enter put.
+```
+
+The checklist is the bridge between "what" and "when."
+
+---
+
 ## Mindset & Discipline / 心法纪律
 
 The tool includes a collapsible mindset panel (盘前 tab, click to expand) containing:
