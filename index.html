@@ -72,6 +72,26 @@ body::before {
   z-index:0;
   pointer-events:none;
 }
+/* Layered parallax drift — far layers move slower, like scroll painting unrolling */
+.im-far  { animation:drift 240s linear infinite alternate; }
+.im-mid  { animation:drift 160s linear infinite alternate; }
+.im-near { animation:drift 110s linear infinite alternate; }
+.im-ridge{ animation:drift 80s linear infinite alternate; }
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-180px)}}
+/* Mist bands flow like water */
+.im-mist1 { animation:mistFlow1 45s ease-in-out infinite; }
+.im-mist2 { animation:mistFlow2 60s ease-in-out infinite; }
+@keyframes mistFlow1{0%,100%{transform:translateX(0);opacity:1}50%{transform:translateX(120px);opacity:0.5}}
+@keyframes mistFlow2{0%,100%{transform:translateX(0);opacity:0.8}50%{transform:translateX(-150px);opacity:1}}
+/* Birds drift slowly across */
+.im-birds { animation:birdDrift 90s linear infinite; }
+@keyframes birdDrift{from{transform:translateX(0)}to{transform:translateX(-300px)}}
+/* Sun breathes */
+.im-sun { animation:sunGlow 8s ease-in-out infinite; transform-origin:180px 80px; }
+@keyframes sunGlow{0%,100%{opacity:0.12;transform:scale(1)}50%{opacity:0.16;transform:scale(1.06)}}
+@media (prefers-reduced-motion: reduce){
+  .im-far,.im-mid,.im-near,.im-ridge,.im-mist1,.im-mist2,.im-birds,.im-sun{animation:none}
+}
 
 .app {
   position:relative;z-index:1;
@@ -500,6 +520,29 @@ header {
   background:var(--ink);transform:translateX(-50%);z-index:10;
   border-radius:2px;
   box-shadow:0 0 8px rgba(28,25,23,0.15);
+  animation:markerBreath 3s ease-in-out infinite;
+}
+@keyframes markerBreath{0%,100%{box-shadow:0 0 6px rgba(28,25,23,0.12)}50%{box-shadow:0 0 14px rgba(28,25,23,0.28)}}
+
+/* Distance metric chips */
+.zone-metrics {
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:30px;
+}
+.zm-chip {
+  display:flex;align-items:center;gap:8px;
+  padding:7px 14px;border:0.5px solid var(--ink6);
+  border-radius:20px;background:var(--card);
+  box-shadow:var(--shadow-sm);
+  transition:all .2s var(--ease);
+}
+.zm-chip:hover { box-shadow:var(--shadow-md);transform:translateY(-1px); }
+.zm-chip.zm-rr { border-color:var(--ink5);background:var(--paper2); }
+.zm-k {
+  font-family:var(--cn);font-size:10px;font-weight:300;
+  letter-spacing:0.1em;color:var(--ink4);
+}
+.zm-v {
+  font-family:var(--num);font-size:12px;font-weight:500;
 }
 .zone-current-label {
   position:absolute;top:-28px;left:50%;transform:translateX(-50%);
@@ -838,9 +881,9 @@ footer {
 <!-- Ink wash mountain landscape -->
 <svg class="ink-mountains" viewBox="0 0 1440 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax slice">
   <!-- Sun -->
-  <circle cx="180" cy="80" r="22" fill="#bf3a2b" opacity="0.12"/>
+  <circle class="im-sun" cx="180" cy="80" r="22" fill="#bf3a2b" opacity="0.12"/>
   <!-- Birds -->
-  <g stroke="#1c1917" stroke-width="1.2" fill="none" opacity="0.06" stroke-linecap="round">
+  <g class="im-birds" stroke="#1c1917" stroke-width="1.2" fill="none" opacity="0.06" stroke-linecap="round">
     <path d="M1050,65 Q1055,58 1060,65 M1063,62 Q1068,55 1073,62"/>
     <path d="M1090,50 Q1094,44 1098,50 M1102,48 Q1106,42 1110,48"/>
     <path d="M1070,42 Q1073,37 1076,42"/>
@@ -848,13 +891,16 @@ footer {
     <path d="M1040,52 Q1043,47 1046,52"/>
   </g>
   <!-- Far mountains (lightest) -->
-  <path d="M0,280 Q120,180 240,220 Q360,160 480,200 Q540,170 640,190 Q740,140 860,180 Q960,150 1060,175 Q1160,130 1260,170 Q1340,145 1440,180 L1440,400 L0,400Z" fill="#8ba4b8" opacity="0.04"/>
+  <g class="im-far"><path d="M-200,280 Q-80,180 40,220 Q160,160 280,200 Q340,170 440,190 Q540,140 660,180 Q760,150 860,175 Q960,130 1060,170 Q1140,145 1240,180 Q1360,160 1440,180 Q1560,150 1680,190 L1680,400 L-200,400Z" fill="#8ba4b8" opacity="0.04"/></g>
   <!-- Mid mountains -->
-  <path d="M0,320 Q100,240 200,270 Q300,220 420,260 Q500,210 600,250 Q720,200 840,240 Q940,210 1040,235 Q1120,195 1220,230 Q1340,200 1440,225 L1440,400 L0,400Z" fill="#6b8a9e" opacity="0.05"/>
+  <g class="im-mid"><path d="M-200,320 Q-100,240 0,270 Q100,220 220,260 Q300,210 400,250 Q520,200 640,240 Q740,210 840,235 Q920,195 1020,230 Q1140,200 1240,225 Q1340,205 1440,225 Q1560,200 1680,235 L1680,400 L-200,400Z" fill="#6b8a9e" opacity="0.05"/></g>
   <!-- Near mountains -->
-  <path d="M0,350 Q80,290 180,310 Q280,270 380,300 Q480,260 560,285 Q680,250 780,280 Q880,250 980,270 Q1060,245 1160,268 Q1260,240 1360,260 L1440,250 L1440,400 L0,400Z" fill="#4a6a7e" opacity="0.055"/>
+  <g class="im-near"><path d="M-200,350 Q-120,290 -20,310 Q80,270 180,300 Q280,260 360,285 Q480,250 580,280 Q680,250 780,270 Q860,245 960,268 Q1060,240 1160,260 Q1260,250 1360,255 Q1440,250 1540,260 Q1620,252 1680,258 L1680,400 L-200,400Z" fill="#4a6a7e" opacity="0.055"/></g>
   <!-- Closest ridge -->
-  <path d="M0,380 Q160,340 320,355 Q480,330 640,350 Q800,325 960,345 Q1120,320 1280,340 Q1380,330 1440,338 L1440,400 L0,400Z" fill="#3a5568" opacity="0.045"/>
+  <g class="im-ridge"><path d="M-200,380 Q-40,340 120,355 Q280,330 440,350 Q600,325 760,345 Q920,320 1080,340 Q1180,330 1280,338 Q1380,332 1440,338 Q1540,330 1680,340 L1680,400 L-200,400Z" fill="#3a5568" opacity="0.045"/></g>
+  <!-- Drifting mist bands -->
+  <g class="im-mist1"><ellipse cx="400" cy="310" rx="320" ry="22" fill="#f6f3ed" opacity="0.35"/></g>
+  <g class="im-mist2"><ellipse cx="1050" cy="345" rx="380" ry="26" fill="#f6f3ed" opacity="0.3"/></g>
   <!-- Mist layer -->
   <rect x="0" y="300" width="1440" height="100" fill="url(#mist)" opacity="0.5"/>
   <defs>
@@ -1364,6 +1410,23 @@ function calcZone() {
     <div class="zone-current-label">${price.toFixed(2)}</div>
   </div>`;
   barHtml += `</div>`;
+
+  // Distance readout chips — live tactical metrics
+  const dPW = ((price - pw) / price * 100);
+  const dCW = ((cw - price) / price * 100);
+  const dVW = ((price - vwap) / price * 100);
+  const rr = (dPW > 0 && dCW > 0) ? (dPW / dCW).toFixed(2) : null;
+  barHtml += `<div class="zone-metrics">
+    <div class="zm-chip"><span class="zm-k">↓ Put Wall</span><span class="zm-v" style="color:var(--vermillion)">${dPW>=0?'+':''}${dPW.toFixed(2)}%</span></div>
+    <div class="zm-chip"><span class="zm-k">VWAP</span><span class="zm-v" style="color:var(--amber)">${dVW>=0?'+':''}${dVW.toFixed(2)}%</span></div>
+    <div class="zm-chip"><span class="zm-k">↑ Call Wall</span><span class="zm-v" style="color:var(--teal)">${dCW>=0?'+':''}${dCW.toFixed(2)}%</span></div>
+    ${rr ? `<div class="zm-chip zm-rr"><span class="zm-k">Put 盈亏比</span><span class="zm-v" style="color:${rr>=1.5?'var(--teal)':rr>=1?'var(--amber)':'var(--vermillion)'}">${rr}</span></div>` : ''}
+  </div>`;
+
+  // Input sanity warning
+  if (pw >= cw) {
+    barHtml = `<div style="padding:14px 18px;border:0.5px solid var(--vermillion);border-radius:6px;background:var(--vermillion-dim);font-family:var(--cn);font-size:13px;color:var(--vermillion);margin-bottom:12px;">⚠ Put Wall（${pw}）≥ Call Wall（${cw}）— 请检查输入是否颠倒</div>` + barHtml;
+  }
   document.getElementById('zone-vis').innerHTML = barHtml;
 
   // ── Zone logic ──
@@ -1385,7 +1448,7 @@ function calcZone() {
 
   // ── BREAKTHROUGH conditions (highest priority) ──
   if (belowPW && gex==='neg') {
-    verdict = {cls:'rv-go',status:'可以操作',title:'Put Wall 已击穿 · 趋势日 · 跟随做 Put',body:`价格（${price.toFixed(2)}）已跌破 Put Wall（${pw.toFixed(1)}），GEX负。做市商追跌模式全开，前支撑变阻力——730现在是天花板不是地板。下方没有结构性刹车。散户抄底的反弹是你入场的机会，不是反转信号。`,action:`操作：反弹至前 Put Wall（${pw.toFixed(0)}）附近受阻 → Buy Put。或在当前位置回测失败后跟随。止损设在 ${pw.toFixed(0)} 上方。`};
+    verdict = {cls:'rv-go',status:'可以操作',title:'Put Wall 已击穿 · 趋势日 · 跟随做 Put',body:`价格（${price.toFixed(2)}）已跌破 Put Wall（${pw.toFixed(1)}），GEX负。做市商追跌模式全开，前支撑变阻力——${pw.toFixed(0)} 现在是天花板不是地板。下方没有结构性刹车。散户抄底的反弹是你入场的机会，不是反转信号。`,action:`操作：反弹至前 Put Wall（${pw.toFixed(0)}）附近受阻 → Buy Put。或在当前位置回测失败后跟随。止损设在 ${pw.toFixed(0)} 上方。`};
   }
   else if (belowPW && gex==='pos') {
     verdict = {cls:'rv-wait',status:'警戒',title:'Put Wall 已击穿 · 但GEX正在托底',body:`价格跌破 Put Wall（${pw.toFixed(1)}），但GEX正。做市商在买入对冲，可能会形成新的支撑。跌幅有限但回不去。磨底状态。`,action:`操作：观望为主。如果价格能收回 ${pw.toFixed(0)} 上方 → 轻仓 Call 反弹。否则不动。`};
@@ -1399,6 +1462,14 @@ function calcZone() {
   // ── STOP conditions ──
   else if (nearVWAP && gex==='pos') {
     verdict = {cls:'rv-stop',status:'禁止',title:'把手离开键盘',body:`价格在VWAP ±0.3% 区间（${vwap.toFixed(1)}），且GEX正。做市商双向压制，多空摩擦区。方向性期权无利润空间，时间价值快速损耗。任何方向的突破都会被MM对冲拉回。`,action:'操作：不做。等价格离开VWAP区间后重新评估。'};
+  }
+  // VWAP battle zone in negative GEX — decision point, not friction
+  else if (nearVWAP && gex==='neg') {
+    verdict = {cls:'rv-wait',status:'警戒',title:'VWAP 决战区 · 方向即将选择',body:`价格在VWAP（${vwap.toFixed(1)}）±0.3%，GEX负。负gamma下VWAP不是摩擦区，是决战线——这里的胜负会被MM对冲放大成趋势。${dex==='pos'?'DEX正：多头在攻，带量站稳VWAP则反弹延续。':'DEX负：空头在压，VWAP拒绝则下一波杀跌开始。'}`,action:`操作：不在区间内开仓。带量站稳 ${vwap.toFixed(0)} 上方 → 轻仓Call。放量拒绝回落 → Buy Put 跟随。`};
+  }
+  // Weak rally above VWAP in neg GEX with neg DEX — prime fade
+  else if (aboveVWAP && gex==='neg' && dex==='neg') {
+    verdict = {cls:'rv-go',status:'可以操作',title:'弱反弹 · 资金未跟 — Fade 做空窗口',body:`价格在VWAP（${vwap.toFixed(1)}）上方但DEX负——反弹没有真实Delta资金支持，是空头回补或散户抄底推的。GEX负意味着一旦回落，MM会加速下杀。这是高质量fade点。`,action:`操作：等动量停滞/上影线 → Buy Put。止损设在日内高点上方。目标VWAP下方延伸。`};
   }
   // Near call wall + GEX neg + DEX pos = Trap setup
   else if (nearCW && gex==='neg' && dex==='pos') {
