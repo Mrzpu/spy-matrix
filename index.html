@@ -68,29 +68,26 @@ body::before {
   position:fixed;
   bottom:0;left:0;right:0;
   width:100%;height:auto;
-  max-height:35vh;
+  max-height:42vh;
   z-index:0;
   pointer-events:none;
 }
-/* Layered parallax drift — far layers move slower, like scroll painting unrolling */
-.im-far  { animation:drift 240s linear infinite alternate; }
-.im-mid  { animation:drift 160s linear infinite alternate; }
-.im-near { animation:drift 110s linear infinite alternate; }
-.im-ridge{ animation:drift 80s linear infinite alternate; }
-@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-180px)}}
-/* Mist bands flow like water */
-.im-mist1 { animation:mistFlow1 45s ease-in-out infinite; }
-.im-mist2 { animation:mistFlow2 60s ease-in-out infinite; }
-@keyframes mistFlow1{0%,100%{transform:translateX(0);opacity:1}50%{transform:translateX(120px);opacity:0.5}}
-@keyframes mistFlow2{0%,100%{transform:translateX(0);opacity:0.8}50%{transform:translateX(-150px);opacity:1}}
-/* Birds drift slowly across */
-.im-birds { animation:birdDrift 90s linear infinite; }
-@keyframes birdDrift{from{transform:translateX(0)}to{transform:translateX(-300px)}}
-/* Sun breathes */
-.im-sun { animation:sunGlow 8s ease-in-out infinite; transform-origin:180px 80px; }
-@keyframes sunGlow{0%,100%{opacity:0.12;transform:scale(1)}50%{opacity:0.16;transform:scale(1.06)}}
+/* Layered parallax — far slower than near, endless scroll-painting drift */
+.im-far  { animation:drift 300s linear infinite alternate; }
+.im-mid  { animation:drift 200s linear infinite alternate; }
+.im-near { animation:drift 130s linear infinite alternate; }
+.im-ridge{ animation:drift 90s linear infinite alternate; }
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-200px)}}
+/* Mist bands breathe very slowly between ranges */
+.im-mistr  { animation:mistBreath 28s ease-in-out infinite; }
+.im-mistr2 { animation:mistBreath 36s ease-in-out infinite reverse; }
+.im-mistr3 { animation:mistBreath 44s ease-in-out infinite; }
+@keyframes mistBreath{0%,100%{opacity:0.75}50%{opacity:1}}
+.im-birds { animation:birdDrift 120s linear infinite; }
+@keyframes birdDrift{from{transform:translateX(0)}to{transform:translateX(-350px)}}
+#sun-group { transition:transform 60s linear; }
 @media (prefers-reduced-motion: reduce){
-  .im-far,.im-mid,.im-near,.im-ridge,.im-mist1,.im-mist2,.im-birds,.im-sun{animation:none}
+  .im-far,.im-mid,.im-near,.im-ridge,.im-mistr,.im-mistr2,.im-mistr3,.im-birds{animation:none}
 }
 
 .app {
@@ -879,45 +876,95 @@ footer {
 <body>
 
 <!-- Ink wash mountain landscape -->
-<svg class="ink-mountains" viewBox="0 0 1440 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax slice">
-  <!-- Sun -->
-  <circle class="im-sun" cx="180" cy="80" r="22" fill="#bf3a2b" opacity="0.12"/>
-  <!-- Birds -->
-  <g class="im-birds" stroke="#1c1917" stroke-width="1.2" fill="none" opacity="0.06" stroke-linecap="round">
-    <path d="M1050,65 Q1055,58 1060,65 M1063,62 Q1068,55 1073,62"/>
-    <path d="M1090,50 Q1094,44 1098,50 M1102,48 Q1106,42 1110,48"/>
-    <path d="M1070,42 Q1073,37 1076,42"/>
-    <path d="M1110,58 Q1114,52 1118,58 M1121,55 Q1125,49 1129,55"/>
-    <path d="M1040,52 Q1043,47 1046,52"/>
-  </g>
-  <!-- Far mountains (lightest) -->
-  <g class="im-far"><path d="M-200,280 Q-80,180 40,220 Q160,160 280,200 Q340,170 440,190 Q540,140 660,180 Q760,150 860,175 Q960,130 1060,170 Q1140,145 1240,180 Q1360,160 1440,180 Q1560,150 1680,190 L1680,400 L-200,400Z" fill="#8ba4b8" opacity="0.04"/></g>
-  <!-- Mid mountains -->
-  <g class="im-mid"><path d="M-200,320 Q-100,240 0,270 Q100,220 220,260 Q300,210 400,250 Q520,200 640,240 Q740,210 840,235 Q920,195 1020,230 Q1140,200 1240,225 Q1340,205 1440,225 Q1560,200 1680,235 L1680,400 L-200,400Z" fill="#6b8a9e" opacity="0.05"/></g>
-  <!-- Near mountains -->
-  <g class="im-near"><path d="M-200,350 Q-120,290 -20,310 Q80,270 180,300 Q280,260 360,285 Q480,250 580,280 Q680,250 780,270 Q860,245 960,268 Q1060,240 1160,260 Q1260,250 1360,255 Q1440,250 1540,260 Q1620,252 1680,258 L1680,400 L-200,400Z" fill="#4a6a7e" opacity="0.055"/></g>
-  <!-- Closest ridge -->
-  <g class="im-ridge"><path d="M-200,380 Q-40,340 120,355 Q280,330 440,350 Q600,325 760,345 Q920,320 1080,340 Q1180,330 1280,338 Q1380,332 1440,338 Q1540,330 1680,340 L1680,400 L-200,400Z" fill="#3a5568" opacity="0.045"/></g>
-  <!-- Drifting mist bands -->
-  <g class="im-mist1"><ellipse cx="400" cy="310" rx="320" ry="22" fill="#f6f3ed" opacity="0.35"/></g>
-  <g class="im-mist2"><ellipse cx="1050" cy="345" rx="380" ry="26" fill="#f6f3ed" opacity="0.3"/></g>
-  <!-- Mist layer -->
-  <rect x="0" y="300" width="1440" height="100" fill="url(#mist)" opacity="0.5"/>
+<svg class="ink-mountains" viewBox="0 0 1440 420" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax slice">
   <defs>
-    <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
+    <!-- Ink gradients: dark ridge fading to mist below — the soul of ink wash -->
+    <linearGradient id="ink-far" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7e95a6" stop-opacity="0.32"/>
+      <stop offset="55%" stop-color="#8ba4b8" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#8ba4b8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="ink-mid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5a7585" stop-opacity="0.42"/>
+      <stop offset="50%" stop-color="#6b8a9e" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#6b8a9e" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="ink-near" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3d5a6e" stop-opacity="0.52"/>
+      <stop offset="45%" stop-color="#4a6a7e" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#4a6a7e" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="ink-front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2c4658" stop-opacity="0.58"/>
+      <stop offset="40%" stop-color="#3a5568" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#3a5568" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="mistband" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#f6f3ed" stop-opacity="0"/>
-      <stop offset="60%" stop-color="#f6f3ed" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#f6f3ed" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#f6f3ed" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="sunglow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#bf3a2b" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#bf3a2b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Sun: position + color driven by ET clock via JS -->
+  <g id="sun-group">
+    <circle id="sun-glow" cx="0" cy="0" r="52" fill="url(#sunglow)"/>
+    <circle id="sun-core" cx="0" cy="0" r="17" fill="#bf3a2b" opacity="0.22"/>
+  </g>
+
+  <!-- FAR range: soft distant peaks, endless -->
+  <g class="im-far">
+    <path d="M-200,250 L-140,196 L-95,232 L-30,178 L25,222 L80,170 L130,214 L200,158 L255,206 L330,165 L390,212 L460,150 L520,200 L600,162 L665,210 L740,148 L800,198 L870,160 L935,208 L1010,152 L1075,202 L1150,164 L1215,210 L1290,156 L1350,200 L1430,166 L1500,212 L1580,158 L1680,206 L1680,420 L-200,420Z" fill="url(#ink-far)"/>
+  </g>
+  <rect class="im-mistr" x="-200" y="222" width="1880" height="56" fill="url(#mistband)"/>
+
+  <!-- MID range: sharper character peaks -->
+  <g class="im-mid">
+    <path d="M-200,300 L-130,238 L-85,272 L-20,210 Q5,200 22,218 L75,260 L140,192 Q158,180 172,196 L225,252 L295,200 L350,262 L425,184 Q444,170 460,190 L515,248 L590,206 L650,266 L725,188 L780,250 L855,212 Q872,200 888,216 L940,262 L1010,196 L1070,256 L1145,202 L1200,264 L1275,190 Q1292,178 1308,194 L1360,250 L1430,208 L1495,266 L1570,200 L1680,258 L1680,420 L-200,420Z" fill="url(#ink-mid)"/>
+    <!-- tree hints on mid ridge -->
+    <g stroke="#3a5568" stroke-width="0.8" opacity="0.35" stroke-linecap="round">
+      <path d="M160,198 l0,-7 m-3,4 l3,-3 l3,3 m-5,-6 l2,-2 l2,2"/>
+      <path d="M450,192 l0,-6 m-2,3 l2,-2 l2,2"/>
+      <path d="M878,218 l0,-7 m-3,4 l3,-3 l3,3"/>
+    </g>
+  </g>
+  <rect class="im-mistr2" x="-200" y="268" width="1880" height="62" fill="url(#mistband)"/>
+
+  <!-- NEAR range: bold ink, jagged -->
+  <g class="im-near">
+    <path d="M-200,348 L-120,282 L-65,322 L10,252 Q32,238 50,258 L105,310 L180,242 L240,316 L320,260 L385,330 L465,240 Q486,226 502,246 L560,302 L640,256 L705,328 L785,248 L845,312 L925,266 L990,334 L1070,250 Q1090,236 1106,254 L1165,308 L1245,262 L1310,330 L1390,254 L1455,316 L1540,268 L1680,322 L1680,420 L-200,420Z" fill="url(#ink-near)"/>
+    <g stroke="#2c4658" stroke-width="0.9" opacity="0.4" stroke-linecap="round">
+      <path d="M42,256 l0,-8 m-3,4 l3,-3 l3,3 m-5,-6 l2,-3 l2,3"/>
+      <path d="M494,244 l0,-8 m-3,5 l3,-4 l3,4"/>
+      <path d="M1098,252 l0,-8 m-3,4 l3,-3 l3,3 m-5,-6 l2,-2 l2,2"/>
+    </g>
+  </g>
+  <rect class="im-mistr3" x="-200" y="318" width="1880" height="58" fill="url(#mistband)"/>
+
+  <!-- FRONT ridge: deepest ink anchor -->
+  <g class="im-ridge">
+    <path d="M-200,392 L-110,338 L-40,372 L50,322 L125,376 L210,330 Q230,318 248,334 L315,374 L400,326 L470,378 L560,332 L640,380 L730,328 L805,376 L895,336 L965,382 L1055,330 L1130,378 L1220,338 L1300,384 L1395,334 L1480,378 L1580,340 L1680,376 L1680,420 L-200,420Z" fill="url(#ink-front)"/>
+  </g>
+
+  <!-- Base mist: ground fades to paper -->
+  <rect x="0" y="350" width="1440" height="70" fill="url(#basemist)"/>
+  <defs>
+    <linearGradient id="basemist" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f6f3ed" stop-opacity="0"/>
+      <stop offset="70%" stop-color="#f6f3ed" stop-opacity="0.7"/>
       <stop offset="100%" stop-color="#f6f3ed" stop-opacity="1"/>
     </linearGradient>
   </defs>
-  <!-- Red plum tree hint (left) -->
-  <g opacity="0.06">
-    <path d="M80,400 Q82,370 78,340 Q76,320 85,305" stroke="#3a3630" stroke-width="1.5" fill="none"/>
-    <path d="M78,340 Q65,330 60,320" stroke="#3a3630" stroke-width="1" fill="none"/>
-    <path d="M85,305 Q95,295 90,290" stroke="#3a3630" stroke-width="1" fill="none"/>
-    <circle cx="60" cy="318" r="2.5" fill="#bf3a2b" opacity="0.8"/><circle cx="65" cy="325" r="2" fill="#bf3a2b" opacity="0.6"/>
-    <circle cx="88" cy="288" r="2.5" fill="#bf3a2b" opacity="0.8"/><circle cx="95" cy="293" r="2" fill="#bf3a2b" opacity="0.6"/>
-    <circle cx="82" cy="302" r="2" fill="#bf3a2b" opacity="0.7"/>
+
+  <!-- Birds -->
+  <g class="im-birds" stroke="#1c1917" stroke-width="1.1" fill="none" opacity="0.14" stroke-linecap="round">
+    <path d="M1050,95 Q1055,88 1060,95 M1063,92 Q1068,85 1073,92"/>
+    <path d="M1090,80 Q1094,74 1098,80 M1102,78 Q1106,72 1110,78"/>
+    <path d="M1110,98 Q1114,92 1118,98"/>
   </g>
 </svg>
 
@@ -1858,6 +1905,43 @@ function esc(s) { const d=document.createElement('div'); d.textContent=s; return
 loadUsers();
 if (currentUser) switchUser();
 
+/* ══ Sun arc — follows ET market day ══ */
+function updateSun(et) {
+  const sg = document.getElementById('sun-group');
+  const core = document.getElementById('sun-core');
+  const glow = document.getElementById('sun-glow');
+  if (!sg) return;
+  const mins = et.getHours()*60 + et.getMinutes();
+  const open = 570, close = 960; // 9:30 → 16:00 ET
+
+  // Night: pale moon high right (20:00–05:30)
+  if (mins >= 1200 || mins < 330) {
+    sg.setAttribute('transform','translate(1180,70)');
+    core.setAttribute('fill','#8ba4b8'); core.setAttribute('opacity','0.18'); core.setAttribute('r','14');
+    glow.setAttribute('r','40'); glow.setAttribute('opacity','0.5');
+    return;
+  }
+  // Map dawn→dusk (05:30–20:00) onto the arc; market hours occupy the high middle
+  const dayStart = 330, dayEnd = 1200;
+  let t = (mins - dayStart) / (dayEnd - dayStart);
+  t = Math.max(0, Math.min(1, t));
+  const x = 110 + t * 1220;                       // left → right
+  const y = 64 + 186 * Math.pow(2*t - 1, 2);      // parabola: low edges, high noon
+  sg.setAttribute('transform', `translate(${x.toFixed(0)},${y.toFixed(0)})`);
+
+  // Phase styling: dawn ember → noon pale → dusk deep vermillion
+  if (t < 0.22) {            // dawn
+    core.setAttribute('fill','#c1502f'); core.setAttribute('opacity','0.30'); core.setAttribute('r','19');
+    glow.setAttribute('r','58'); glow.setAttribute('opacity','1');
+  } else if (t > 0.78) {     // dusk — 夕阳
+    core.setAttribute('fill','#b03020'); core.setAttribute('opacity','0.34'); core.setAttribute('r','22');
+    glow.setAttribute('r','70'); glow.setAttribute('opacity','1');
+  } else {                   // high day
+    core.setAttribute('fill','#bf3a2b'); core.setAttribute('opacity','0.16'); core.setAttribute('r','15');
+    glow.setAttribute('r','42'); glow.setAttribute('opacity','0.6');
+  }
+}
+
 /* ══ Clock + Open Guard ══ */
 function tick() {
   const now = new Date();
@@ -1866,6 +1950,7 @@ function tick() {
   const t = `${p(et.getHours())}:${p(et.getMinutes())}:${p(et.getSeconds())} ET`;
   document.getElementById('clock').textContent = t;
   document.getElementById('ft-time').textContent = t;
+  updateSun(et);
   // Open guard: 9:30-9:45 ET
   const mins = et.getHours()*60+et.getMinutes();
   const guard = document.getElementById('open-guard');
