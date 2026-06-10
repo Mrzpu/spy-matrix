@@ -889,6 +889,87 @@ header {
 .j-entry-img img { width:100%;display:block; }
 .j-entry-img.zoomed { cursor:zoom-out; }
 
+
+/* ══ 盘伴 chat ══ */
+#chat-fab {
+  position:fixed;left:22px;bottom:22px;z-index:60;
+  width:50px;height:50px;border-radius:50%;
+  background:var(--ink);color:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:var(--shadow-lift);
+  transition:all .25s var(--ease);
+}
+#chat-fab:hover { transform:translateY(-2px) scale(1.05); }
+#chat-panel {
+  position:fixed;left:22px;bottom:84px;z-index:60;
+  width:380px;max-width:calc(100vw - 32px);
+  height:520px;max-height:calc(100vh - 120px);
+  background:var(--card);border:0.5px solid var(--ink6);
+  border-radius:12px;box-shadow:var(--shadow-lift);
+  display:none;flex-direction:column;overflow:hidden;
+  animation:fadeUp .25s var(--ease);
+}
+#chat-panel.open { display:flex; }
+.ch-head {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:0.5px solid var(--ink6);
+  background:var(--paper);
+}
+.ch-title { font-family:var(--cn);font-size:14px;letter-spacing:0.14em;color:var(--ink); }
+.ch-head-btns { display:flex;gap:10px; }
+.ch-hbtn { cursor:pointer;color:var(--ink4);font-size:14px;transition:color .15s;user-select:none; }
+.ch-hbtn:hover { color:var(--ink); }
+.ch-settings {
+  display:none;padding:12px 16px;border-bottom:0.5px solid var(--ink6);
+  background:var(--paper2);
+}
+.ch-settings.open { display:block; }
+.ch-set-row { display:flex;align-items:center;gap:10px;margin-bottom:8px; }
+.ch-set-label { font-family:var(--cn);font-size:11px;color:var(--ink4);min-width:52px; }
+.ch-select,.ch-key {
+  flex:1;font-family:var(--ui);font-size:12px;
+  padding:7px 10px;border:0.5px solid var(--ink6);border-radius:4px;
+  background:var(--card);color:var(--ink);outline:none;
+}
+.ch-set-hint { font-family:var(--ui);font-size:10px;color:var(--ink4);line-height:1.5; }
+.ch-msgs {
+  flex:1;overflow-y:auto;padding:14px 16px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.ch-msg {
+  max-width:86%;padding:10px 14px;border-radius:10px;
+  font-family:var(--ui);font-size:13px;line-height:1.7;
+  white-space:pre-wrap;word-break:break-word;
+  animation:fadeUp .2s var(--ease);
+}
+.ch-msg.user { align-self:flex-end;background:var(--ink);color:var(--paper); }
+.ch-msg.ai { align-self:flex-start;background:var(--paper2);color:var(--ink2);border:0.5px solid var(--ink6); }
+.ch-msg.err { align-self:flex-start;background:var(--vermillion-dim);color:var(--vermillion);border:0.5px solid var(--vermillion);font-size:12px; }
+.ch-msg.thinking { align-self:flex-start;color:var(--ink4);background:var(--paper2);border:0.5px solid var(--ink6); }
+.ch-inputrow {
+  display:flex;gap:8px;padding:12px 14px;
+  border-top:0.5px solid var(--ink6);background:var(--paper);
+}
+.ch-input {
+  flex:1;font-family:var(--ui);font-size:13px;
+  padding:9px 12px;border:0.5px solid var(--ink6);border-radius:8px;
+  background:var(--card);color:var(--ink);outline:none;resize:none;
+  max-height:90px;line-height:1.5;
+}
+.ch-input:focus { border-color:var(--ink3); }
+.ch-send {
+  font-family:var(--cn);font-size:14px;
+  width:42px;border:none;border-radius:8px;
+  background:var(--ink);color:var(--paper);cursor:pointer;
+  transition:all .15s var(--ease);
+}
+.ch-send:hover { background:var(--ink2); }
+.ch-send:disabled { opacity:0.4;cursor:default; }
+@media(max-width:700px){
+  #chat-panel { left:8px;bottom:76px;width:calc(100vw - 16px);height:65vh; }
+  #chat-fab { left:16px;bottom:16px; }
+}
+
 /* ── Footer ── */
 footer {
   margin-top:60px;padding-top:20px;
@@ -1246,6 +1327,41 @@ footer {
     <div class="j-empty-text">选择或创建交易者开始记录</div>
   </div>
 
+</div>
+
+
+<!-- ══ 盘伴 — AI copilot ══ -->
+<div id="chat-fab" onclick="toggleChat()" title="盘伴">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6 C4 4.9 4.9 4 6 4 H18 C19.1 4 20 4.9 20 6 V14 C20 15.1 19.1 16 18 16 H9 L5 20 V16 H6 C4.9 16 4 15.1 4 14 Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="13" cy="10" r="1" fill="currentColor"/><circle cx="17" cy="10" r="1" fill="currentColor" opacity="0.4"/></svg>
+</div>
+<div id="chat-panel">
+  <div class="ch-head">
+    <span class="ch-title">盘伴</span>
+    <div class="ch-head-btns">
+      <span class="ch-hbtn" onclick="toggleChatSettings()" title="设置">⚙</span>
+      <span class="ch-hbtn" onclick="clearChat()" title="清空对话">↺</span>
+      <span class="ch-hbtn" onclick="toggleChat()" title="收起">▾</span>
+    </div>
+  </div>
+  <div class="ch-settings" id="ch-settings">
+    <div class="ch-set-row">
+      <label class="ch-set-label">模型</label>
+      <select class="ch-select" id="ch-provider" onchange="saveChatCfg()">
+        <option value="deepseek">DeepSeek（便宜快速）</option>
+        <option value="claude">Claude Sonnet（更聪明）</option>
+      </select>
+    </div>
+    <div class="ch-set-row">
+      <label class="ch-set-label">API Key</label>
+      <input class="ch-key" id="ch-key" type="password" placeholder="只存在你自己的浏览器里" onchange="saveChatCfg()">
+    </div>
+    <div class="ch-set-hint">Key 仅保存于本机 localStorage，不会上传。DeepSeek key: platform.deepseek.com · Claude key: console.anthropic.com</div>
+  </div>
+  <div class="ch-msgs" id="ch-msgs"></div>
+  <div class="ch-inputrow">
+    <textarea class="ch-input" id="ch-input" rows="1" placeholder="现在这个位置怎么看..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+    <button class="ch-send" id="ch-send" onclick="sendChat()">送</button>
+  </div>
 </div>
 
 <footer>
@@ -2064,7 +2180,7 @@ function drawSky(et) {
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const W = window.innerWidth;
-  const H = Math.ceil(Math.min(window.innerHeight * 0.55, 560));
+  const H = Math.ceil(Math.min(window.innerHeight * 0.72, 700));
   cv.width = W * dpr; cv.height = H * dpr;
   cv.style.width = W + 'px'; cv.style.height = H + 'px';
   const ctx = cv.getContext('2d');
@@ -2089,9 +2205,10 @@ function drawSky(et) {
     else                  body = { core:'#c05518', glowA:0.46, r:22, glowR:86 };  // 暮色深橙
   }
 
-  // Arc: low at edges (behind the ridges), high at apex
+  // Arc: glow-safe — apex leaves room for the largest halo (86*2.1≈181px)
   const x = W * 0.06 + t * W * 0.88;
-  const y = H * 0.20 + (H * 0.62) * Math.pow(2*t - 1, 2);
+  const topMargin = 195;
+  const y = topMargin + (H - 50 - topMargin) * Math.pow(2*t - 1, 2);
 
   // Outer atmospheric halo — wide, breath-soft
   let g = ctx.createRadialGradient(x, y, 0, x, y, body.glowR * 2.1);
@@ -2170,7 +2287,7 @@ function drawSeal() {
   const cv = document.getElementById('seal-canvas');
   if (!cv) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const S = 46;
+  const S = 64;
   cv.width = S*dpr; cv.height = S*dpr;
   cv.style.width = S+'px'; cv.style.height = S+'px';
   const ctx = cv.getContext('2d');
@@ -2179,12 +2296,12 @@ function drawSeal() {
   ctx.rotate(-0.045);                      // hand-pressed, never square
   // Seal paste: uneven vermillion block with ragged edge
   ctx.fillStyle = '#bf3a2b';
-  const r = 19, n = 28;
+  const r = 26.5, n = 32;
   ctx.beginPath();
   let sd = 77; const sr = () => (sd = (sd*16807)%2147483647)/2147483647;
   for (let i = 0; i <= n; i++) {
     const a = (i/n)*Math.PI*2;
-    const rr = r + (sr()-0.5)*2.6;          // ragged ink edge
+    const rr = r + (sr()-0.5)*3.4;          // ragged ink edge
     const px = Math.cos(a)*rr, py = Math.sin(a)*rr;
     i ? ctx.lineTo(px,py) : ctx.moveTo(px,py);
   }
@@ -2194,17 +2311,17 @@ function drawSeal() {
   for (let i = 0; i < 26; i++) {
     ctx.globalAlpha = 0.10 + sr()*0.16;
     ctx.beginPath();
-    ctx.arc((sr()-0.5)*30, (sr()-0.5)*30, 0.6+sr()*1.7, 0, Math.PI*2);
+    ctx.arc((sr()-0.5)*42, (sr()-0.5)*42, 0.8+sr()*2.2, 0, Math.PI*2);
     ctx.fill();
   }
   ctx.globalCompositeOperation = 'source-over';
   ctx.globalAlpha = 1;
   // 白文 "知止" — carved characters, paper color
   ctx.fillStyle = '#f6f3ed';
-  ctx.font = '600 13px "Noto Serif SC", serif';
+  ctx.font = '600 18px "Noto Serif SC", serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('知', 0, -7.5);
-  ctx.fillText('止', 0, 7.5);
+  ctx.fillText('知', 0, -10.5);
+  ctx.fillText('止', 0, 10.5);
 }
 drawSeal();
 
@@ -2255,6 +2372,118 @@ function geeseFrame() {
 }
 setInterval(maybeLaunchGeese, 45000);
 setTimeout(maybeLaunchGeese, 8000);        // a chance shortly after open
+
+/* ══ 盘伴 — AI copilot ══ */
+const CH_SYS = `你是一个SPY 0DTE期权交易员的实时盘中助手，名叫盘伴。交易员的框架是做市商对冲机制：GEX正=MM高抛低吸压制波动（突破是陷阱）；GEX负=MM追涨杀跌放大趋势（支撑会失效）；DEX看净Delta资金方向，DEX velocity减速是最早的入场信号。核心setup是Trap Setup：EMA多头+GEX负+DEX正，等散户追高、价格接近Call Wall、量缩+DEX降温后做put。信号出现不等于立即入场，入场是独立的盘中决策。纪律：开盘15分钟不做、每天最多5笔、2PM ET后无持仓不开新仓、GEX拥有否决权、午盘(11-14点)是死区。回复要求：简洁直接，用户在盯盘没时间读长文；不要复述他的系统；不要emoji；他错了直接指出并解释；中英文混用自然即可。每条用户消息前附有当前盘面快照，直接基于快照分析。`;
+
+let chHistory = [];
+try { chHistory = JSON.parse(localStorage.getItem('sm_chat')||'[]'); } catch(e){}
+
+function toggleChat() {
+  const p = document.getElementById('chat-panel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) {
+    loadChatCfg(); renderChat();
+    document.getElementById('ch-input').focus();
+  }
+}
+function toggleChatSettings() { document.getElementById('ch-settings').classList.toggle('open'); }
+function loadChatCfg() {
+  document.getElementById('ch-provider').value = localStorage.getItem('sm_chat_provider')||'deepseek';
+  document.getElementById('ch-key').value = localStorage.getItem('sm_chat_key_'+(localStorage.getItem('sm_chat_provider')||'deepseek'))||'';
+}
+function saveChatCfg() {
+  const prov = document.getElementById('ch-provider').value;
+  localStorage.setItem('sm_chat_provider', prov);
+  localStorage.setItem('sm_chat_key_'+prov, document.getElementById('ch-key').value.trim());
+  loadChatCfg();
+}
+function clearChat() {
+  chHistory = []; localStorage.removeItem('sm_chat'); renderChat();
+}
+function saveChatHist() {
+  try { localStorage.setItem('sm_chat', JSON.stringify(chHistory.slice(-60))); } catch(e){
+    chHistory = chHistory.slice(-20);
+    try { localStorage.setItem('sm_chat', JSON.stringify(chHistory)); } catch(e2){}
+  }
+}
+function renderChat(thinking) {
+  const box = document.getElementById('ch-msgs');
+  box.innerHTML = chHistory.map(m =>
+    `<div class="ch-msg ${m.role==='user'?'user':(m.err?'err':'ai')}">${escCh(m.content)}</div>`
+  ).join('') + (thinking ? '<div class="ch-msg thinking">思考中...</div>' : '');
+  box.scrollTop = box.scrollHeight;
+}
+function escCh(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+function buildLiveContext() {
+  const v = id => document.getElementById(id) ? document.getElementById(id).value : '';
+  const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const verdictEl = document.querySelector('#ref-output .rv-title');
+  const preEl = document.querySelector('#pre-output .v-title');
+  return `[盘面快照 ET ${et.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}]
+盘前: EMA=${S.ema} GEX=${S.gex} DEX=${S.dex}${preEl?' 主剧本:'+preEl.textContent.trim():''}
+盘中: 价格=${v('inp-price')||'?'} VWAP=${v('inp-vwap')||'?'} CallWall=${v('inp-cw')||'?'} PutWall=${v('inp-pw')||'?'} HVL=${v('inp-hvl')||'?'} GEX=${S.lgex} DEX=${S.ldex}${verdictEl?' 系统判断:'+verdictEl.textContent.trim():''}`;
+}
+
+async function sendChat() {
+  const inp = document.getElementById('ch-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  const prov = localStorage.getItem('sm_chat_provider')||'deepseek';
+  const key = localStorage.getItem('sm_chat_key_'+prov)||'';
+  if (!key) {
+    document.getElementById('ch-settings').classList.add('open');
+    chHistory.push({role:'assistant',content:'先在设置里填入 '+(prov==='deepseek'?'DeepSeek':'Claude')+' API Key（只存本机）。',err:true});
+    renderChat(); return;
+  }
+  inp.value = '';
+  chHistory.push({role:'user',content:text});
+  renderChat(true);
+  saveChatHist();
+  document.getElementById('ch-send').disabled = true;
+
+  const ctxMsg = buildLiveContext() + '\n\n' + text;
+  const sendMsgs = chHistory.slice(-16).map((m,i,arr) =>
+    ({ role:m.role, content: i===arr.length-1 ? ctxMsg : m.content }));
+
+  try {
+    let reply;
+    if (prov === 'claude') {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key':key,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true'
+        },
+        body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1024, system:CH_SYS, messages:sendMsgs })
+      });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error.message||'API error');
+      reply = (d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+    } else {
+      const r = await fetch('https://api.deepseek.com/chat/completions', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+key },
+        body: JSON.stringify({ model:'deepseek-chat', messages:[{role:'system',content:CH_SYS},...sendMsgs], max_tokens:1024 })
+      });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error.message||'API error');
+      reply = d.choices[0].message.content;
+    }
+    chHistory.push({role:'assistant',content:reply});
+  } catch(err) {
+    let hint = err.message;
+    if (/fetch|CORS|network/i.test(hint)) hint += ' — 可能是浏览器CORS限制，试着在设置里切换到另一个模型。';
+    if (/401|auth|invalid/i.test(hint)) hint += ' — 检查API Key是否正确。';
+    chHistory.push({role:'assistant',content:'请求失败：'+hint,err:true});
+  }
+  document.getElementById('ch-send').disabled = false;
+  renderChat();
+  saveChatHist();
+}
 
 /* ══ Clock + Open Guard ══ */
 function tick() {
