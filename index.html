@@ -1353,9 +1353,9 @@ footer {
     </div>
     <div class="ch-set-row">
       <label class="ch-set-label">API Key</label>
-      <input class="ch-key" id="ch-key" type="password" placeholder="只存在你自己的浏览器里" onchange="saveChatCfg()">
+      <input class="ch-key" id="ch-key" type="password" placeholder="仅 Claude 模式需要，DeepSeek 免填" onchange="saveChatCfg()">
     </div>
-    <div class="ch-set-hint">Key 仅保存于本机 localStorage，不会上传。DeepSeek key: platform.deepseek.com · Claude key: console.anthropic.com</div>
+    <div class="ch-set-hint">DeepSeek 已由网站服务器接管，无需填 key，直接聊。切换 Claude 时才需填入自己的 key（仅存本机）。</div>
   </div>
   <div class="ch-msgs" id="ch-msgs"></div>
   <div class="ch-inputrow">
@@ -2432,9 +2432,10 @@ async function sendChat() {
   if (!text) return;
   const prov = localStorage.getItem('sm_chat_provider')||'deepseek';
   const key = localStorage.getItem('sm_chat_key_'+prov)||'';
-  if (!key) {
+  // DeepSeek runs through the Vercel proxy — no key needed in browser.
+  if (prov === 'claude' && !key) {
     document.getElementById('ch-settings').classList.add('open');
-    chHistory.push({role:'assistant',content:'先在设置里填入 '+(prov==='deepseek'?'DeepSeek':'Claude')+' API Key（只存本机）。',err:true});
+    chHistory.push({role:'assistant',content:'Claude 模式需要在设置里填入你自己的 API Key（只存本机）。DeepSeek 模式无需 key。',err:true});
     renderChat(); return;
   }
   inp.value = '';
@@ -2464,9 +2465,9 @@ async function sendChat() {
       if (d.error) throw new Error(d.error.message||'API error');
       reply = (d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
     } else {
-      const r = await fetch('https://api.deepseek.com/chat/completions', {
+      const r = await fetch('/api/chat', {
         method:'POST',
-        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+key },
+        headers:{ 'Content-Type':'application/json' },
         body: JSON.stringify({ model:'deepseek-chat', messages:[{role:'system',content:CH_SYS},...sendMsgs], max_tokens:1024 })
       });
       const d = await r.json();
@@ -2476,7 +2477,7 @@ async function sendChat() {
     chHistory.push({role:'assistant',content:reply});
   } catch(err) {
     let hint = err.message;
-    if (/fetch|CORS|network/i.test(hint)) hint += ' — 可能是浏览器CORS限制，试着在设置里切换到另一个模型。';
+    if (/fetch|CORS|network|404/i.test(hint)) hint += ' — 确认 Vercel 项目里有 api/chat.js 且已部署，环境变量 DEEPSEEK_API_KEY 已添加。';
     if (/401|auth|invalid/i.test(hint)) hint += ' — 检查API Key是否正确。';
     chHistory.push({role:'assistant',content:'请求失败：'+hint,err:true});
   }
