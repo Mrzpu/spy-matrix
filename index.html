@@ -736,6 +736,14 @@ header {
   border-bottom:0.5px solid transparent;
 }
 .j-remove-link:hover { opacity:1;border-bottom-color:var(--vermillion); }
+.j-backup-row { margin-top:10px;display:flex;gap:18px; }
+.j-backup-link {
+  font-family:var(--cn);font-size:12px;font-weight:300;
+  color:var(--ink3);cursor:pointer;letter-spacing:0.06em;
+  opacity:0.7;transition:opacity .2s var(--ease);
+  border-bottom:0.5px solid transparent;
+}
+.j-backup-link:hover { opacity:1;border-bottom-color:var(--ink3); }
 
 .j-new-card {
   background:var(--card);
@@ -1256,6 +1264,11 @@ footer {
   </div>
   <div id="j-remove-row" class="j-remove-row" style="display:none;">
     <span class="j-remove-link" onclick="deleteUser()">移除此交易者及所有记录</span>
+  </div>
+  <div class="j-backup-row">
+    <span class="j-backup-link" onclick="exportData()">⤓ 导出备份</span>
+    <span class="j-backup-link" onclick="document.getElementById('j-import-file').click()">⤒ 导入备份</span>
+    <input type="file" id="j-import-file" accept=".json" style="display:none;" onchange="importData(this.files[0])">
   </div>
 
   <div id="j-content" style="display:none;">
@@ -2237,6 +2250,55 @@ function drawSky(et) {
     ctx.fillStyle = 'rgba(246,243,237,0.55)';
     ctx.beginPath(); ctx.arc(x - body.r*0.42, y - body.r*0.30, body.r*0.92, 0, Math.PI*2); ctx.fill();
   }
+
+  // 晚霞 — horizon wash when the body hangs low (sunset / dawn / moonglow)
+  const lowness = Math.max(0, (y - H*0.42) / (H*0.58));
+  if (lowness > 0.05) {
+    const washA = isNight ? lowness*0.10 : lowness*0.30;
+    ctx.save();
+    ctx.translate(x, Math.min(y + 40, H*0.92));
+    ctx.scale(1, 0.30);
+    const wg = ctx.createRadialGradient(0,0,0, 0,0, W*0.52);
+    wg.addColorStop(0, body.core + Math.round(washA*255).toString(16).padStart(2,'0'));
+    wg.addColorStop(0.6, body.core + Math.round(washA*0.4*255).toString(16).padStart(2,'0'));
+    wg.addColorStop(1, body.core + '00');
+    ctx.fillStyle = wg;
+    ctx.fillRect(-W*0.55, -W*0.55, W*1.1, W*1.1);
+    ctx.restore();
+  }
+
+  // 云 — slow wisps crossing the sky, veiling the sun as they pass
+  let cs = 4242; const cr = () => (cs=(cs*16807)%2147483647)/2147483647;
+  const warm = !isNight && mins >= 840;            // dusk: clouds catch fire
+  for (let b = 0; b < 3; b++) {
+    const baseY = H*(0.26 + b*0.15) + (cr()-0.5)*H*0.05;
+    const speed = 0.35 + b*0.22;                   // px per minute, nearer = faster
+    const span = W + 560;
+    const off = ((mins * speed) % span);
+    for (let i = 0; i < 5; i++) {
+      const ex = -280 + off + (cr()-0.5)*320 + i*120;
+      const ey = baseY + (cr()-0.5)*16;
+      const ew = 110 + cr()*170;
+      const eh = (11 + cr()*9) / ew;
+      ctx.save();
+      ctx.translate(ex, ey);
+      ctx.scale(1, eh);
+      let g2 = ctx.createRadialGradient(0,0,0, 0,0, ew);
+      const cc = isNight ? '#9fb0bf' : '#ccd5dc';
+      g2.addColorStop(0, cc + '34');
+      g2.addColorStop(1, cc + '00');
+      ctx.fillStyle = g2;
+      ctx.beginPath(); ctx.arc(0,0,ew,0,Math.PI*2); ctx.fill();
+      if (warm) {                                   // sunset tint on the belly
+        g2 = ctx.createRadialGradient(0,ew*0.2,0, 0,ew*0.2, ew*0.8);
+        g2.addColorStop(0, body.core + '1e');
+        g2.addColorStop(1, body.core + '00');
+        ctx.fillStyle = g2;
+        ctx.beginPath(); ctx.arc(0,ew*0.2,ew*0.8,0,Math.PI*2); ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
 }
 
 /* ══ Logo — one brushstroke, one signal point ══ */
@@ -2484,6 +2546,39 @@ async function sendChat() {
   document.getElementById('ch-send').disabled = false;
   renderChat();
   saveChatHist();
+}
+
+/* ══ 备份 — export / import all sm_* data ══ */
+function exportData() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('sm_')) data[k] = localStorage.getItem(k);
+  }
+  const blob = new Blob([JSON.stringify(data, null, 1)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'signal_matrix_backup_' + etToday() + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importData(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      let n = 0;
+      Object.keys(data).forEach(k => {
+        if (k.startsWith('sm_')) { localStorage.setItem(k, data[k]); n++; }
+      });
+      loadUsers(); switchUser();
+      try { chHistory = JSON.parse(localStorage.getItem('sm_chat')||'[]'); } catch(e2){}
+      alert('导入完成：恢复了 ' + n + ' 项数据。');
+    } catch(err) { alert('文件格式错误，无法导入。'); }
+  };
+  r.readAsText(file);
+  document.getElementById('j-import-file').value = '';
 }
 
 /* ══ Clock + Open Guard ══ */
