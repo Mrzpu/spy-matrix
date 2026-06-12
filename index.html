@@ -1624,6 +1624,11 @@ function calcZone() {
   else if (aboveCW && gex==='pos') {
     verdict = {cls:'rv-wait',status:'警戒',title:'Call Wall 已突破 · 但GEX正在压制',body:`价格突破 Call Wall（${cw.toFixed(1)}），但GEX正。做市商在卖出对冲，上涨阻力在增加。可能是假突破。`,action:`操作：观望。如果缩量回落跌破 ${cw.toFixed(0)} → 放弃做多。站稳 + 放量 → 轻仓 Call。`};
   }
+  // ── Negative Transition: below HVL with GEX still positive ──
+  // GEX数字还正，但价格已在HVL下方 = 对冲支撑在衰减，不是摩擦区
+  else if (belowHVL && gex==='pos' && !nearPW) {
+    verdict = {cls:'rv-wait',status:'警戒',title:'Negative Transition · 结构在转变',body:`价格（${price.toFixed(2)}）已跌破 HVL（${hvl.toFixed(1)}），GEX虽正但物理逻辑已变——HVL下方做市商的高抛低吸支撑在衰减，pin结构失效中。${dex==='pos'?'DEX仍正：散户还在接，但接盘力量撑不起HVL下方的结构。':'DEX负：资金流出确认转变。'}盯住对HVL的第一次回测。`,action:`操作：等反弹回测 ${hvl.toFixed(0)} 被拒（缩量/上影线）→ Buy Put，止损 ${hvl.toFixed(0)} 上方，目标 Put Wall ${pw.toFixed(0)}。若放量收回 ${hvl.toFixed(0)} 上方 → 假跌破，放弃。`};
+  }
   // ── STOP conditions ──
   else if (nearVWAP && gex==='pos') {
     verdict = {cls:'rv-stop',status:'禁止',title:'把手离开键盘',body:`价格在VWAP ±0.3% 区间（${vwap.toFixed(1)}），且GEX正。做市商双向压制，多空摩擦区。方向性期权无利润空间，时间价值快速损耗。任何方向的突破都会被MM对冲拉回。`,action:'操作：不做。等价格离开VWAP区间后重新评估。'};
