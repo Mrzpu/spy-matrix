@@ -3,11 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
 <title>SPY 0DTE · 信号矩阵</title>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
+  color-scheme: light;
   --paper: #f6f3ed;
   --paper2: #efece5;
   --paper3: #e6e2da;
@@ -143,6 +146,43 @@ header {
   animation:pulse 2.5s ease-in-out infinite;
 }
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
+
+/* ── Phase ribbon — the time dimension ── */
+.phase-ribbon {
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:30px;padding:14px 20px;gap:16px;flex-wrap:wrap;
+  background:var(--card);border:0.5px solid var(--ink6);
+  border-radius:8px;box-shadow:var(--shadow-sm);
+}
+.phase-now { display:flex;align-items:center;gap:12px;flex-wrap:wrap; }
+.phase-dot {
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  animation:pulse 2.5s ease-in-out infinite;
+}
+.phase-label { font-family:var(--cn);font-size:15px;font-weight:500;letter-spacing:0.06em; }
+.phase-desc { font-family:var(--ui);font-size:12px;color:var(--ink4);letter-spacing:0.02em; }
+.phase-auto {
+  display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;
+}
+.phase-auto-track {
+  width:32px;height:18px;border-radius:10px;
+  background:var(--ink5);position:relative;
+  transition:background .25s var(--ease);
+}
+.phase-auto-thumb {
+  position:absolute;top:2px;left:2px;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--card);box-shadow:var(--shadow-sm);
+  transition:transform .25s var(--ease);
+}
+.phase-auto.on .phase-auto-track { background:var(--teal); }
+.phase-auto.on .phase-auto-thumb { transform:translateX(14px); }
+.phase-auto-text { font-family:var(--cn);font-size:12px;color:var(--ink4);font-weight:300;letter-spacing:0.06em; }
+.phase-auto.on .phase-auto-text { color:var(--teal); }
+
+/* When following market, the manual tabs recede — they're now a readout, not the control */
+body.auto-following .tab-btn { opacity:0.5; }
+body.auto-following .tab-btn.active { opacity:1; }
 
 /* ── Tab Nav ── */
 .tab-nav {
@@ -909,6 +949,26 @@ header {
   transition:all .25s var(--ease);
 }
 #chat-fab:hover { transform:translateY(-2px) scale(1.05); }
+.chat-badge {
+  position:absolute;top:-2px;right:-2px;
+  min-width:18px;height:18px;border-radius:9px;
+  background:var(--vermillion);color:#fff;
+  font-family:var(--ui);font-size:10px;font-weight:600;
+  display:none;align-items:center;justify-content:center;
+  padding:0 5px;box-shadow:0 1px 4px rgba(0,0,0,0.2);
+  animation:badgePop .3s var(--ease);
+}
+.chat-badge.show { display:flex; }
+@keyframes badgePop{from{transform:scale(0)}to{transform:scale(1)}}
+.ch-msg.push {
+  align-self:flex-start;background:var(--amber-dim);
+  color:var(--ink2);border:0.5px solid var(--amber);
+  font-size:12px;position:relative;padding-left:30px;
+}
+.ch-msg.push::before {
+  content:'';position:absolute;left:12px;top:14px;
+  width:8px;height:8px;border-radius:50%;background:var(--amber);
+}
 #chat-panel {
   position:fixed;left:22px;bottom:84px;z-index:60;
   width:380px;max-width:calc(100vw - 32px);
@@ -1042,10 +1102,22 @@ footer {
 </header>
 
 <!-- ── Tab Navigation ── -->
+<div class="phase-ribbon" id="phase-ribbon">
+  <div class="phase-now" id="phase-now">
+    <span class="phase-dot" id="phase-dot"></span>
+    <span class="phase-label" id="phase-label">—</span>
+    <span class="phase-desc" id="phase-desc"></span>
+  </div>
+  <div class="phase-auto" id="phase-auto-toggle" onclick="toggleAutoPhase()">
+    <span class="phase-auto-track"><span class="phase-auto-thumb"></span></span>
+    <span class="phase-auto-text">跟随市场</span>
+  </div>
+</div>
+
 <div class="tab-nav">
-  <button class="tab-btn active" onclick="switchTab('pre')" id="tab-pre">盘前</button>
-  <button class="tab-btn" onclick="switchTab('live')" id="tab-live">盘中</button>
-  <button class="tab-btn" onclick="switchTab('post')" id="tab-post">盘后</button>
+  <button class="tab-btn active" onclick="switchTab('pre',true)" id="tab-pre">盘前</button>
+  <button class="tab-btn" onclick="switchTab('live',true)" id="tab-live">盘中</button>
+  <button class="tab-btn" onclick="switchTab('post',true)" id="tab-post">盘后</button>
 </div>
 
 <!-- ══════════════════════════════════════════ -->
@@ -1347,6 +1419,7 @@ footer {
 <!-- ══ 盘伴 — AI copilot ══ -->
 <div id="chat-fab" onclick="toggleChat()" title="盘伴">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6 C4 4.9 4.9 4 6 4 H18 C19.1 4 20 4.9 20 6 V14 C20 15.1 19.1 16 18 16 H9 L5 20 V16 H6 C4.9 16 4 15.1 4 14 Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="13" cy="10" r="1" fill="currentColor"/><circle cx="17" cy="10" r="1" fill="currentColor" opacity="0.4"/></svg>
+  <span id="chat-badge" class="chat-badge"></span>
 </div>
 <div id="chat-panel">
   <div class="ch-head">
@@ -1390,13 +1463,62 @@ footer {
 const S = { ema:'bull', gex:'neg', dex:'pos', lgex:'neg', ldex:'pos', aux:{} };
 
 /* ══ Tabs ══ */
-function switchTab(t) {
+let autoPhase = true;
+let lastAutoTab = null;
+
+function switchTab(t, manual) {
+  if (manual) { autoPhase = false; syncAutoToggle(); }
   ['pre','live','post'].forEach(k => {
     document.getElementById('tab-'+k).classList.toggle('active', k===t);
     document.getElementById('panel-'+k).classList.toggle('active', k===t);
   });
   if (t==='live') calcZone();
   if (t==='post') { updateJournalDate(); renderEntries(); }
+}
+
+function toggleAutoPhase() {
+  autoPhase = !autoPhase;
+  syncAutoToggle();
+  if (autoPhase) { lastAutoTab = null; applyPhase(); }
+}
+function syncAutoToggle() {
+  document.getElementById('phase-auto-toggle').classList.toggle('on', autoPhase);
+  document.body.classList.toggle('auto-following', autoPhase);
+}
+
+// Phase engine — the third dimension: the site reshapes itself to the trading day
+function currentPhase(mins) {
+  // mins = ET minutes since midnight
+  if (mins < 570)            return {key:'pre',  tab:'pre',  label:'盘前',   desc:'读结构 · 定方向 · 守心法', color:'var(--amber)'};
+  if (mins < 585)            return {key:'open', tab:'live', label:'开盘保护', desc:'前15分钟 · 把手离开键盘',   color:'var(--vermillion)'};
+  if (mins < 660)            return {key:'prime',tab:'live', label:'黄金窗口', desc:'9:45–11:00 · 趋势最清晰',  color:'var(--teal)'};
+  if (mins < 840)            return {key:'dead', tab:'live', label:'午盘死区', desc:'11:00–14:00 · 流动性真空 · 少动', color:'var(--ink4)'};
+  if (mins < 960)            return {key:'pm',   tab:'live', label:'尾盘加速', desc:'14:00后 · 无持仓不开新仓',  color:'var(--vermillion)'};
+  if (mins < 1200)           return {key:'post', tab:'post', label:'盘后复盘', desc:'记录 · 反思 · 评分',        color:'var(--indigo)'};
+  return                            {key:'rest', tab:'pre',  label:'休市',   desc:'市场已闭 · 养精蓄锐',      color:'var(--ink4)'};
+}
+
+function applyPhase() {
+  const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const mins = et.getHours()*60 + et.getMinutes();
+  const ph = currentPhase(mins);
+
+  // Update ribbon always
+  document.getElementById('phase-label').textContent = ph.label;
+  document.getElementById('phase-desc').textContent = ph.desc;
+  document.getElementById('phase-dot').style.background = ph.color;
+  document.getElementById('phase-label').style.color = ph.color;
+
+  // Auto-switch tab only if following market AND tab actually changed
+  if (autoPhase && ph.tab !== lastAutoTab) {
+    lastAutoTab = ph.tab;
+    ['pre','live','post'].forEach(k => {
+      document.getElementById('tab-'+k).classList.toggle('active', k===ph.tab);
+      document.getElementById('panel-'+k).classList.toggle('active', k===ph.tab);
+    });
+    if (ph.tab==='live') calcZone();
+    if (ph.tab==='post') { updateJournalDate(); renderEntries(); }
+  }
 }
 
 /* ══ Mindset ══ */
@@ -2456,6 +2578,7 @@ function toggleChat() {
   p.classList.toggle('open');
   if (p.classList.contains('open')) {
     loadChatCfg(); renderChat();
+    clearBadge();
     document.getElementById('ch-input').focus();
   }
 }
@@ -2481,12 +2604,90 @@ function saveChatHist() {
 }
 function renderChat(thinking) {
   const box = document.getElementById('ch-msgs');
-  box.innerHTML = chHistory.map(m =>
-    `<div class="ch-msg ${m.role==='user'?'user':(m.err?'err':'ai')}">${escCh(m.content)}</div>`
-  ).join('') + (thinking ? '<div class="ch-msg thinking">思考中...</div>' : '');
+  box.innerHTML = chHistory.map(m => {
+    const cls = m.push ? 'push' : (m.role==='user'?'user':(m.err?'err':'ai'));
+    return `<div class="ch-msg ${cls}">${escCh(m.content)}</div>`;
+  }).join('') + (thinking ? '<div class="ch-msg thinking">思考中...</div>' : '');
   box.scrollTop = box.scrollHeight;
 }
 function escCh(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+/* ══ 盘伴主动推 — proactive nudges, zero external deps ══ */
+let pushUnseen = 0;
+let pushedToday = {};   // {dateKey: Set of pushKeys already fired}
+
+function pushMsg(content) {
+  chHistory.push({ role:'assistant', content, push:true });
+  saveChatHist();
+  const panelOpen = document.getElementById('chat-panel').classList.contains('open');
+  if (panelOpen) { renderChat(); }
+  else { pushUnseen++; showBadge(); }
+}
+function showBadge() {
+  const b = document.getElementById('chat-badge');
+  b.textContent = pushUnseen > 9 ? '9+' : String(pushUnseen);
+  b.classList.add('show');
+}
+function clearBadge() {
+  pushUnseen = 0;
+  document.getElementById('chat-badge').classList.remove('show');
+}
+
+// Fire-once-per-day guard
+function pushOnce(key, content) {
+  const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const dk = et.toISOString().split('T')[0];
+  if (!pushedToday[dk]) pushedToday = { [dk]: {} };   // reset on new day
+  if (pushedToday[dk][key]) return;
+  pushedToday[dk][key] = true;
+  try { localStorage.setItem('sm_pushed', JSON.stringify(pushedToday)); } catch(e){}
+  pushMsg(content);
+}
+
+// Restore today's fired-keys so refresh doesn't re-push
+try {
+  const saved = JSON.parse(localStorage.getItem('sm_pushed')||'{}');
+  const et0 = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const dk0 = et0.toISOString().split('T')[0];
+  if (saved[dk0]) pushedToday = saved;
+} catch(e){}
+
+// The push engine — checked every tick, but each message fires once/day
+function checkPushes(et) {
+  const mins = et.getHours()*60 + et.getMinutes();
+  const dow = et.getDay(); // 0=Sun 6=Sat
+  if (dow===0 || dow===6) return;  // weekend, market closed
+
+  // 9:30 — market open, deliver the day's structural read from pre-market inputs
+  if (mins >= 570 && mins < 575) {
+    const emaMap = {bull:'EMA多头',bear:'EMA空头',flat:'EMA纠缠'};
+    const gexTxt = S.gex==='pos'?'GEX正':'GEX负';
+    const dexTxt = S.dex==='pos'?'DEX正':'DEX负';
+    let read = '开盘了。盘前结构：'+emaMap[S.ema]+' · '+gexTxt+' · '+dexTxt+'。';
+    if (S.ema==='bull'&&S.gex==='neg'&&S.dex==='pos') read += ' 这是Trap Setup的盘前形态——别追开盘拉升，等接近Call Wall、量缩、DEX降温再做put。';
+    else if (S.ema==='bear'&&S.gex==='neg'&&S.dex==='neg') read += ' 三力同向空头，反弹至EMA阻力做put。';
+    else if (S.gex==='pos') read += ' GEX正，今天偏震荡磨，方向性期权耐心等位置。';
+    read += ' 前15分钟先看不做。';
+    pushOnce('open', read);
+  }
+  // 9:45 — opening guard lifts
+  if (mins >= 585 && mins < 590) {
+    pushOnce('prime', '开盘保护期结束。9:45–11:00是黄金窗口，趋势最清晰，数据也可靠了。有setup可以动手，但记住信号≠立即入场，等你的确认。');
+  }
+  // 11:00 — dead zone
+  if (mins >= 660 && mins < 665) {
+    pushOnce('dead', '进入午盘死区（11:00–14:00）。华尔街吃饭去了，流动性变薄，算法主导，假突破概率高。没有明确结构就别动，管住手。');
+  }
+  // 14:00 — afternoon, no new positions
+  if (mins >= 840 && mins < 845) {
+    pushOnce('pm', '两点了。无持仓的话不开新仓——0DTE theta这时候加速，尾盘波动被放大，下午的"机会"九成是陷阱。有持仓就管理存量，设好移动止盈。');
+  }
+  // 15:50 — near close
+  if (mins >= 950 && mins < 955) {
+    pushOnce('close', '快收盘了。手里还有0DTE的话准备平仓，别留到最后一刻赌gamma。收盘后去盘后tab记一笔今天的复盘——不管赚亏。');
+  }
+}
+
 
 function buildLiveContext() {
   const v = id => document.getElementById(id) ? document.getElementById(id).value : '';
@@ -2609,11 +2810,14 @@ function tick() {
   // Afternoon guard: after 14:00 ET (2PM)
   if (mins>=840 && mins<960) { pmGuard.classList.add('active'); }
   else { pmGuard.classList.remove('active'); }
+  applyPhase();
+  checkPushes(et);
 }
 setInterval(tick,1000); tick();
 
 /* ══ Init ══ */
 restoreIntraday(); updateSum(); renderPre(); calcZone();
+syncAutoToggle(); applyPhase();
 </script>
 </body>
 </html>
