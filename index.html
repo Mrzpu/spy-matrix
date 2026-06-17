@@ -98,7 +98,6 @@ body::before {
 #sun-group { /* transition managed by JS — instant first paint, 60s drift after */ }
 @media (prefers-reduced-motion: reduce){
   #ink-canvas{animation:none}
-  #fall-canvas{animation:none}
 }
 
 .app {
@@ -2314,94 +2313,10 @@ function drawMountains() {
   bg.addColorStop(1, 'rgba(246,243,237,1)');
   ctx.fillStyle = bg;
   ctx.fillRect(0, H - 56, W, 56);
-
-  // Record waterfall geometry: a notch on the 3rd layer (near range), screen-space
-  // 3rd layer baseY frac 0.68; place fall at ~62% width, run down to the mist below it
-  const fallLayer = layers[2];
-  window._fall = {
-    x: W * 0.615,                        // canvas-space (canvas is 1.25× screen, drifts as one)
-    yTop: H * fallLayer[0] + 6,
-    yBot: H * layers[3][0] - 4,          // ends where the nearest mist begins
-    H: H
-  };
 }
 drawMountains();
 
-/* ══ 高山流水 — a thread of falling water, animated layer on top ══ */
-function setupFall() {
-  let fc = document.getElementById('fall-canvas');
-  if (!fc) {
-    fc = document.createElement('canvas');
-    fc.id = 'fall-canvas';
-    fc.style.cssText = 'position:fixed;bottom:0;left:0;z-index:0;pointer-events:none;animation:canvasDrift 280s linear infinite alternate;';
-    const ink = document.getElementById('ink-canvas');
-    ink.parentNode.insertBefore(fc, ink.nextSibling);
-  }
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const W = Math.ceil(window.innerWidth * 1.25);   // match mountain canvas width for drift sync
-  const H = Math.ceil(Math.min(window.innerHeight * 0.40, 420));
-  fc.width = W * dpr; fc.height = H * dpr;
-  fc.style.width = W + 'px'; fc.style.height = H + 'px';
-  fc._ctx = fc.getContext('2d');
-  fc._ctx.setTransform(dpr,0,0,dpr,0,0);
-  // particles: thin column of droplets at varied speeds = turbulent thread
-  fc._drops = [];
-  const f = window._fall;
-  if (!f) return;
-  for (let i = 0; i < 46; i++) {
-    fc._drops.push({
-      t: Math.random(),                 // 0..1 progress down the fall
-      sp: 0.006 + Math.random()*0.010,  // speed
-      jx: (Math.random()-0.5),          // horizontal jitter seed
-      len: 6 + Math.random()*14,        // streak length
-      a: 0.18 + Math.random()*0.30      // alpha
-    });
-  }
-}
-function drawFall() {
-  const fc = document.getElementById('fall-canvas');
-  const f = window._fall;
-  if (!fc || !fc._ctx || !f) { requestAnimationFrame(drawFall); return; }
-  const ctx = fc._ctx;
-  const W = Math.ceil(window.innerWidth * 1.25);
-  ctx.clearRect(0, 0, W, f.H);
-  const span = f.yBot - f.yTop;
-
-  fc._drops.forEach(d => {
-    d.t += d.sp;
-    if (d.t > 1) { d.t -= 1; d.jx = (Math.random()-0.5); }
-    const y = f.yTop + span * d.t;
-    // slight horizontal wander + widening as it falls (water spreads)
-    const wander = Math.sin(d.t * 6.28 + d.jx*3) * (1.2 + d.t*2.5);
-    const x = f.x + wander + d.jx*1.5;
-    // fade in at top, fade out into the mist at bottom
-    const edge = Math.min(d.t*4, (1-d.t)*3, 1);
-    const alpha = d.a * Math.max(0, edge);
-    const grad = ctx.createLinearGradient(x, y, x, y + d.len);
-    grad.addColorStop(0, `rgba(255,255,255,0)`);
-    grad.addColorStop(0.5, `rgba(250,251,252,${alpha})`);
-    grad.addColorStop(1, `rgba(255,255,255,0)`);
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = 0.8 + d.t*0.8;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + wander*0.15, y + d.len);
-    ctx.stroke();
-  });
-
-  // soft splash glow where it meets the mist
-  const sg = ctx.createRadialGradient(f.x, f.yBot, 0, f.x, f.yBot, 22);
-  sg.addColorStop(0, 'rgba(250,251,252,0.16)');
-  sg.addColorStop(1, 'rgba(250,251,252,0)');
-  ctx.fillStyle = sg;
-  ctx.beginPath(); ctx.ellipse(f.x, f.yBot, 22, 7, 0, 0, Math.PI*2); ctx.fill();
-
-  requestAnimationFrame(drawFall);
-}
-setupFall();
-requestAnimationFrame(drawFall);
-
-let _rsT; window.addEventListener('resize', () => { clearTimeout(_rsT); _rsT = setTimeout(() => { drawMountains(); setupFall(); _lastSkyMin = -1; const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'})); drawSky(et); }, 200); });
+let _rsT; window.addEventListener('resize', () => { clearTimeout(_rsT); _rsT = setTimeout(() => { drawMountains(); _lastSkyMin = -1; const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'})); drawSky(et); }, 200); });
 
 /* ══ 日月 — painted sky, sun by day, moon takes the night shift ══ */
 let _lastSkyMin = -1;
@@ -2415,6 +2330,7 @@ function drawSky(et) {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const W = window.innerWidth;
   const H = Math.ceil(Math.min(window.innerHeight * 0.72, 700));
+  if (!W || !H) return;   // 视口未就绪(innerHeight=0)时别画,下一拍再来,避免 H=0 把透明度算成 Infinity
   cv.width = W * dpr; cv.height = H * dpr;
   cv.style.width = W + 'px'; cv.style.height = H + 'px';
   const ctx = cv.getContext('2d');
@@ -2620,6 +2536,12 @@ setTimeout(maybeLaunchGeese, 8000);        // a chance shortly after open
 const CH_SYS = `你是一个SPY 0DTE期权交易员的实时盘中助手，名叫盘伴。交易员的框架是做市商对冲机制：GEX正=MM高抛低吸压制波动（突破是陷阱）；GEX负=MM追涨杀跌放大趋势（支撑会失效）；DEX看净Delta资金方向，DEX velocity减速是最早的入场信号。核心setup是Trap Setup：EMA多头+GEX负+DEX正，等散户追高、价格接近Call Wall、量缩+DEX降温后做put。信号出现不等于立即入场，入场是独立的盘中决策。纪律：开盘15分钟不做、每天最多5笔、2PM ET后无持仓不开新仓、GEX拥有否决权、午盘(11-14点)是死区。
 
 重要的数据规则：快照里的GEX/DEX是用户手动设置的二元开关，可能滞后或过期——用户消息里贴的具体数字永远优先于快照开关，两者矛盾时以数字为准并指出开关可能没更新。GEX绝对值在±50M以内视为flip过渡区，既不是正也不是负，按结构不明处理。永远关注1d变化速度：GEX/DEX在快速修复（向正移动）=空头论点地基在融化；在快速恶化=趋势在自我强化。价格跌破HVL但GEX仍正=Negative Transition，支撑在衰减，不是摩擦区。
+
+持仓/出场模式：当用户说他已经在仓里（如"我在745 put里"），切到出场模式，目标只有一个——帮他按信号拿住趋势、别凭恐惧砍盈利。不要问他赚多少或成本：P&L锚定正是他过早平仓的根源。只问三样，并严格用这三个词：①价位（价格相对put/call wall、HVL、VWAP在哪）；②DEX绝对值（TanukiTrade的value字段，符号+量级，50M附近是噪音、400M是真料）；③velocity（1D字段，值朝哪个方向、多快变）。绝对值和velocity是两条独立的轴，必须分开看，冲突时主动点破。
+
+出场规则——分批，不找底、不给抄底价位，只给信号触发：到第一目标（下一道墙/量度跌幅）先平1/3落袋，让那份合理的恐惧闭嘴；剩2/3挂在前一个swing后面跟踪（持put看反弹的lower-high，持call看higher-low）；runner出场触发=velocity滚头（1D不再朝持仓方向加速、或开始反向穿越）或价格收回前高。反弹真假用"绝对值+velocity"一起判：velocity真正把值带过零、进到明确反向（如+400M真料）=真反转/诱空，平掉；velocity只是回血但绝对值还死在对持仓有利的深区（如持put时DEX仍-700M）=派发/诱多死猫跳，反弹是加仓点不是离场点，拿住。两个都是-700M、光看绝对值不够，必须配1D才知道是拿还是跑。
+
+生死线：当信号还支持拿（绝对值深、velocity没滚头）而用户想跑，直接告诉他这是心跳不是盘面、runner该拿着，不要附和他的恐惧。临近收盘按ET时钟收紧——越往尾盘gamma反抽的不对称越往反方向翻，逐步多平、把跟踪拉近，呼应"2PM后"那条纪律。你的判断只值用户喂进来的velocity数，输入不可靠就直说。
 
 回复要求：简洁直接，用户在盯盘没时间读长文；不要复述他的系统；不要emoji；他错了直接指出并解释；中英文混用自然即可。每条用户消息前附有当前盘面快照，直接基于快照分析。`;
 
