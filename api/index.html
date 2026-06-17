@@ -1,0 +1,2779 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<title>SPY 0DTE · 信号矩阵</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20140%20140%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22140%22%20height%3D%22140%22%20rx%3D%220%22%20fill%3D%22%23bf3a2b%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2212%22%20width%3D%22116%22%20height%3D%22116%22%20rx%3D%226%22%20fill%3D%22none%22%20stroke%3D%22%23f5f0e8%22%20stroke-width%3D%223%22/%3E%3Ctext%20x%3D%2270%22%20y%3D%2275%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Noto%20Serif%20SC%27%2C%27STSong%27%2C%27SimSun%27%2Cserif%22%20font-weight%3D%22900%22%20font-size%3D%2294%22%20fill%3D%22%23f5f0e8%22%3E%E7%9F%A9%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20140%20140%22%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%22136%22%20height%3D%22136%22%20rx%3D%2210%22%20fill%3D%22%23bf3a2b%22/%3E%3Crect%20x%3D%229%22%20y%3D%229%22%20width%3D%22122%22%20height%3D%22122%22%20rx%3D%225%22%20fill%3D%22none%22%20stroke%3D%22%23f5f0e8%22%20stroke-width%3D%223%22/%3E%3Ctext%20x%3D%2270%22%20y%3D%2275%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Noto%20Serif%20SC%27%2C%27STSong%27%2C%27SimSun%27%2Cserif%22%20font-weight%3D%22900%22%20font-size%3D%2296%22%20fill%3D%22%23f5f0e8%22%3E%E7%9F%A9%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600;700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --paper: #f6f3ed;
+  --paper2: #efece5;
+  --paper3: #e6e2da;
+  --card: #faf8f4;
+  --card-hover: #ffffff;
+  --ink: #1c1917;
+  --ink2: #3a3630;
+  --ink3: #6b6560;
+  --ink4: #9e9890;
+  --ink5: #cdc7bc;
+  --ink6: #ddd9d0;
+  --vermillion: #bf3a2b;
+  --vermillion-dim: rgba(191,58,43,0.06);
+  --vermillion-mid: rgba(191,58,43,0.14);
+  --vermillion-glow: rgba(191,58,43,0.03);
+  --teal: #2a7a6e;
+  --teal-dim: rgba(42,122,110,0.06);
+  --teal-mid: rgba(42,122,110,0.14);
+  --teal-glow: rgba(42,122,110,0.03);
+  --indigo: #4a5a88;
+  --indigo-dim: rgba(74,90,136,0.06);
+  --amber: #a07a28;
+  --amber-dim: rgba(160,122,40,0.06);
+  --amber-mid: rgba(160,122,40,0.14);
+  --purple: #6a5a88;
+  --purple-dim: rgba(106,90,136,0.06);
+  --cn: 'Noto Serif SC', 'Songti SC', serif;
+  --en: 'Source Serif 4', Georgia, serif;
+  --ui: 'DM Sans', -apple-system, sans-serif;
+  --num: 'DM Mono', 'SF Mono', monospace;
+  --shadow-sm: 0 1px 2px rgba(28,25,23,0.04), 0 2px 6px rgba(28,25,23,0.02);
+  --shadow-md: 0 2px 4px rgba(28,25,23,0.04), 0 8px 24px rgba(28,25,23,0.04);
+  --shadow-lg: 0 4px 8px rgba(28,25,23,0.04), 0 16px 40px rgba(28,25,23,0.06);
+  --shadow-lift: 0 8px 24px rgba(28,25,23,0.08), 0 2px 6px rgba(28,25,23,0.04);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--ui);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Subtle grain */
+body::before {
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
+
+/* 天 — sun & moon canvas, static, behind mountains */
+#sky-tint {
+  position:fixed;inset:0;
+  z-index:0;pointer-events:none;
+  transition:opacity 2s ease;
+}
+#sky-canvas {
+  position:fixed;bottom:0;left:0;
+  z-index:0;pointer-events:none;
+}
+#geese-canvas {
+  position:fixed;top:0;left:0;
+  z-index:0;pointer-events:none;
+}
+#seal-canvas {
+  position:fixed;bottom:26px;left:30px;
+  z-index:1;pointer-events:none;
+  opacity:0.78;
+}
+@media(max-width:700px){ #seal-canvas{ bottom:16px;left:16px;transform:scale(0.8);transform-origin:bottom left; } }
+/* Canvas mountains drift — endless scroll painting */
+#ink-canvas {
+  position:fixed;bottom:0;left:0;
+  z-index:0;pointer-events:none;
+  animation:canvasDrift 280s linear infinite alternate;
+}
+@keyframes canvasDrift{from{transform:translateX(0)}to{transform:translateX(-22vw)}}
+#sun-group { /* transition managed by JS — instant first paint, 60s drift after */ }
+@media (prefers-reduced-motion: reduce){
+  #ink-canvas{animation:none}
+}
+
+.app {
+  position:relative;z-index:1;
+  max-width:960px;
+  margin:0 auto;
+  padding:0 32px 100px;
+}
+
+/* ── Header ── */
+header {
+  padding:40px 0 32px;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  border-bottom:1px solid var(--ink6);
+  gap:16px;flex-wrap:wrap;
+}
+.header-left { display:flex;align-items:flex-end;gap:20px; }
+.logo-mark {
+  width:48px;height:48px;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 0.3s var(--ease);
+  flex-shrink:0;
+}
+.logo-mark:hover { transform:translateY(-2px)scale(1.04); }
+.header-title {
+  font-family:var(--cn);font-size:22px;font-weight:500;
+  color:var(--ink);letter-spacing:0.06em;line-height:1;
+}
+.header-sub {
+  font-family:var(--en);font-size:13px;font-weight:300;
+  color:var(--ink4);margin-top:6px;letter-spacing:0.12em;
+  font-style:italic;
+}
+.clock {
+  font-family:var(--num);font-size:12px;
+  color:var(--ink4);letter-spacing:0.06em;
+  display:flex;align-items:center;gap:8px;
+}
+.clock-dot {
+  width:6px;height:6px;border-radius:50%;
+  background:var(--teal);
+  box-shadow:0 0 8px rgba(42,122,110,0.3);
+  animation:pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
+
+/* ── Phase ribbon — the time dimension ── */
+.phase-ribbon {
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:30px;padding:14px 20px;gap:16px;flex-wrap:wrap;
+  background:var(--card);border:0.5px solid var(--ink6);
+  border-radius:8px;box-shadow:var(--shadow-sm);
+}
+.phase-now { display:flex;align-items:center;gap:12px;flex-wrap:wrap; }
+.phase-dot {
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  animation:pulse 2.5s ease-in-out infinite;
+}
+.phase-label { font-family:var(--cn);font-size:15px;font-weight:500;letter-spacing:0.06em; }
+.phase-desc { font-family:var(--ui);font-size:12px;color:var(--ink4);letter-spacing:0.02em; }
+.phase-auto {
+  display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;
+}
+.phase-auto-track {
+  width:32px;height:18px;border-radius:10px;
+  background:var(--ink5);position:relative;
+  transition:background .25s var(--ease);
+}
+.phase-auto-thumb {
+  position:absolute;top:2px;left:2px;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--card);box-shadow:var(--shadow-sm);
+  transition:transform .25s var(--ease);
+}
+.phase-auto.on .phase-auto-track { background:var(--teal); }
+.phase-auto.on .phase-auto-thumb { transform:translateX(14px); }
+.phase-auto-text { font-family:var(--cn);font-size:12px;color:var(--ink4);font-weight:300;letter-spacing:0.06em; }
+.phase-auto.on .phase-auto-text { color:var(--teal); }
+
+/* When following market, the manual tabs recede — they're now a readout, not the control */
+body.auto-following .tab-btn { opacity:0.5; }
+body.auto-following .tab-btn.active { opacity:1; }
+
+/* ── Tab Nav ── */
+.tab-nav {
+  display:flex;gap:0;margin-top:32px;
+  border-bottom:1px solid var(--ink6);
+  position:relative;
+}
+.tab-btn {
+  font-family:var(--cn);font-size:15px;font-weight:300;
+  color:var(--ink4);background:none;border:none;
+  padding:14px 28px;cursor:pointer;position:relative;
+  letter-spacing:0.14em;
+  transition:color 0.3s var(--ease);
+}
+.tab-btn:hover { color:var(--ink2); }
+.tab-btn.active {
+  color:var(--ink);font-weight:400;
+}
+.tab-btn.active::after {
+  content:'';position:absolute;bottom:-1px;left:28px;right:28px;
+  height:2px;background:var(--ink);
+  animation:tabSlide 0.3s var(--ease);
+}
+@keyframes tabSlide{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.tab-panel { display:none;padding-top:32px; }
+.tab-panel.active { display:block;animation:fadeUp .4s var(--ease); }
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── Section dividers ── */
+.sec-label {
+  font-family:var(--cn);font-size:13px;font-weight:300;
+  letter-spacing:0.22em;color:var(--ink4);
+  margin:36px 0 16px;
+  display:flex;align-items:center;gap:16px;
+}
+.sec-label::after {
+  content:'';flex:1;height:0.5px;
+  background:linear-gradient(90deg,var(--ink6) 0%,transparent 100%);
+}
+
+/* ── Mindset section ── */
+.ms-toggle {
+  background:var(--card);
+  border:0.5px solid var(--ink6);
+  border-left:2px solid var(--ink2);
+  padding:16px 22px;
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;user-select:none;
+  transition:all 0.25s var(--ease);
+  margin-bottom:4px;
+  border-radius:6px;
+  box-shadow:var(--shadow-sm);
+}
+.ms-toggle:hover { background:var(--card-hover);box-shadow:var(--shadow-md);transform:translateY(-1px); }
+.ms-toggle-left { display:flex;align-items:center;gap:14px; }
+.ms-toggle-icon { font-family:var(--cn);font-size:16px;color:var(--ink3); }
+.ms-toggle-title {
+  font-family:var(--cn);font-size:14px;font-weight:300;
+  letter-spacing:0.1em;color:var(--ink2);
+}
+.ms-badge {
+  font-family:var(--num);font-size:10px;font-weight:500;
+  padding:3px 10px;border:0.5px solid var(--ink6);color:var(--ink4);
+  border-radius:20px;
+}
+.ms-badge.complete { border-color:var(--teal);color:var(--teal);background:var(--teal-dim); }
+.ms-chevron { font-size:12px;color:var(--ink4);transition:transform .3s var(--ease); }
+.ms-chevron.open { transform:rotate(180deg); }
+.ms-panel { display:none;padding:16px 0; }
+.ms-panel.open { display:block;animation:fadeUp .3s var(--ease); }
+
+.ms-grid { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
+
+.ms-card {
+  border:0.5px solid var(--ink6);
+  padding:22px 24px;
+  background:var(--card);
+  border-radius:6px;
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow 0.25s var(--ease),transform 0.25s var(--ease);
+}
+.ms-card:hover { box-shadow:var(--shadow-md);transform:translateY(-1px); }
+.ms-card-accent { border-left:2px solid var(--ink2); }
+.ms-card-warm { border-left:2px solid var(--vermillion); }
+
+.ms-card-label {
+  font-family:var(--cn);font-size:12px;letter-spacing:0.2em;
+  color:var(--ink4);margin-bottom:8px;font-weight:300;
+}
+.ms-card-title {
+  font-family:var(--en);font-size:15px;font-weight:600;
+  color:var(--ink);margin-bottom:16px;
+  font-style:italic;letter-spacing:0.02em;
+}
+
+.ms-rows { display:flex;flex-direction:column;gap:12px; }
+.ms-row { display:flex;gap:12px;align-items:flex-start; }
+.ms-dot { width:5px;height:5px;border-radius:50%;margin-top:7px;flex-shrink:0; }
+.dot-ink { background:var(--ink2); }
+.dot-vermillion { background:var(--vermillion); }
+.dot-teal { background:var(--teal); }
+.dot-amber { background:var(--amber); }
+.ms-row-text {
+  font-family:var(--ui);font-size:13px;color:var(--ink3);line-height:1.75;
+}
+.ms-row-text strong { color:var(--ink);font-weight:500; }
+
+/* Traps */
+.ms-traps { display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px; }
+.ms-trap {
+  border:0.5px solid var(--ink6);overflow:hidden;
+  background:var(--card);border-radius:6px;
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow 0.25s var(--ease),transform 0.25s var(--ease);
+}
+.ms-trap:hover { box-shadow:var(--shadow-md);transform:translateY(-1px); }
+.ms-trap-head {
+  padding:10px 16px;display:flex;align-items:center;gap:10px;
+  border-bottom:0.5px solid var(--ink6);
+  background:var(--paper);
+}
+.ms-trap-tag {
+  font-family:var(--num);font-size:9px;font-weight:500;
+  letter-spacing:0.12em;padding:2px 8px;border-radius:3px;
+}
+.tag-teal { background:var(--teal-dim);color:var(--teal);border:0.5px solid rgba(42,122,110,0.2); }
+.tag-vermillion { background:var(--vermillion-dim);color:var(--vermillion);border:0.5px solid rgba(191,58,43,0.2); }
+.tag-amber { background:var(--amber-dim);color:var(--amber);border:0.5px solid rgba(160,122,40,0.2); }
+.ms-trap-name { font-family:var(--cn);font-size:12px;color:var(--ink2);font-weight:400; }
+.ms-trap-body {
+  padding:14px 16px;font-family:var(--ui);font-size:12px;
+  color:var(--ink3);line-height:1.75;
+}
+.ms-trap-body strong { color:var(--ink);font-weight:500; }
+
+/* Rules */
+.ms-rules { display:flex;flex-direction:column;gap:6px;margin-top:8px; }
+.ms-rule {
+  display:flex;gap:14px;align-items:flex-start;
+  padding:10px 14px;border:0.5px solid var(--ink6);
+  border-radius:4px;background:var(--paper);
+  transition:background 0.2s var(--ease);
+}
+.ms-rule:hover { background:var(--paper2); }
+.ms-rule-num {
+  font-family:var(--cn);font-size:15px;font-weight:200;
+  color:var(--ink5);flex-shrink:0;min-width:22px;
+}
+.ms-rule-text {
+  font-family:var(--ui);font-size:13px;color:var(--ink3);line-height:1.6;
+}
+.ms-rule-text strong { color:var(--ink);font-weight:500; }
+
+/* Checklist */
+.ms-checks { display:flex;flex-direction:column;gap:6px;margin-top:8px; }
+.ms-chk {
+  display:flex;gap:14px;align-items:flex-start;
+  padding:12px 16px;border:0.5px solid var(--ink6);
+  cursor:pointer;border-radius:4px;background:var(--paper);
+  transition:all 0.2s var(--ease);
+}
+.ms-chk:hover { background:var(--paper2);transform:translateY(-1px);box-shadow:var(--shadow-sm); }
+.ms-chk.checked { border-color:var(--teal);background:var(--teal-dim);box-shadow:0 0 0 1px var(--teal-dim); }
+.ms-chk-num {
+  font-family:var(--cn);font-size:15px;font-weight:200;
+  color:var(--ink5);flex-shrink:0;min-width:22px;
+}
+.ms-chk.checked .ms-chk-num { color:var(--teal); }
+.ms-chk-title { font-family:var(--cn);font-size:13px;color:var(--ink2);margin-bottom:3px; }
+.ms-chk.checked .ms-chk-title { color:var(--teal); }
+.ms-chk-sub { font-family:var(--ui);font-size:11px;color:var(--ink4);line-height:1.55; }
+.ms-verdict {
+  margin-top:12px;padding:10px 16px;
+  font-family:var(--cn);font-size:12px;letter-spacing:0.08em;
+  text-align:center;border:0.5px solid var(--ink6);color:var(--ink4);
+  border-radius:4px;
+  transition:all .25s var(--ease);
+}
+.ms-verdict.ready { border-color:var(--teal);color:var(--teal);background:var(--teal-dim);box-shadow:0 0 20px var(--teal-glow); }
+.ms-verdict.partial { border-color:var(--amber);color:var(--amber);background:var(--amber-dim); }
+
+/* ── Signal Controls ── */
+.ctrl-grid { display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px; }
+.ctrl-box {
+  border:0.5px solid var(--ink6);padding:18px 20px;
+  background:var(--card);border-radius:6px;
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow 0.2s var(--ease);
+}
+.ctrl-box:hover { box-shadow:var(--shadow-md); }
+.ctrl-label {
+  font-family:var(--cn);font-size:12px;letter-spacing:0.16em;
+  color:var(--ink4);margin-bottom:12px;font-weight:300;
+  display:flex;align-items:center;gap:8px;
+}
+.ctrl-dot { width:5px;height:5px;border-radius:50%; }
+.btn-row { display:flex;gap:8px;flex-wrap:wrap; }
+.sig-btn {
+  font-family:var(--ui);font-size:12px;font-weight:500;
+  padding:8px 16px;border:0.5px solid var(--ink6);
+  background:var(--paper);color:var(--ink4);
+  cursor:pointer;border-radius:4px;
+  transition:all 0.2s var(--ease);
+  letter-spacing:0.02em;
+}
+.sig-btn:hover { background:var(--paper2);border-color:var(--ink5);color:var(--ink2);transform:translateY(-1px); }
+.sig-btn:active { transform:translateY(0);box-shadow:none; }
+.sig-btn.on-bull { border-color:var(--teal);background:var(--teal-dim);color:var(--teal);box-shadow:0 0 12px var(--teal-glow); }
+.sig-btn.on-bear { border-color:var(--vermillion);background:var(--vermillion-dim);color:var(--vermillion);box-shadow:0 0 12px var(--vermillion-glow); }
+.sig-btn.on-flat { border-color:var(--ink3);background:rgba(0,0,0,0.02);color:var(--ink2); }
+
+/* ── Aux Signals ── */
+.aux-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:18px; }
+.aux-tile {
+  border:0.5px solid var(--ink6);padding:12px 14px;
+  cursor:pointer;user-select:none;
+  background:var(--card);border-radius:4px;
+  transition:all .2s var(--ease);
+}
+.aux-tile:hover { background:var(--card-hover);transform:translateY(-1px);box-shadow:var(--shadow-sm); }
+.aux-tile.on { border-color:var(--indigo);background:var(--indigo-dim);box-shadow:0 0 12px rgba(74,90,136,0.05); }
+.aux-name { font-family:var(--ui);font-size:11px;letter-spacing:0.1em;color:var(--ink4);text-transform:uppercase;margin-bottom:4px; }
+.aux-val { font-family:var(--ui);font-size:12px;color:var(--ink2);font-weight:500; }
+.aux-tile.on .aux-name,.aux-tile.on .aux-val { color:var(--indigo); }
+
+/* ── Signal Summary ── */
+.sig-sum {
+  display:flex;gap:16px;flex-wrap:wrap;
+  padding:12px 18px;border:0.5px solid var(--ink6);
+  background:var(--card);margin-bottom:24px;
+  border-radius:6px;box-shadow:var(--shadow-sm);
+}
+.sum-item { font-family:var(--ui);font-size:13px;display:flex;align-items:center;gap:8px; }
+.sum-k { color:var(--ink4);font-weight:300; }
+.sum-v { font-weight:600;font-family:var(--num); }
+
+/* ── Analysis Output (Pre-market) ── */
+.verdict-card {
+  border:0.5px solid var(--ink6);
+  padding:28px 30px;margin:8px 0 16px;
+  background:var(--card);
+  border-radius:8px;
+  box-shadow:var(--shadow-md);
+  animation:verdictIn 0.4s var(--ease);
+}
+@keyframes verdictIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.verdict-card.vc-call { border-left:3px solid var(--teal);box-shadow:var(--shadow-md),inset 0 0 40px var(--teal-glow); }
+.verdict-card.vc-put { border-left:3px solid var(--vermillion);box-shadow:var(--shadow-md),inset 0 0 40px var(--vermillion-glow); }
+.verdict-card.vc-neutral { border-left:3px solid var(--amber); }
+.verdict-card.vc-wait { border-left:3px solid var(--ink6); }
+
+.v-head { display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap; }
+.v-title { font-family:var(--cn);font-size:17px;font-weight:500;letter-spacing:0.02em; }
+.vc-call .v-title { color:var(--teal); }
+.vc-put .v-title { color:var(--vermillion); }
+.vc-neutral .v-title { color:var(--amber); }
+.vc-wait .v-title { color:var(--ink4); }
+
+.q-badge {
+  font-family:var(--ui);font-size:10px;font-weight:500;
+  letter-spacing:0.1em;padding:4px 12px;
+  border:0.5px solid;border-radius:20px;
+}
+.q-hi { border-color:var(--teal);color:var(--teal);background:var(--teal-dim); }
+.q-mid { border-color:var(--amber);color:var(--amber);background:var(--amber-dim); }
+.q-lo { border-color:var(--ink6);color:var(--ink4); }
+
+.v-body { font-family:var(--ui);font-size:14px;color:var(--ink3);line-height:1.85;margin-bottom:16px; }
+
+/* Trade chips */
+.trade-row { display:flex;gap:8px;flex-wrap:wrap; }
+.chip {
+  font-family:var(--ui);font-size:11px;font-weight:500;
+  letter-spacing:0.06em;padding:6px 14px;
+  border:0.5px solid;display:flex;align-items:center;gap:6px;
+  text-transform:uppercase;border-radius:20px;
+  transition:transform 0.15s var(--ease);
+}
+.chip:hover { transform:translateY(-1px); }
+.chip-call { border-color:var(--teal);color:var(--teal);background:var(--teal-dim); }
+.chip-put { border-color:var(--vermillion);color:var(--vermillion);background:var(--vermillion-dim); }
+.chip-spread { border-color:var(--indigo);color:var(--indigo);background:var(--indigo-dim); }
+.chip-condor { border-color:var(--purple);color:var(--purple);background:var(--purple-dim); }
+.chip-butterfly { border-color:var(--amber);color:var(--amber);background:var(--amber-dim); }
+.chip-no { border-color:var(--ink6);color:var(--ink4);opacity:.5; }
+
+/* Info cards */
+.info-grid { display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px; }
+.info-card {
+  border:0.5px solid var(--ink6);padding:18px 20px;
+  background:var(--card);border-radius:6px;
+  box-shadow:var(--shadow-sm);
+}
+.info-card-title { font-family:var(--cn);font-size:12px;letter-spacing:0.16em;color:var(--ink4);margin-bottom:12px;font-weight:300; }
+.info-row { display:flex;justify-content:space-between;align-items:center;margin-bottom:8px; }
+.info-k { font-family:var(--ui);font-size:12px;color:var(--ink4); }
+.info-v { font-family:var(--ui);font-size:12px;color:var(--ink);font-weight:500; }
+.info-v.c-teal { color:var(--teal); }
+.info-v.c-vermillion { color:var(--vermillion); }
+.info-v.c-amber { color:var(--amber); }
+
+/* Abort */
+.abort-box {
+  border:0.5px solid var(--vermillion);border-left:2px solid var(--vermillion);
+  background:var(--vermillion-dim);padding:16px 20px;margin-bottom:14px;
+  border-radius:6px;
+}
+.abort-title { font-family:var(--cn);font-size:12px;letter-spacing:0.16em;color:var(--vermillion);margin-bottom:10px;font-weight:300; }
+.abort-item {
+  font-family:var(--ui);font-size:12px;color:var(--ink3);line-height:1.8;
+  display:flex;gap:8px;
+}
+.abort-item::before { content:'▸';color:var(--vermillion);flex-shrink:0; }
+
+/* ══════════════════════════════════════ */
+/* ── INTRADAY REFEREE LAYER ── */
+/* ══════════════════════════════════════ */
+.ref-inputs {
+  display:grid;grid-template-columns:repeat(5,1fr);gap:12px;
+  margin-bottom:20px;
+}
+.ref-input-box {
+  border:0.5px solid var(--ink6);padding:16px 18px;
+  background:var(--card);border-radius:6px;
+  box-shadow:var(--shadow-sm);
+  transition:all 0.25s var(--ease);
+}
+.ref-input-box:focus-within {
+  border-color:var(--ink3);
+  box-shadow:var(--shadow-md);
+  transform:translateY(-1px);
+  background:var(--card-hover);
+}
+.ref-input-label {
+  font-family:var(--cn);font-size:12px;letter-spacing:0.14em;
+  color:var(--ink4);margin-bottom:8px;display:block;font-weight:300;
+}
+.ref-input {
+  font-family:var(--num);font-size:20px;font-weight:500;
+  color:var(--ink);background:transparent;border:none;
+  width:100%;outline:none;
+  border-bottom:1px solid var(--ink6);padding-bottom:6px;
+  transition:border-color 0.2s var(--ease);
+}
+.ref-input:focus { border-bottom-color:var(--ink2); }
+.ref-input::placeholder { color:var(--ink5); }
+
+/* Zone visualization */
+.zone-bar-wrap { margin-bottom:24px; }
+.zone-bar {
+  position:relative;height:48px;
+  background:var(--paper2);border:0.5px solid var(--ink6);
+  overflow:visible;margin:36px 0 32px;
+  border-radius:6px;
+  box-shadow:inset 0 1px 3px rgba(28,25,23,0.04);
+}
+.zone-marker {
+  position:absolute;top:-24px;
+  font-family:var(--ui);font-size:10px;letter-spacing:0.08em;
+  text-transform:uppercase;text-align:center;
+  transform:translateX(-50%);white-space:nowrap;
+  font-weight:500;
+}
+.zone-marker .zm-line {
+  width:1px;margin:3px auto 0;
+}
+.zone-marker-label { padding-bottom:4px; }
+
+.zone-fill {
+  position:absolute;top:0;bottom:0;opacity:0.1;
+  border-radius:4px;
+}
+.zone-fill-teal { background:var(--teal); }
+.zone-fill-vermillion { background:var(--vermillion); }
+
+.zone-current {
+  position:absolute;top:-8px;bottom:-8px;width:2.5px;
+  background:var(--ink);transform:translateX(-50%);z-index:10;
+  border-radius:2px;
+  box-shadow:0 0 8px rgba(28,25,23,0.15);
+  animation:markerBreath 3s ease-in-out infinite;
+}
+@keyframes markerBreath{0%,100%{box-shadow:0 0 6px rgba(28,25,23,0.12)}50%{box-shadow:0 0 14px rgba(28,25,23,0.28)}}
+
+/* Distance metric chips */
+.zone-metrics {
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:30px;
+}
+.zm-chip {
+  display:flex;align-items:center;gap:8px;
+  padding:7px 14px;border:0.5px solid var(--ink6);
+  border-radius:20px;background:var(--card);
+  box-shadow:var(--shadow-sm);
+  transition:all .2s var(--ease);
+}
+.zm-chip:hover { box-shadow:var(--shadow-md);transform:translateY(-1px); }
+.zm-chip.zm-rr { border-color:var(--ink5);background:var(--paper2); }
+.zm-k {
+  font-family:var(--cn);font-size:11px;font-weight:300;
+  letter-spacing:0.1em;color:var(--ink4);
+}
+.zm-v {
+  font-family:var(--num);font-size:12px;font-weight:500;
+}
+.zone-current-label {
+  position:absolute;top:-28px;left:50%;transform:translateX(-50%);
+  font-family:var(--num);font-size:12px;font-weight:500;
+  color:var(--ink);background:var(--card);
+  padding:2px 8px;border-radius:4px;
+  box-shadow:var(--shadow-sm);
+  white-space:nowrap;border:0.5px solid var(--ink6);
+}
+.zone-label-bottom {
+  position:absolute;bottom:-22px;
+  font-family:var(--num);font-size:9px;
+  color:var(--ink4);transform:translateX(-50%);
+  letter-spacing:0.04em;white-space:nowrap;
+}
+
+/* Referee verdict */
+.ref-verdict {
+  border:0.5px solid var(--ink6);
+  padding:32px 34px;margin:8px 0 16px;
+  background:var(--card);
+  border-radius:8px;
+  box-shadow:var(--shadow-md);
+  animation:verdictIn .4s var(--ease);
+}
+.ref-verdict.rv-go { border-left:3px solid var(--teal);box-shadow:var(--shadow-lg),inset 0 0 60px var(--teal-glow); }
+.ref-verdict.rv-wait { border-left:3px solid var(--amber);box-shadow:var(--shadow-md); }
+.ref-verdict.rv-stop { border-left:3px solid var(--vermillion);box-shadow:var(--shadow-lg),inset 0 0 60px var(--vermillion-glow); }
+.ref-verdict.rv-idle { border-left:3px solid var(--ink6); }
+
+.rv-status {
+  font-family:var(--cn);font-size:11px;letter-spacing:0.2em;font-weight:300;
+  margin-bottom:10px;
+}
+.rv-go .rv-status { color:var(--teal); }
+.rv-wait .rv-status { color:var(--amber); }
+.rv-stop .rv-status { color:var(--vermillion); }
+.rv-idle .rv-status { color:var(--ink4); }
+
+.rv-title {
+  font-family:var(--cn);font-size:22px;font-weight:500;
+  margin-bottom:14px;line-height:1.4;letter-spacing:0.02em;
+}
+.rv-go .rv-title { color:var(--teal); }
+.rv-wait .rv-title { color:var(--amber); }
+.rv-stop .rv-title { color:var(--vermillion); }
+.rv-idle .rv-title { color:var(--ink4); }
+
+.rv-body {
+  font-family:var(--ui);font-size:14px;color:var(--ink3);
+  line-height:1.9;margin-bottom:18px;
+}
+.rv-action {
+  font-family:var(--cn);font-size:13px;font-weight:300;
+  padding:12px 18px;border:0.5px solid;
+  letter-spacing:0.04em;border-radius:4px;
+  line-height:1.6;
+}
+.rv-go .rv-action { border-color:rgba(42,122,110,0.2);color:var(--teal);background:var(--teal-dim); }
+.rv-wait .rv-action { border-color:rgba(160,122,40,0.2);color:var(--amber);background:var(--amber-dim); }
+.rv-stop .rv-action { border-color:rgba(191,58,43,0.2);color:var(--vermillion);background:var(--vermillion-dim); }
+
+/* Timer warning */
+.open-guard {
+  border:1px solid var(--vermillion);background:var(--vermillion-dim);
+  padding:18px 24px;margin-bottom:20px;
+  display:none;text-align:center;
+  font-family:var(--cn);font-size:15px;color:var(--vermillion);
+  letter-spacing:0.12em;font-weight:300;
+  border-radius:8px;
+  box-shadow:0 0 30px var(--vermillion-glow);
+  animation:guardPulse 2s ease-in-out infinite;
+}
+@keyframes guardPulse{0%,100%{box-shadow:0 0 30px var(--vermillion-glow)}50%{box-shadow:0 0 50px rgba(191,58,43,0.08)}}
+.open-guard.active { display:block; }
+
+/* ── Dynamic Entry Flow ── */
+.dq-wrap {
+  margin-top:20px;padding-top:18px;
+  border-top:0.5px solid var(--ink6);
+}
+.dq-label {
+  font-family:var(--cn);font-size:12px;letter-spacing:0.18em;
+  color:var(--ink4);margin-bottom:14px;font-weight:300;
+}
+.dq-list { display:flex;flex-direction:column;gap:8px; }
+.dq-item {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border:0.5px solid var(--ink6);
+  border-radius:4px;background:var(--paper);
+  transition:all .2s var(--ease);gap:14px;
+}
+.dq-item:hover { background:var(--paper2); }
+.dq-item.dq-yes { border-color:var(--teal);background:var(--teal-dim);box-shadow:0 0 12px var(--teal-glow); }
+.dq-item.dq-yes.dq-put-mode { border-color:var(--vermillion);background:var(--vermillion-dim);box-shadow:0 0 12px var(--vermillion-glow); }
+.dq-item.dq-no { border-color:var(--ink6);background:var(--paper);opacity:.45; }
+.dq-q {
+  font-family:var(--cn);font-size:13px;color:var(--ink2);font-weight:300;
+  flex:1;line-height:1.5;
+}
+.dq-item.dq-yes .dq-q { color:var(--teal);font-weight:400; }
+.dq-item.dq-yes.dq-put-mode .dq-q { color:var(--vermillion);font-weight:400; }
+.dq-item.dq-no .dq-q { color:var(--ink4); }
+.dq-btns { display:flex;gap:4px;flex-shrink:0; }
+.dq-btn {
+  font-family:var(--cn);font-size:12px;font-weight:300;
+  padding:5px 14px;border:0.5px solid var(--ink6);
+  background:transparent;color:var(--ink4);
+  cursor:pointer;border-radius:3px;
+  transition:all .15s var(--ease);
+}
+.dq-btn:hover { background:var(--paper2);color:var(--ink2); }
+.dq-btn:active { transform:scale(0.96); }
+.dq-btn.dq-btn-yes { border-color:var(--teal);color:var(--teal);background:var(--teal-dim); }
+.dq-btn.dq-btn-yes.dq-put-mode { border-color:var(--vermillion);color:var(--vermillion);background:var(--vermillion-dim); }
+.dq-btn.dq-btn-no { border-color:var(--ink4);color:var(--ink4);background:rgba(0,0,0,0.02); }
+
+.dq-result {
+  margin-top:12px;padding:14px 18px;
+  border:0.5px solid var(--ink6);
+  display:flex;align-items:center;justify-content:space-between;
+  border-radius:6px;
+  transition:all .25s var(--ease);
+}
+.dq-result.dqr-go { border-left:3px solid var(--teal);border-color:var(--teal);background:var(--teal-dim);box-shadow:0 0 20px var(--teal-glow); }
+.dq-result.dqr-go.dqr-put { border-left:3px solid var(--vermillion);border-color:var(--vermillion);background:var(--vermillion-dim);box-shadow:0 0 20px var(--vermillion-glow); }
+.dq-result.dqr-wait { border-left:3px solid var(--amber);border-color:var(--amber);background:var(--amber-dim); }
+.dq-result.dqr-idle { border-color:var(--ink6); }
+.dqr-text {
+  font-family:var(--cn);font-size:14px;font-weight:400;letter-spacing:0.04em;
+}
+.dqr-go .dqr-text { color:var(--teal); }
+.dqr-go.dqr-put .dqr-text { color:var(--vermillion); }
+.dqr-wait .dqr-text { color:var(--amber); }
+.dqr-idle .dqr-text { color:var(--ink4); }
+.dqr-score {
+  font-family:var(--num);font-size:11px;letter-spacing:0.06em;
+  padding:3px 12px;border:0.5px solid;border-radius:20px;
+}
+.dqr-go .dqr-score { border-color:var(--teal);color:var(--teal);background:var(--teal-dim); }
+.dqr-go.dqr-put .dqr-score { border-color:var(--vermillion);color:var(--vermillion);background:var(--vermillion-dim); }
+.dqr-wait .dqr-score { border-color:var(--amber);color:var(--amber);background:var(--amber-dim); }
+.dqr-idle .dqr-score { border-color:var(--ink6);color:var(--ink4); }
+
+/* ── Journal / Post-Market ── */
+.j-user-row {
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px;
+}
+.j-user-select {
+  font-family:var(--cn);font-size:14px;font-weight:300;
+  padding:10px 16px;border:0.5px solid var(--ink6);
+  background:var(--card);color:var(--ink);
+  border-radius:6px;min-width:200px;
+  box-shadow:var(--shadow-sm);cursor:pointer;
+  transition:all .2s var(--ease);
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='%239e9890' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  padding-right:36px;
+}
+.j-user-select:hover { box-shadow:var(--shadow-md);border-color:var(--ink5); }
+.j-user-add { display:flex;gap:6px; }
+.j-user-input {
+  font-family:var(--ui);font-size:13px;
+  padding:9px 14px;border:0.5px solid var(--ink6);
+  background:var(--card);color:var(--ink);
+  border-radius:4px;width:160px;outline:none;
+  transition:all .2s var(--ease);
+}
+.j-user-input:focus { border-color:var(--ink3);box-shadow:var(--shadow-sm); }
+.j-user-input::placeholder { color:var(--ink5); }
+.j-user-btn {
+  font-family:var(--cn);font-size:16px;font-weight:300;
+  width:38px;height:38px;border:0.5px solid var(--ink6);
+  background:var(--card);color:var(--ink3);
+  border-radius:4px;cursor:pointer;
+  transition:all .2s var(--ease);
+  display:flex;align-items:center;justify-content:center;
+}
+.j-user-btn:hover { background:var(--card-hover);color:var(--ink);box-shadow:var(--shadow-sm);transform:translateY(-1px); }
+.j-user-btn:active { transform:scale(0.95); }
+.j-remove-row { margin-top:8px;margin-bottom:4px; }
+.j-remove-link {
+  font-family:var(--cn);font-size:12px;font-weight:300;
+  color:var(--vermillion);cursor:pointer;
+  letter-spacing:0.06em;opacity:0.6;
+  transition:opacity .2s var(--ease);
+  border-bottom:0.5px solid transparent;
+}
+.j-remove-link:hover { opacity:1;border-bottom-color:var(--vermillion); }
+.j-backup-row { margin-top:10px;display:flex;gap:18px; }
+.j-backup-link {
+  font-family:var(--cn);font-size:12px;font-weight:300;
+  color:var(--ink3);cursor:pointer;letter-spacing:0.06em;
+  opacity:0.7;transition:opacity .2s var(--ease);
+  border-bottom:0.5px solid transparent;
+}
+.j-backup-link:hover { opacity:1;border-bottom-color:var(--ink3); }
+
+.j-new-card {
+  background:var(--card);
+  border:0.5px solid var(--ink6);
+  border-radius:8px;
+  padding:28px 30px;
+  box-shadow:var(--shadow-md);
+  margin-bottom:24px;
+  /* Subtle notebook feel */
+  background-image:
+    repeating-linear-gradient(transparent, transparent 31px, var(--ink6) 31px, var(--ink6) 31.5px);
+  background-position:0 60px;
+  background-size:100% 32px;
+}
+.j-card-date {
+  font-family:var(--en);font-size:14px;font-weight:300;
+  color:var(--ink4);font-style:italic;margin-bottom:20px;
+  letter-spacing:0.06em;
+}
+.j-field { margin-bottom:16px; }
+.j-field-label {
+  font-family:var(--cn);font-size:13px;font-weight:300;
+  letter-spacing:0.14em;color:var(--ink4);
+  margin-bottom:6px;display:block;
+}
+.j-textarea {
+  font-family:var(--ui);font-size:13px;
+  color:var(--ink);background:transparent;
+  border:none;border-bottom:0.5px solid var(--ink6);
+  width:100%;padding:8px 0;outline:none;
+  resize:vertical;line-height:1.7;
+  transition:border-color .2s var(--ease);
+}
+.j-textarea:focus { border-bottom-color:var(--ink3); }
+.j-textarea::placeholder { color:var(--ink5); }
+.j-input {
+  font-family:var(--num);font-size:15px;font-weight:500;
+  color:var(--ink);background:transparent;
+  border:none;border-bottom:0.5px solid var(--ink6);
+  width:100%;padding:8px 0;outline:none;
+  transition:border-color .2s var(--ease);
+}
+.j-input:focus { border-bottom-color:var(--ink3); }
+.j-input::placeholder { color:var(--ink5); }
+.j-field-row { display:flex;gap:20px;align-items:flex-end; }
+.j-stars { display:flex;gap:4px;padding:6px 0; }
+.j-star {
+  font-size:22px;cursor:pointer;color:var(--ink5);
+  transition:all .15s var(--ease);
+  user-select:none;
+}
+.j-star:hover { transform:scale(1.15); }
+.j-star.filled { color:var(--amber); }
+.j-save-btn {
+  font-family:var(--cn);font-size:13px;font-weight:400;
+  padding:10px 28px;border:0.5px solid var(--ink2);
+  background:var(--ink);color:var(--paper);
+  border-radius:4px;cursor:pointer;
+  letter-spacing:0.1em;
+  transition:all .2s var(--ease);
+  margin-top:8px;
+}
+.j-save-btn:hover { background:var(--ink2);box-shadow:var(--shadow-md);transform:translateY(-1px); }
+.j-save-btn:active { transform:translateY(0); }
+
+/* Past entries */
+.j-entry {
+  background:var(--card);
+  border:0.5px solid var(--ink6);
+  border-radius:6px;
+  padding:22px 26px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow-sm);
+  transition:all .2s var(--ease);
+  position:relative;
+}
+.j-entry:hover { box-shadow:var(--shadow-md);transform:translateY(-1px); }
+.j-entry-head {
+  display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:12px;gap:12px;
+}
+.j-entry-date {
+  font-family:var(--en);font-size:13px;font-weight:300;
+  color:var(--ink4);font-style:italic;
+}
+.j-entry-result {
+  font-family:var(--num);font-size:14px;font-weight:500;
+  padding:2px 10px;border-radius:20px;border:0.5px solid;
+}
+.j-entry-result.positive { color:var(--teal);border-color:var(--teal);background:var(--teal-dim); }
+.j-entry-result.negative { color:var(--vermillion);border-color:var(--vermillion);background:var(--vermillion-dim); }
+.j-entry-result.neutral { color:var(--ink4);border-color:var(--ink6); }
+.j-entry-section {
+  margin-bottom:10px;
+}
+.j-entry-label {
+  font-family:var(--cn);font-size:12px;font-weight:300;
+  letter-spacing:0.14em;color:var(--ink4);margin-bottom:3px;
+}
+.j-entry-text {
+  font-family:var(--ui);font-size:13px;color:var(--ink2);
+  line-height:1.7;white-space:pre-wrap;
+}
+.j-entry-stars { font-size:14px;color:var(--amber);letter-spacing:2px; }
+.j-entry-del {
+  position:absolute;top:12px;right:14px;
+  font-size:11px;color:var(--ink5);cursor:pointer;
+  opacity:0;transition:opacity .2s;
+  padding:4px 8px;
+}
+.j-entry:hover .j-entry-del { opacity:1; }
+.j-entry-del:hover { color:var(--vermillion); }
+
+.j-empty {
+  text-align:center;padding:60px 20px;
+}
+.j-empty-icon {
+  font-family:var(--cn);font-size:48px;font-weight:200;
+  color:var(--ink5);margin-bottom:12px;
+}
+.j-empty-text {
+  font-family:var(--cn);font-size:14px;font-weight:300;
+  color:var(--ink4);letter-spacing:0.1em;
+}
+
+/* Image attach */
+.j-imgdrop {
+  border:1px dashed var(--ink5);border-radius:6px;
+  padding:18px;text-align:center;cursor:pointer;
+  font-family:var(--cn);font-size:12px;color:var(--ink4);
+  font-weight:300;letter-spacing:0.04em;
+  transition:all .2s var(--ease);position:relative;
+  outline:none;
+}
+.j-imgdrop:hover,.j-imgdrop:focus { border-color:var(--ink3);background:var(--paper2); }
+.j-imgdrop img {
+  max-width:100%;max-height:260px;border-radius:4px;
+  box-shadow:var(--shadow-sm);display:block;margin:0 auto;
+}
+.j-imgremove {
+  position:absolute;top:8px;right:10px;
+  font-family:var(--ui);font-size:11px;color:var(--vermillion);
+  background:var(--card);padding:3px 10px;border-radius:12px;
+  border:0.5px solid var(--vermillion);
+  box-shadow:var(--shadow-sm);
+}
+.j-entry-img {
+  margin-top:12px;border-radius:6px;overflow:hidden;
+  box-shadow:var(--shadow-sm);cursor:zoom-in;
+}
+.j-entry-img img { width:100%;display:block; }
+.j-entry-img.zoomed { cursor:zoom-out; }
+
+
+/* ══ 盘伴 chat ══ */
+#chat-fab {
+  position:fixed;right:22px;bottom:22px;z-index:60;
+  width:50px;height:50px;border-radius:50%;
+  background:var(--ink);color:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:var(--shadow-lift);
+  transition:all .25s var(--ease);
+}
+#chat-fab:hover { transform:translateY(-2px) scale(1.05); }
+.chat-badge {
+  position:absolute;top:-2px;right:-2px;
+  min-width:18px;height:18px;border-radius:9px;
+  background:var(--vermillion);color:#fff;
+  font-family:var(--ui);font-size:10px;font-weight:600;
+  display:none;align-items:center;justify-content:center;
+  padding:0 5px;box-shadow:0 1px 4px rgba(0,0,0,0.2);
+  animation:badgePop .3s var(--ease);
+}
+.chat-badge.show { display:flex; }
+@keyframes badgePop{from{transform:scale(0)}to{transform:scale(1)}}
+.ch-msg.push {
+  align-self:flex-start;background:var(--amber-dim);
+  color:var(--ink2);border:0.5px solid var(--amber);
+  font-size:12px;position:relative;padding-left:30px;
+}
+.ch-msg.push::before {
+  content:'';position:absolute;left:12px;top:14px;
+  width:8px;height:8px;border-radius:50%;background:var(--amber);
+}
+#chat-panel {
+  position:fixed;right:22px;bottom:84px;z-index:60;
+  width:380px;max-width:calc(100vw - 32px);
+  height:520px;max-height:calc(100vh - 120px);
+  background:var(--card);border:0.5px solid var(--ink6);
+  border-radius:12px;box-shadow:var(--shadow-lift);
+  display:none;flex-direction:column;overflow:hidden;
+  animation:fadeUp .25s var(--ease);
+}
+#chat-panel.open { display:flex; }
+.ch-head {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:0.5px solid var(--ink6);
+  background:var(--paper);
+}
+.ch-title { font-family:var(--cn);font-size:14px;letter-spacing:0.14em;color:var(--ink); }
+.ch-head-btns { display:flex;gap:10px; }
+.ch-hbtn { cursor:pointer;color:var(--ink4);font-size:14px;transition:color .15s;user-select:none; }
+.ch-hbtn:hover { color:var(--ink); }
+.ch-settings {
+  display:none;padding:12px 16px;border-bottom:0.5px solid var(--ink6);
+  background:var(--paper2);
+}
+.ch-settings.open { display:block; }
+.ch-set-row { display:flex;align-items:center;gap:10px;margin-bottom:8px; }
+.ch-set-label { font-family:var(--cn);font-size:11px;color:var(--ink4);min-width:52px; }
+.ch-select {
+  flex:1;font-family:var(--ui);font-size:12px;
+  padding:7px 10px;border:0.5px solid var(--ink6);border-radius:4px;
+  background:var(--card);color:var(--ink);outline:none;
+}
+.ch-set-hint { font-family:var(--ui);font-size:10px;color:var(--ink4);line-height:1.5; }
+.ch-msgs {
+  flex:1;overflow-y:auto;padding:14px 16px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.ch-msg {
+  max-width:86%;padding:10px 14px;border-radius:10px;
+  font-family:var(--ui);font-size:13px;line-height:1.7;
+  white-space:pre-wrap;word-break:break-word;
+  animation:fadeUp .2s var(--ease);
+}
+.ch-msg.user { align-self:flex-end;background:var(--ink);color:var(--paper); }
+.ch-msg.ai { align-self:flex-start;background:var(--paper2);color:var(--ink2);border:0.5px solid var(--ink6); }
+.ch-msg.err { align-self:flex-start;background:var(--vermillion-dim);color:var(--vermillion);border:0.5px solid var(--vermillion);font-size:12px; }
+.ch-msg.thinking { align-self:flex-start;color:var(--ink4);background:var(--paper2);border:0.5px solid var(--ink6); }
+.ch-inputrow {
+  display:flex;gap:8px;padding:12px 14px;
+  border-top:0.5px solid var(--ink6);background:var(--paper);
+}
+.ch-input {
+  flex:1;font-family:var(--ui);font-size:13px;
+  padding:9px 12px;border:0.5px solid var(--ink6);border-radius:8px;
+  background:var(--card);color:var(--ink);outline:none;resize:none;
+  max-height:90px;line-height:1.5;
+}
+.ch-input:focus { border-color:var(--ink3); }
+.ch-send {
+  font-family:var(--cn);font-size:14px;
+  width:42px;border:none;border-radius:8px;
+  background:var(--ink);color:var(--paper);cursor:pointer;
+  transition:all .15s var(--ease);
+}
+.ch-send:hover { background:var(--ink2); }
+.ch-send:disabled { opacity:0.4;cursor:default; }
+@media(max-width:700px){
+  #chat-panel { right:8px;bottom:76px;width:calc(100vw - 16px);height:65vh; }
+  #chat-fab { right:16px;bottom:16px; }
+}
+
+/* ── Footer ── */
+footer {
+  margin-top:60px;padding-top:20px;
+  border-top:0.5px solid var(--ink6);
+  font-family:var(--ui);font-size:10px;color:var(--ink5);
+  letter-spacing:0.06em;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+
+@media(max-width:700px) {
+  .app { padding:0 18px 60px; }
+  .ctrl-grid,.ms-grid,.info-grid { grid-template-columns:1fr; }
+  .ms-traps { grid-template-columns:1fr; }
+  /* Intraday: thumb-sized inputs, price spans full row */
+  .ref-inputs { grid-template-columns:1fr 1fr; gap:10px; }
+  .ref-inputs .ref-input-box:first-child { grid-column:1 / -1; }
+  .ref-input { font-size:26px; padding-bottom:8px; }
+  .ref-input-box { padding:16px; }
+  /* Bigger touch targets everywhere */
+  .sig-btn { padding:12px 18px; font-size:14px; }
+  .dq-btn { padding:10px 22px; font-size:15px; }
+  .dq-item { padding:14px 16px; }
+  .dq-q { font-size:14px; }
+  .tab-btn { padding:16px 22px; font-size:16px; flex:1; }
+  .j-save-btn { width:100%; padding:14px; font-size:15px; }
+  .aux-tile { padding:14px; }
+  /* Zone bar: simplified — smaller labels, taller bar */
+  .zone-bar { height:54px; margin:34px 0 30px; }
+  .zone-marker { font-size:8px; }
+  .zone-label-bottom { font-size:8px; }
+  .zone-metrics { gap:6px; }
+  .zm-chip { padding:8px 12px; flex:1 1 calc(50% - 6px); justify-content:space-between; }
+  .rv-title { font-size:19px; }
+  .ref-verdict { padding:24px 22px; }
+  .verdict-card { padding:22px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Shared seal filter (朱泥压印的毛边) — define once, reused by header logo -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <filter id="seal-roughen" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.048" numOctaves="4" seed="3" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- Ink wash mountain landscape -->
+<div id="sky-tint"></div>
+<canvas id="sky-canvas"></canvas>
+<canvas id="seal-canvas" width="0" height="0"></canvas>
+<canvas id="geese-canvas"></canvas>
+<canvas id="ink-canvas"></canvas>
+<div class="app">
+
+<header>
+  <div class="header-left">
+    <div class="logo-mark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="48" height="48" role="img" aria-label="矩印 · 信号矩阵"><title>矩印 · 信号矩阵</title><rect x="7" y="7" width="126" height="126" rx="5" fill="#bf3a2b" filter="url(#seal-roughen)"/><rect x="12" y="12" width="116" height="116" rx="3" fill="none" stroke="#f5f0e8" stroke-width="1.8"/><rect x="17" y="17" width="106" height="106" rx="1.5" fill="none" stroke="#f5f0e8" stroke-width="0.6"/><text x="70" y="74" text-anchor="middle" dominant-baseline="central" font-family="'Noto Serif SC','STFangsong','STSong','SimSun',serif" font-weight="900" font-size="76" fill="#f5f0e8">矩</text></svg></div>
+    <div>
+      <div class="header-title">信号矩阵</div>
+      <div class="header-sub">SPY 0DTE · Signal Matrix</div>
+    </div>
+  </div>
+  <div class="clock">
+    <div class="clock-dot"></div>
+    <span id="clock">--:--:-- ET</span>
+  </div>
+</header>
+
+<!-- ── Tab Navigation ── -->
+<div class="phase-ribbon" id="phase-ribbon">
+  <div class="phase-now" id="phase-now">
+    <span class="phase-dot" id="phase-dot"></span>
+    <span class="phase-label" id="phase-label">—</span>
+    <span class="phase-desc" id="phase-desc"></span>
+  </div>
+  <div class="phase-auto" id="phase-auto-toggle" onclick="toggleAutoPhase()">
+    <span class="phase-auto-track"><span class="phase-auto-thumb"></span></span>
+    <span class="phase-auto-text">跟随市场</span>
+  </div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('pre',true)" id="tab-pre">盘前</button>
+  <button class="tab-btn" onclick="switchTab('live',true)" id="tab-live">盘中</button>
+  <button class="tab-btn" onclick="switchTab('post',true)" id="tab-post">盘后</button>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB 1: PRE-MARKET -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel active" id="panel-pre">
+
+  <!-- Mindset Toggle -->
+  <div class="ms-toggle" onclick="toggleMs()" style="margin-top:20px;">
+    <div class="ms-toggle-left">
+      <span class="ms-toggle-icon">⬡</span>
+      <span class="ms-toggle-title">心法 · 纪律 · 做市商视角</span>
+      <span class="ms-badge" id="chk-badge">0 / 3</span>
+    </div>
+    <span class="ms-chevron" id="ms-chev">▾</span>
+  </div>
+
+  <div id="ms-panel" class="ms-panel">
+
+    <div class="ms-grid">
+      <div class="ms-card ms-card-accent">
+        <div class="ms-card-label">认知底层</div>
+        <div class="ms-card-title">Dealer Hedging Moves the Market</div>
+        <div class="ms-rows">
+          <div class="ms-row"><div class="ms-dot dot-teal"></div><div class="ms-row-text"><strong>+GEX</strong> — 做市商高抛低吸，行情钉在 VWAP。K线突破是陷阱，均线交叉是绞肉机。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-vermillion"></div><div class="ms-row-text"><strong>−GEX</strong> — 做市商追涨杀跌，每一波下跌触发更猛烈抛售。底背离之后还有背离。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-amber"></div><div class="ms-row-text"><strong>Gamma Flip</strong> — 物理法则转折点。带量站稳/跌破时，震荡切换成单边，果断跟随。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-ink"></div><div class="ms-row-text"><strong>核心问题</strong> — 不问"市场去哪"，只问"做市商此刻被迫做什么？"</div></div>
+        </div>
+      </div>
+      <div class="ms-card ms-card-warm">
+        <div class="ms-card-label">心法</div>
+        <div class="ms-card-title">第三人称视角 · 情绪隔离</div>
+        <div class="ms-rows">
+          <div class="ms-row"><div class="ms-dot dot-vermillion"></div><div class="ms-row-text"><strong>多则惑，少则得。</strong> 慢下来比快更快。知止可以不殆。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-vermillion"></div><div class="ms-row-text"><strong>情绪隔离。</strong> 我有亏损，但亏损不拥有我。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-vermillion"></div><div class="ms-row-text"><strong>内求觉察。</strong> 深呼吸，元思考。答案在系统里。</div></div>
+          <div class="ms-row"><div class="ms-dot dot-vermillion"></div><div class="ms-row-text"><strong>本质。</strong> Discipline, mindset, and discipline.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ms-traps">
+      <div class="ms-trap">
+        <div class="ms-trap-head"><span class="ms-trap-tag tag-teal">+GEX</span><span class="ms-trap-name">假突破陷阱</span></div>
+        <div class="ms-trap-body">放量突破VWAP + MACD金叉 → 看涨情绪。<br><strong>过滤：</strong>正GEX高值 + 逼近Call Wall。<br><strong>操作：</strong>放弃追多，等动量耗尽做空。</div>
+      </div>
+      <div class="ms-trap">
+        <div class="ms-trap-head"><span class="ms-trap-tag tag-vermillion">−GEX</span><span class="ms-trap-name">支撑失效陷阱</span></div>
+        <div class="ms-trap-body">急跌触及VWAP或技术支撑 + MACD底背离。<br><strong>过滤：</strong>GEX深度负值 or 破Gamma Flip。<br><strong>操作：</strong>绝不接飞刀，等反抽做空。</div>
+      </div>
+      <div class="ms-trap">
+        <div class="ms-trap-head"><span class="ms-trap-tag tag-amber">FLIP</span><span class="ms-trap-name">均值回归失效</span></div>
+        <div class="ms-trap-body">VWAP附近窄幅盘整 + MACD粘合。<br><strong>过滤：</strong>价格逼近Gamma Flip。<br><strong>操作：</strong>带量突破后跟随单边趋势。</div>
+      </div>
+    </div>
+
+    <div class="ms-grid" style="margin-top:10px;">
+      <div class="ms-card">
+        <div class="ms-card-label">硬性纪律</div>
+        <div class="ms-rules">
+          <div class="ms-rule"><span class="ms-rule-num">壹</span><span class="ms-rule-text">每天不超过 <strong>5 笔</strong></span></div>
+          <div class="ms-rule"><span class="ms-rule-num">贰</span><span class="ms-rule-text">开盘 <strong>15 分钟</strong>内绝不进场</span></div>
+          <div class="ms-rule"><span class="ms-rule-num">叁</span><span class="ms-rule-text">没有结构，<strong>坚决不做</strong></span></div>
+          <div class="ms-rule"><span class="ms-rule-num">肆</span><span class="ms-rule-text">盈亏都 <strong>必须复盘</strong></span></div>
+          <div class="ms-rule"><span class="ms-rule-num">伍</span><span class="ms-rule-text"><strong>GEX 是否决权</strong>。图表与 MM 方向相反时，放弃</span></div>
+        </div>
+      </div>
+      <div class="ms-card">
+        <div class="ms-card-label">开仓三步核对</div>
+        <div class="ms-checks">
+          <div class="ms-chk" onclick="toggleChk(this)" id="chk1">
+            <div class="ms-chk-num">壹</div>
+            <div><div class="ms-chk-title">确认底牌</div><div class="ms-chk-sub">GEX 正/负？Call Wall / Put Wall？Gamma Flip？</div></div>
+          </div>
+          <div class="ms-chk" onclick="toggleChk(this)" id="chk2">
+            <div class="ms-chk-num">贰</div>
+            <div><div class="ms-chk-title">验证冲突</div><div class="ms-chk-sub">信号与 MM 当前强制对冲方向是否一致？</div></div>
+          </div>
+          <div class="ms-chk" onclick="toggleChk(this)" id="chk3">
+            <div class="ms-chk-num">叁</div>
+            <div><div class="ms-chk-title">逆向思考</div><div class="ms-chk-sub">我站在散户一边，还是做市商流动性一边？</div></div>
+          </div>
+        </div>
+        <div class="ms-verdict" id="chk-verdict">等待核对...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signal Matrix -->
+  <div class="sec-label">信号输入</div>
+
+  <div class="ctrl-grid">
+    <div class="ctrl-box">
+      <div class="ctrl-label"><span class="ctrl-dot" style="background:var(--amber)"></span>EMA（9 / 20 / 50）</div>
+      <div class="btn-row">
+        <button class="sig-btn on-bull" data-g="ema" data-v="bull" onclick="setSig('ema','bull',this)">9&gt;20&gt;50 多头</button>
+        <button class="sig-btn" data-g="ema" data-v="bear" onclick="setSig('ema','bear',this)">9&lt;20&lt;50 空头</button>
+        <button class="sig-btn" data-g="ema" data-v="flat" onclick="setSig('ema','flat',this)">纠缠</button>
+      </div>
+    </div>
+    <div class="ctrl-box">
+      <div class="ctrl-label"><span class="ctrl-dot" style="background:var(--vermillion)"></span>GEX</div>
+      <div class="btn-row">
+        <button class="sig-btn" data-g="gex" data-v="pos" onclick="setSig('gex','pos',this)">+ 正 · 稳定</button>
+        <button class="sig-btn on-bear" data-g="gex" data-v="neg" onclick="setSig('gex','neg',this)">− 负 · 放大</button>
+      </div>
+    </div>
+    <div class="ctrl-box">
+      <div class="ctrl-label"><span class="ctrl-dot" style="background:var(--indigo)"></span>DEX</div>
+      <div class="btn-row">
+        <button class="sig-btn on-bull" data-g="dex" data-v="pos" onclick="setSig('dex','pos',this)">+ 买方主导</button>
+        <button class="sig-btn" data-g="dex" data-v="neg" onclick="setSig('dex','neg',this)">− 卖方主导</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">辅助信号</div>
+  <div class="aux-grid">
+    <div class="aux-tile" onclick="toggleAux(this,'hvl')"><div class="aux-name">Price vs HVL</div><div class="aux-val">Below HVL ↓</div></div>
+    <div class="aux-tile" onclick="toggleAux(this,'vix')"><div class="aux-name">VIX / IVR</div><div class="aux-val">High &gt; 20</div></div>
+    <div class="aux-tile" onclick="toggleAux(this,'vol')"><div class="aux-name">Volume</div><div class="aux-val">Climax / Spike</div></div>
+    <div class="aux-tile" onclick="toggleAux(this,'opex')"><div class="aux-name">OPEX Week</div><div class="aux-val">Monthly Expiry</div></div>
+    <div class="aux-tile" onclick="toggleAux(this,'dexvel')"><div class="aux-name">DEX Velocity</div><div class="aux-val">Decelerating</div></div>
+    <div class="aux-tile" onclick="toggleAux(this,'macro')"><div class="aux-name">Macro Event</div><div class="aux-val">CPI / FOMC / NFP</div></div>
+  </div>
+
+  <div class="sig-sum">
+    <div class="sum-item"><span class="sum-k">EMA</span><span class="sum-v" id="s-ema" style="color:var(--teal)">BULL</span></div>
+    <div class="sum-item"><span class="sum-k">GEX</span><span class="sum-v" id="s-gex" style="color:var(--vermillion)">− NEG</span></div>
+    <div class="sum-item"><span class="sum-k">DEX</span><span class="sum-v" id="s-dex" style="color:var(--teal)">+ POS</span></div>
+  </div>
+
+  <div class="sec-label">分析输出</div>
+  <div id="pre-output"></div>
+
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB 2: INTRADAY REFEREE -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-live">
+
+  <div class="open-guard" id="open-guard">
+    开盘保护期 · 把手离开键盘
+  </div>
+  <div class="open-guard" id="afternoon-guard" style="border-color:var(--amber);background:var(--amber-dim);color:var(--amber);">
+    下午两点后 · 无持仓不开新仓
+  </div>
+
+  <div class="sec-label">关键位输入</div>
+
+  <div class="ref-inputs">
+    <div class="ref-input-box">
+      <label class="ref-input-label">当前价格</label>
+      <input class="ref-input" id="inp-price" type="number" step="0.01" placeholder="740.55" oninput="calcZone()">
+    </div>
+    <div class="ref-input-box">
+      <label class="ref-input-label">VWAP</label>
+      <input class="ref-input" id="inp-vwap" type="number" step="0.01" placeholder="741.20" oninput="calcZone()">
+    </div>
+    <div class="ref-input-box">
+      <label class="ref-input-label">Call Wall</label>
+      <input class="ref-input" id="inp-cw" type="number" step="0.01" placeholder="745.00" oninput="calcZone()">
+    </div>
+    <div class="ref-input-box">
+      <label class="ref-input-label">Put Wall</label>
+      <input class="ref-input" id="inp-pw" type="number" step="0.01" placeholder="738.00" oninput="calcZone()">
+    </div>
+    <div class="ref-input-box">
+      <label class="ref-input-label">HVL</label>
+      <input class="ref-input" id="inp-hvl" type="number" step="0.01" placeholder="744.00" oninput="calcZone()">
+    </div>
+  </div>
+
+  <div class="ctrl-grid" style="grid-template-columns:1fr 1fr;">
+    <div class="ctrl-box">
+      <div class="ctrl-label"><span class="ctrl-dot" style="background:var(--vermillion)"></span>GEX</div>
+      <div class="btn-row">
+        <button class="sig-btn" data-g="lgex" data-v="pos" onclick="setSig('lgex','pos',this)">+ 正</button>
+        <button class="sig-btn on-bear" data-g="lgex" data-v="neg" onclick="setSig('lgex','neg',this)">− 负</button>
+      </div>
+    </div>
+    <div class="ctrl-box">
+      <div class="ctrl-label"><span class="ctrl-dot" style="background:var(--indigo)"></span>DEX</div>
+      <div class="btn-row">
+        <button class="sig-btn on-bull" data-g="ldex" data-v="pos" onclick="setSig('ldex','pos',this)">+ 买方</button>
+        <button class="sig-btn" data-g="ldex" data-v="neg" onclick="setSig('ldex','neg',this)">− 卖方</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone Visualization -->
+  <div class="sec-label">价格区间 · 做市商行为</div>
+  <div id="zone-vis" style="margin-bottom:24px;"></div>
+
+  <!-- Referee Output + Dynamic Entry Flow -->
+  <div id="ref-output"></div>
+
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB 3: POST-MARKET JOURNAL -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-post">
+
+  <div class="sec-label">交易者</div>
+
+  <div class="j-user-row">
+    <select class="j-user-select" id="j-user-select" onchange="switchUser()">
+      <option value="">选择交易者...</option>
+    </select>
+    <div class="j-user-add">
+      <input class="j-user-input" id="j-new-user" type="text" placeholder="新交易者名字" maxlength="20" onkeydown="if(event.key==='Enter')addUser()">
+      <button class="j-user-btn" onclick="addUser()">+</button>
+    </div>
+  </div>
+  <div id="j-remove-row" class="j-remove-row" style="display:none;">
+    <span class="j-remove-link" onclick="deleteUser()">移除此交易者及所有记录</span>
+  </div>
+  <div class="j-backup-row">
+    <span class="j-backup-link" onclick="exportData()">⤓ 导出备份</span>
+    <span class="j-backup-link" onclick="document.getElementById('j-import-file').click()">⤒ 导入备份</span>
+    <input type="file" id="j-import-file" accept=".json" style="display:none;" onchange="importData(this.files[0])">
+  </div>
+
+  <div id="j-content" style="display:none;">
+
+    <div class="sec-label">新记录</div>
+
+    <div class="j-new-card">
+      <div class="j-card-date" id="j-date"></div>
+
+      <div class="j-field">
+        <label class="j-field-label">Setup · 今天看到了什么</label>
+        <textarea class="j-textarea" id="j-setup" rows="2" placeholder="EMA bull + GEX neg + DEX pos, trap setup..."></textarea>
+      </div>
+
+      <div class="j-field">
+        <label class="j-field-label">执行 · 做了什么</label>
+        <textarea class="j-textarea" id="j-exec" rows="2" placeholder="10:15 买 put 735，止损 738..."></textarea>
+      </div>
+
+      <div class="j-field-row">
+        <div class="j-field" style="flex:1">
+          <label class="j-field-label">结果</label>
+          <input class="j-input" id="j-result" type="text" placeholder="+$320 / -$150 / 未入场">
+        </div>
+        <div class="j-field">
+          <label class="j-field-label">纪律评分</label>
+          <div class="j-stars" id="j-stars">
+            <span class="j-star" onclick="setStars(1)">☆</span>
+            <span class="j-star" onclick="setStars(2)">☆</span>
+            <span class="j-star" onclick="setStars(3)">☆</span>
+            <span class="j-star" onclick="setStars(4)">☆</span>
+            <span class="j-star" onclick="setStars(5)">☆</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="j-field">
+        <label class="j-field-label">反思 · 下次怎么做更好</label>
+        <textarea class="j-textarea" id="j-reflect" rows="2" placeholder="方向对但entry太早，应该等量缩..."></textarea>
+      </div>
+
+      <div class="j-field">
+        <label class="j-field-label">截图 · K线图（可选 — 粘贴 Ctrl+V 或点击选择）</label>
+        <div class="j-imgdrop" id="j-imgdrop" onclick="document.getElementById('j-imgfile').click()" tabindex="0">
+          <span id="j-imgdrop-hint">点击选择图片，或聚焦此处后 Ctrl+V 粘贴截图</span>
+          <img id="j-imgpreview" style="display:none;">
+          <span class="j-imgremove" id="j-imgremove" style="display:none;" onclick="event.stopPropagation();clearImg()">✕ 移除</span>
+        </div>
+        <input type="file" id="j-imgfile" accept="image/*" style="display:none;" onchange="handleImgFile(this.files[0])">
+      </div>
+
+      <button class="j-save-btn" onclick="saveEntry()">保存记录</button>
+    </div>
+
+    <div class="sec-label">历史记录</div>
+    <div id="j-entries"></div>
+
+  </div>
+
+  <div id="j-empty" class="j-empty">
+    <div class="j-empty-icon">
+      <svg width="48" height="48" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="4" y1="24" x2="28" y2="24" stroke="var(--ink5)" stroke-width="0.5"/>
+        <path d="M4,22 C8,22 10,20 13,18 C16,16 17,24 20,14 C22,8 25,10 28,6" 
+              stroke="var(--ink4)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <circle cx="20" cy="14" r="2.5" fill="var(--ink5)"/>
+      </svg>
+    </div>
+    <div class="j-empty-text">选择或创建交易者开始记录</div>
+  </div>
+
+</div>
+
+
+<!-- ══ 盘伴 — AI copilot ══ -->
+<div id="chat-fab" onclick="toggleChat()" title="盘伴">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6 C4 4.9 4.9 4 6 4 H18 C19.1 4 20 4.9 20 6 V14 C20 15.1 19.1 16 18 16 H9 L5 20 V16 H6 C4.9 16 4 15.1 4 14 Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="13" cy="10" r="1" fill="currentColor"/><circle cx="17" cy="10" r="1" fill="currentColor" opacity="0.4"/></svg>
+  <span id="chat-badge" class="chat-badge"></span>
+</div>
+<div id="chat-panel">
+  <div class="ch-head">
+    <span class="ch-title">盘伴</span>
+    <div class="ch-head-btns">
+      <span class="ch-hbtn" onclick="toggleChatSettings()" title="设置">⚙</span>
+      <span class="ch-hbtn" onclick="clearChat()" title="清空对话">↺</span>
+      <span class="ch-hbtn" onclick="toggleChat()" title="收起">▾</span>
+    </div>
+  </div>
+  <div class="ch-settings" id="ch-settings">
+    <div class="ch-set-row">
+      <label class="ch-set-label">模型</label>
+      <select class="ch-select" id="ch-provider" onchange="saveChatCfg()">
+        <option value="deepseek">DeepSeek（便宜快速）</option>
+        <option value="claude">Claude Sonnet（更聪明）</option>
+      </select>
+    </div>
+    <div class="ch-set-hint">DeepSeek 和 Claude 都已由网站服务器接管，无需填 key，切换模型即可。</div>
+  </div>
+  <div class="ch-msgs" id="ch-msgs"></div>
+  <div class="ch-inputrow">
+    <textarea class="ch-input" id="ch-input" rows="1" placeholder="现在这个位置怎么看..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+    <button class="ch-send" id="ch-send" onclick="sendChat()">送</button>
+  </div>
+</div>
+
+<footer>
+  <span>信号矩阵 · 仅供参考 · Not financial advice</span>
+  <span id="ft-time"></span>
+</footer>
+
+</div>
+
+<script>
+/* ══ Global State ══ */
+const S = { ema:'bull', gex:'neg', dex:'pos', lgex:'neg', ldex:'pos', aux:{} };
+
+/* ══ Tabs ══ */
+let autoPhase = true;
+let lastAutoTab = null;
+
+function switchTab(t, manual) {
+  if (manual) { autoPhase = false; syncAutoToggle(); }
+  ['pre','live','post'].forEach(k => {
+    document.getElementById('tab-'+k).classList.toggle('active', k===t);
+    document.getElementById('panel-'+k).classList.toggle('active', k===t);
+  });
+  if (t==='live') calcZone();
+  if (t==='post') { updateJournalDate(); renderEntries(); }
+}
+
+function toggleAutoPhase() {
+  autoPhase = !autoPhase;
+  syncAutoToggle();
+  if (autoPhase) { lastAutoTab = null; applyPhase(); }
+}
+function syncAutoToggle() {
+  document.getElementById('phase-auto-toggle').classList.toggle('on', autoPhase);
+  document.body.classList.toggle('auto-following', autoPhase);
+}
+
+// Phase engine — the third dimension: the site reshapes itself to the trading day
+function currentPhase(mins) {
+  // mins = ET minutes since midnight
+  if (mins < 570)            return {key:'pre',  tab:'pre',  label:'盘前',   desc:'读结构 · 定方向 · 守心法', color:'var(--amber)'};
+  if (mins < 585)            return {key:'open', tab:'live', label:'开盘保护', desc:'前15分钟 · 把手离开键盘',   color:'var(--vermillion)'};
+  if (mins < 660)            return {key:'prime',tab:'live', label:'黄金窗口', desc:'9:45–11:00 · 趋势最清晰',  color:'var(--teal)'};
+  if (mins < 840)            return {key:'dead', tab:'live', label:'午盘死区', desc:'11:00–14:00 · 流动性真空 · 少动', color:'var(--ink4)'};
+  if (mins < 960)            return {key:'pm',   tab:'live', label:'尾盘加速', desc:'14:00后 · 无持仓不开新仓',  color:'var(--vermillion)'};
+  if (mins < 1200)           return {key:'post', tab:'post', label:'盘后复盘', desc:'记录 · 反思 · 评分',        color:'var(--indigo)'};
+  return                            {key:'rest', tab:'pre',  label:'休市',   desc:'市场已闭 · 养精蓄锐',      color:'var(--ink4)'};
+}
+
+function applyPhase() {
+  const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const mins = et.getHours()*60 + et.getMinutes();
+  const ph = currentPhase(mins);
+
+  // Update ribbon always
+  document.getElementById('phase-label').textContent = ph.label;
+  document.getElementById('phase-desc').textContent = ph.desc;
+  document.getElementById('phase-dot').style.background = ph.color;
+  document.getElementById('phase-label').style.color = ph.color;
+
+  // Auto-switch tab only if following market AND tab actually changed
+  if (autoPhase && ph.tab !== lastAutoTab) {
+    lastAutoTab = ph.tab;
+    ['pre','live','post'].forEach(k => {
+      document.getElementById('tab-'+k).classList.toggle('active', k===ph.tab);
+      document.getElementById('panel-'+k).classList.toggle('active', k===ph.tab);
+    });
+    if (ph.tab==='live') calcZone();
+    if (ph.tab==='post') { updateJournalDate(); renderEntries(); }
+  }
+}
+
+/* ══ Mindset ══ */
+function toggleMs() {
+  document.getElementById('ms-panel').classList.toggle('open');
+  document.getElementById('ms-chev').classList.toggle('open');
+}
+function toggleChk(el) {
+  el.classList.toggle('checked');
+  const n = document.querySelectorAll('.ms-chk.checked').length;
+  const b = document.getElementById('chk-badge');
+  const v = document.getElementById('chk-verdict');
+  b.textContent = n+' / 3';
+  b.className = 'ms-badge' + (n===3?' complete':'');
+  if (n===3) { v.className='ms-verdict ready'; v.textContent='✓ 三项确认 — 可以开仓'; }
+  else if (n>0) { v.className='ms-verdict partial'; v.textContent=n+'/3 已确认'; }
+  else { v.className='ms-verdict'; v.textContent='等待核对...'; }
+}
+
+/* ══ Signal Buttons ══ */
+function setSig(g, v, btn) {
+  S[g] = v;
+  document.querySelectorAll(`[data-g="${g}"]`).forEach(b => b.className='sig-btn');
+  const cls = {bull:'on-bull',bear:'on-bear',flat:'on-flat',pos:'on-bull',neg:'on-bear'}[v]||'on-flat';
+  btn.classList.add(cls);
+  if (['ema','gex','dex'].includes(g)) { updateSum(); renderPre(); }
+  if (['lgex','ldex'].includes(g)) calcZone();
+}
+function toggleAux(el, key) {
+  S.aux[key] = !S.aux[key];
+  el.classList.toggle('on', S.aux[key]);
+  renderPre();
+}
+function updateSum() {
+  const el = {bull:['BULL','var(--teal)'],bear:['BEAR','var(--vermillion)'],flat:['FLAT','var(--ink3)']};
+  const [et,ec] = el[S.ema]; document.getElementById('s-ema').textContent=et; document.getElementById('s-ema').style.color=ec;
+  document.getElementById('s-gex').textContent = S.gex==='pos'?'+ POS':'− NEG';
+  document.getElementById('s-gex').style.color = S.gex==='pos'?'var(--teal)':'var(--vermillion)';
+  document.getElementById('s-dex').textContent = S.dex==='pos'?'+ POS':'− NEG';
+  document.getElementById('s-dex').style.color = S.dex==='pos'?'var(--teal)':'var(--vermillion)';
+}
+
+/* ══ Pre-Market Combos ══ */
+const C = {
+  bull_pos_pos:{d:'call',q:'high',t:'📈 三力同向多头 — Buy Call',b:'EMA多头 + GEX正 + DEX正。MMs对冲买入支撑上涨，趋势自我强化。做call，止损20EMA下方。',tr:['call','call_spread'],no:['put','iron_condor'],tm:'全天有效，午盘回测EMA加仓',en:'回调至20EMA/9EMA支撑',ex:'Call Wall或日内高点',ab:'跌破20EMA + DEX翻负'},
+  bull_neg_pos:{d:'put',q:'high',t:'⚡ Trap Setup — Buy Put',b:'EMA多头给散户信心追多；GEX负MMs不压制波动；DEX正净买入旺盛。开盘拉升但支撑虚假。接近call wall + DEX降温时做put。',tr:['put','put_spread'],no:['call','iron_condor'],tm:'等拉升后 9:45–11:00 或午后反弹失败',en:'Call Wall附近缩量 + 上影线/吞没',ex:'Put Wall或EMA支撑',ab:'价格突破Call Wall不回头 + 放量 → 止损'},
+  bull_pos_neg:{d:'put',q:'mid',t:'📉 多头分化 — 轻仓 Put Spread',b:'GEX正压制波动，DEX负资金净流出。慢速向下回归均值。用spread不用裸put。',tr:['put_spread','butterfly'],no:['naked_call','naked_put'],tm:'午盘后效果更好',en:'反弹至EMA阻力位',ex:'日内低点或支撑',ab:'站上9EMA + DEX翻正'},
+  bull_neg_neg:{d:'put',q:'mid',t:'🔄 资金撤退 — Put',b:'EMA多头但聪明钱减仓，GEX负放大下行。趋势末段信号。',tr:['put','put_spread'],no:['iron_condor'],tm:'等EMA向下弯曲后入场',en:'跌破9EMA回测失败',ex:'20EMA或50EMA',ab:'回收9EMA + DEX转正'},
+  bear_neg_neg:{d:'put',q:'high',t:'🔻 三力同向空头 — Buy Put',b:'EMA空头 + GEX负 + DEX负。MMs放大下跌，结构性熊市。0DTE快进快出。',tr:['put','put_spread'],no:['call','iron_condor'],tm:'开盘观察，反弹至EMA阻力后入场',en:'反弹至20EMA被压 / 破关键支撑',ex:'Put Wall或次级支撑',ab:'强势收复20EMA + GEX转正'},
+  bear_pos_neg:{d:'put',q:'mid',t:'📌 空头 + GEX压制慢跌',b:'方向做空，但GEX正导致慢磨。Put spread或butterfly。',tr:['put_spread','butterfly'],no:['naked_put','iron_condor'],tm:'全天均可，慢跌适合稍长持有',en:'反弹至EMA阻力',ex:'次级支撑或日内低点',ab:'突破EMA + DEX翻正'},
+  bear_neg_pos:{d:'call',q:'mid',t:'🔄 资金接盘 — 等反转 Call',b:'DEX正有人买Delta，GEX负放大反弹。反转早期信号。突破20EMA做call。',tr:['call','call_spread'],no:['put'],tm:'观望为主，等EMA反转确认',en:'突破20EMA + DEX持续正',ex:'次级阻力或前高',ab:'DEX转负 + 跌回均线下'},
+  bear_pos_pos:{d:'neutral',q:'low',t:'🤔 信号分歧 — 观望',b:'EMA空头但GEX/DEX偏多。信号矛盾，不适合0DTE。',tr:['iron_condor'],no:['naked_call','naked_put'],tm:'观望，等确认',en:'不建议入场',ex:'—',ab:'—'},
+  flat_neg_pos:{d:'neutral',q:'low',t:'🌀 压缩 + 方向未定',b:'EMA纠缠，GEX负放大突破，DEX正散户偏多。最危险setup。',tr:['iron_condor'],no:['naked_call','naked_put'],tm:'等EMA明确后再用系统',en:'EMA排列完成后评估',ex:'—',ab:'直接观望'},
+  flat_pos_neg:{d:'neutral',q:'low',t:'📌 低波整理 — Iron Condor',b:'GEX正压制 + DEX负。窄幅震荡，0DTE方向性不适合。',tr:['iron_condor'],no:['naked_call','naked_put'],tm:'全天，注意收盘前gamma spike',en:'Call Wall卖call / Put Wall卖put',ex:'收盘前1小时平仓',ab:'任意一侧突破'},
+  flat_pos_pos:{d:'call',q:'low',t:'📈 低波偏多 — Call Spread',b:'资金偏多但无突破，GEX正压制。Call spread控损。',tr:['call_spread','iron_condor'],no:['naked_put'],tm:'午盘后偏多更明显',en:'回调不破支撑',ex:'Call Wall',ab:'EMA下行 + DEX翻负'},
+  flat_neg_neg:{d:'put',q:'mid',t:'⬇️ 压缩偏空 — 等突破 Put',b:'DEX负资金做空，GEX负一旦突破放大。小仓put等突破。',tr:['put','put_spread'],no:['call','iron_condor'],tm:'等向下突破压缩区',en:'跌破压缩区下沿',ex:'次级支撑或Put Wall',ab:'重回压缩区上沿 + DEX转正'},
+};
+const TL = {
+  call:{l:'Buy Call',c:'chip-call'},put:{l:'Buy Put',c:'chip-put'},
+  call_spread:{l:'Call Spread',c:'chip-spread'},put_spread:{l:'Put Spread',c:'chip-spread'},
+  iron_condor:{l:'Iron Condor',c:'chip-condor'},butterfly:{l:'Butterfly',c:'chip-butterfly'},
+  naked_call:{l:'Naked Call',c:'chip-no'},naked_put:{l:'Naked Put',c:'chip-no'},
+};
+
+function renderPre() {
+  const k = `${S.ema}_${S.gex}_${S.dex}`;
+  const c = C[k]; if(!c) return;
+  const dc = {call:'vc-call',put:'vc-put',neutral:'vc-neutral'}[c.d]||'vc-wait';
+  const qc = {high:'q-hi',mid:'q-mid',low:'q-lo'}[c.q];
+  const ql = {high:'高信号',mid:'中等',low:'低'}[c.q];
+  const chips = c.tr.map(t=>`<div class="chip ${TL[t].c}">✓ ${TL[t].l}</div>`).join('');
+  const nochips = c.no.map(t=>`<div class="chip chip-no">✗ ${TL[t].l}</div>`).join('');
+
+  const auxNotes = [];
+  if(S.aux.hvl) auxNotes.push('价格低于HVL：Negative Transition Zone，做多谨慎');
+  if(S.aux.vix) auxNotes.push('VIX/IVR偏高：期权贵，prefer spreads');
+  if(S.aux.vol) auxNotes.push('成交量异常：止损要宽，仓位要小');
+  if(S.aux.opex) auxNotes.push('OPEX周：Max Pain引力强，注意pin risk');
+  if(S.aux.dexvel) auxNotes.push('DEX减速：买方动能衰减，put最佳timing');
+  if(S.aux.macro) auxNotes.push('⚠ 宏观事件日：建议不交易或大幅缩仓');
+
+  document.getElementById('pre-output').innerHTML = `
+    <div class="verdict-card ${dc}">
+      <div class="v-head">
+        <div class="v-title">${c.t}</div>
+        <div class="q-badge ${qc}">${ql}</div>
+      </div>
+      <div class="v-body">${c.b}</div>
+      <div class="trade-row">${chips}${nochips?'<span style="width:1px;background:var(--ink5);margin:0 2px"></span>'+nochips:''}</div>
+    </div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-title">时机与入场</div>
+        <div class="info-row"><span class="info-k">最佳时段</span><span class="info-v">${c.tm}</span></div>
+        <div class="info-row"><span class="info-k">入场触发</span><span class="info-v">${c.en}</span></div>
+        <div class="info-row"><span class="info-k c-amber">目标出场</span><span class="info-v c-amber">${c.ex}</span></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">中止条件</div>
+        <div class="abort-item">${c.ab}</div>
+      </div>
+    </div>
+    ${auxNotes.length?`<div class="abort-box"><div class="abort-title">辅助信号修正</div>${auxNotes.map(n=>`<div class="abort-item">${n}</div>`).join('')}</div>`:''}
+  `;
+}
+
+/* ══ Intraday Referee ══ */
+const REF_IDS = ['inp-price','inp-vwap','inp-cw','inp-pw','inp-hvl'];
+function etToday() {
+  const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  return et.toISOString().split('T')[0];
+}
+function saveIntraday() {
+  const data = { date: etToday(), gex: S.lgex, dex: S.ldex };
+  REF_IDS.forEach(id => data[id] = document.getElementById(id).value);
+  try { localStorage.setItem('sm_intraday', JSON.stringify(data)); } catch(e){}
+}
+function restoreIntraday() {
+  let d; try { d = JSON.parse(localStorage.getItem('sm_intraday')||'null'); } catch(e){ return; }
+  if (!d || d.date !== etToday()) { localStorage.removeItem('sm_intraday'); return; }
+  REF_IDS.forEach(id => { if (d[id]) document.getElementById(id).value = d[id]; });
+  if (d.gex) { S.lgex = d.gex;
+    document.querySelectorAll('[data-g="lgex"]').forEach(b => {
+      b.className = 'sig-btn' + (b.dataset.v===d.gex ? (d.gex==='pos'?' on-bull':' on-bear') : ''); }); }
+  if (d.dex) { S.ldex = d.dex;
+    document.querySelectorAll('[data-g="ldex"]').forEach(b => {
+      b.className = 'sig-btn' + (b.dataset.v===d.dex ? (d.dex==='pos'?' on-bull':' on-bear') : ''); }); }
+}
+
+function calcZone() {
+  saveIntraday();
+  const price = parseFloat(document.getElementById('inp-price').value);
+  const vwap = parseFloat(document.getElementById('inp-vwap').value);
+  const cw = parseFloat(document.getElementById('inp-cw').value);
+  const pw = parseFloat(document.getElementById('inp-pw').value);
+  const hvl = parseFloat(document.getElementById('inp-hvl').value);
+  const gex = S.lgex;
+  const dex = S.ldex;
+
+  if ([price,vwap,cw,pw,hvl].some(isNaN)) {
+    document.getElementById('zone-vis').innerHTML = `<div style="text-align:center;color:var(--ink4);font-family:var(--cn);font-size:13px;padding:30px 0;">输入关键位后自动生成区间图</div>`;
+    document.getElementById('ref-output').innerHTML = '';
+    return;
+  }
+
+  // Build zone bar
+  const all = [price,vwap,cw,pw,hvl];
+  const mn = Math.min(...all); const mx = Math.max(...all);
+  const pad = (mx-mn)*0.15 || 1;
+  const lo = mn - pad; const hi = mx + pad;
+  const pct = v => ((v-lo)/(hi-lo)*100);
+
+  const markers = [
+    {v:pw, label:'PUT WALL', color:'var(--vermillion)', short:'PW'},
+    {v:hvl, label:'HVL', color:'var(--indigo)', short:'HVL'},
+    {v:vwap, label:'VWAP', color:'var(--amber)', short:'VWAP'},
+    {v:cw, label:'CALL WALL', color:'var(--teal)', short:'CW'},
+  ].sort((a,b)=>a.v-b.v);
+
+  let barHtml = `<div class="zone-bar">`;
+  // Zone fills
+  if (pw < vwap) barHtml += `<div class="zone-fill zone-fill-vermillion" style="left:${pct(pw)}%;right:${100-pct(vwap)}%"></div>`;
+  if (vwap < cw) barHtml += `<div class="zone-fill zone-fill-teal" style="left:${pct(vwap)}%;right:${100-pct(cw)}%"></div>`;
+
+  // Markers
+  markers.forEach(m => {
+    barHtml += `<div class="zone-marker" style="left:${pct(m.v)}%">
+      <div class="zone-marker-label" style="color:${m.color}">${m.label}</div>
+      <div class="zm-line" style="height:${m.v===hvl?'48px':'40px'};background:${m.color}"></div>
+    </div>`;
+    barHtml += `<div class="zone-label-bottom" style="left:${pct(m.v)}%;color:${m.color}">${m.v.toFixed(1)}</div>`;
+  });
+
+  // Current price
+  barHtml += `<div class="zone-current" style="left:${pct(price)}%">
+    <div class="zone-current-label">${price.toFixed(2)}</div>
+  </div>`;
+  barHtml += `</div>`;
+
+  // Distance readout chips — live tactical metrics
+  const dPW = ((price - pw) / price * 100);
+  const dCW = ((cw - price) / price * 100);
+  const dVW = ((price - vwap) / price * 100);
+  const rr = (dPW > 0 && dCW > 0) ? (dPW / dCW).toFixed(2) : null;
+  barHtml += `<div class="zone-metrics">
+    <div class="zm-chip"><span class="zm-k">↓ Put Wall</span><span class="zm-v" style="color:var(--vermillion)">${dPW>=0?'+':''}${dPW.toFixed(2)}%</span></div>
+    <div class="zm-chip"><span class="zm-k">VWAP</span><span class="zm-v" style="color:var(--amber)">${dVW>=0?'+':''}${dVW.toFixed(2)}%</span></div>
+    <div class="zm-chip"><span class="zm-k">↑ Call Wall</span><span class="zm-v" style="color:var(--teal)">${dCW>=0?'+':''}${dCW.toFixed(2)}%</span></div>
+    ${rr ? `<div class="zm-chip zm-rr"><span class="zm-k">Put 盈亏比</span><span class="zm-v" style="color:${rr>=1.5?'var(--teal)':rr>=1?'var(--amber)':'var(--vermillion)'}">${rr}</span></div>` : ''}
+  </div>`;
+
+  // Input sanity warning
+  if (pw >= cw) {
+    barHtml = `<div style="padding:14px 18px;border:0.5px solid var(--vermillion);border-radius:6px;background:var(--vermillion-dim);font-family:var(--cn);font-size:13px;color:var(--vermillion);margin-bottom:12px;">⚠ Put Wall（${pw}）≥ Call Wall（${cw}）— 请检查输入是否颠倒</div>` + barHtml;
+  }
+  document.getElementById('zone-vis').innerHTML = barHtml;
+
+  // ── Zone logic ──
+  const nearPct = 0.003; // 0.3% proximity threshold
+  const nearCW = Math.abs(price-cw)/price < nearPct;
+  const nearPW = Math.abs(price-pw)/price < nearPct;
+  const nearVWAP = Math.abs(price-vwap)/price < nearPct;
+  const aboveVWAP = price > vwap;
+  const belowVWAP = price < vwap;
+  const aboveHVL = price > hvl;
+  const belowHVL = price < hvl;
+  const belowPW = price < pw * (1 - nearPct); // clearly below put wall
+  const aboveCW = price > cw * (1 + nearPct); // clearly above call wall
+  const distPW = ((price - pw) / price * 100).toFixed(1);
+  const distCW = ((cw - price) / price * 100).toFixed(1);
+  const distVWAP = ((price - vwap) / price * 100).toFixed(1);
+
+  let verdict = {cls:'rv-idle',status:'待定',title:'输入数据分析中...',body:'',action:''};
+
+  // ── BREAKTHROUGH conditions (highest priority) ──
+  if (belowPW && gex==='neg') {
+    verdict = {cls:'rv-go',status:'可以操作',title:'Put Wall 已击穿 · 趋势日 · 跟随做 Put',body:`价格（${price.toFixed(2)}）已跌破 Put Wall（${pw.toFixed(1)}），GEX负。做市商追跌模式全开，前支撑变阻力——${pw.toFixed(0)} 现在是天花板不是地板。下方没有结构性刹车。散户抄底的反弹是你入场的机会，不是反转信号。`,action:`操作：反弹至前 Put Wall（${pw.toFixed(0)}）附近受阻 → Buy Put。或在当前位置回测失败后跟随。止损设在 ${pw.toFixed(0)} 上方。`};
+  }
+  else if (belowPW && gex==='pos') {
+    verdict = {cls:'rv-wait',status:'警戒',title:'Put Wall 已击穿 · 但GEX正在托底',body:`价格跌破 Put Wall（${pw.toFixed(1)}），但GEX正。做市商在买入对冲，可能会形成新的支撑。跌幅有限但回不去。磨底状态。`,action:`操作：观望为主。如果价格能收回 ${pw.toFixed(0)} 上方 → 轻仓 Call 反弹。否则不动。`};
+  }
+  else if (aboveCW && gex==='neg') {
+    verdict = {cls:'rv-go',status:'可以操作',title:'Call Wall 已击穿 · 逼空日 · 跟随做 Call',body:`价格（${price.toFixed(2)}）已突破 Call Wall（${cw.toFixed(1)}），GEX负。做市商追涨模式全开，空头被逼仓。前阻力变支撑——${cw.toFixed(0)}现在是地板不是天花板。不要做put逆势。`,action:`操作：回调至前 Call Wall（${cw.toFixed(0)}）附近获支撑 → Buy Call。止损设在 ${cw.toFixed(0)} 下方。`};
+  }
+  else if (aboveCW && gex==='pos') {
+    verdict = {cls:'rv-wait',status:'警戒',title:'Call Wall 已突破 · 但GEX正在压制',body:`价格突破 Call Wall（${cw.toFixed(1)}），但GEX正。做市商在卖出对冲，上涨阻力在增加。可能是假突破。`,action:`操作：观望。如果缩量回落跌破 ${cw.toFixed(0)} → 放弃做多。站稳 + 放量 → 轻仓 Call。`};
+  }
+  // ── Negative Transition: below HVL with GEX still positive ──
+  // GEX数字还正，但价格已在HVL下方 = 对冲支撑在衰减，不是摩擦区
+  else if (belowHVL && gex==='pos' && !nearPW) {
+    verdict = {cls:'rv-wait',status:'警戒',title:'Negative Transition · 结构在转变',body:`价格（${price.toFixed(2)}）已跌破 HVL（${hvl.toFixed(1)}），GEX虽正但物理逻辑已变——HVL下方做市商的高抛低吸支撑在衰减，pin结构失效中。${dex==='pos'?'DEX仍正：散户还在接，但接盘力量撑不起HVL下方的结构。':'DEX负：资金流出确认转变。'}盯住对HVL的第一次回测。`,action:`操作：等反弹回测 ${hvl.toFixed(0)} 被拒（缩量/上影线）→ Buy Put，止损 ${hvl.toFixed(0)} 上方，目标 Put Wall ${pw.toFixed(0)}。若放量收回 ${hvl.toFixed(0)} 上方 → 假跌破，放弃。`};
+  }
+  // ── STOP conditions ──
+  else if (nearVWAP && gex==='pos') {
+    verdict = {cls:'rv-stop',status:'禁止',title:'把手离开键盘',body:`价格在VWAP ±0.3% 区间（${vwap.toFixed(1)}），且GEX正。做市商双向压制，多空摩擦区。方向性期权无利润空间，时间价值快速损耗。任何方向的突破都会被MM对冲拉回。`,action:'操作：不做。等价格离开VWAP区间后重新评估。'};
+  }
+  // VWAP battle zone in negative GEX — decision point, not friction
+  else if (nearVWAP && gex==='neg') {
+    verdict = {cls:'rv-wait',status:'警戒',title:'VWAP 决战区 · 方向即将选择',body:`价格在VWAP（${vwap.toFixed(1)}）±0.3%，GEX负。负gamma下VWAP不是摩擦区，是决战线——这里的胜负会被MM对冲放大成趋势。${dex==='pos'?'DEX正：多头在攻，带量站稳VWAP则反弹延续。':'DEX负：空头在压，VWAP拒绝则下一波杀跌开始。'}`,action:`操作：不在区间内开仓。带量站稳 ${vwap.toFixed(0)} 上方 → 轻仓Call。放量拒绝回落 → Buy Put 跟随。`};
+  }
+  // Weak rally above VWAP in neg GEX with neg DEX — prime fade
+  else if (aboveVWAP && gex==='neg' && dex==='neg') {
+    verdict = {cls:'rv-go',status:'可以操作',title:'弱反弹 · 资金未跟 — Fade 做空窗口',body:`价格在VWAP（${vwap.toFixed(1)}）上方但DEX负——反弹没有真实Delta资金支持，是空头回补或散户抄底推的。GEX负意味着一旦回落，MM会加速下杀。这是高质量fade点。`,action:`操作：等动量停滞/上影线 → Buy Put。止损设在日内高点上方。目标VWAP下方延伸。`};
+  }
+  // Near call wall + GEX neg + DEX pos = Trap setup
+  else if (nearCW && gex==='neg' && dex==='pos') {
+    verdict = {cls:'rv-go',status:'可以操作',title:'⚡ Trap Setup — Call Wall 做空窗口',body:`价格逼近Call Wall（${cw.toFixed(1)}），GEX负且DEX正。散户追高，做市商即将反向抛售对冲。观察是否出现上影线/吞没/缩量。确认后买Put。`,action:'操作：等确认K线后 Buy Put。止损设在Call Wall上方。'};
+  }
+  // Near call wall + GEX pos
+  else if (nearCW && gex==='pos') {
+    verdict = {cls:'rv-stop',status:'禁止',title:'Call Wall 阻力区 · 停手',body:`价格逼近Call Wall（${cw.toFixed(1)}），GEX正。做市商在这里大量抛售对冲，是结构性天花板。追多必死。但GEX正的环境下跌也不会太深。`,action:'操作：不做。等价格回落后找新入场位。'};
+  }
+  // Near put wall
+  else if (nearPW && gex==='pos') {
+    verdict = {cls:'rv-stop',status:'禁止',title:'Put Wall 支撑区 · 停手',body:`价格逼近Put Wall（${pw.toFixed(1)}），GEX正。做市商大量买入对冲，结构性地板。做空必死。`,action:'操作：不做put。如果企稳可考虑轻仓call。'};
+  }
+  else if (nearPW && gex==='neg') {
+    verdict = {cls:'rv-wait',status:'警戒',title:'Put Wall 危险区 · 可能击穿',body:`价格逼近Put Wall（${pw.toFixed(1)}）但GEX负。做市商追跌，Put Wall支撑力大幅减弱。如果放量跌破，下方没有刹车。`,action:'操作：观察。跌破Put Wall放量 → 跟随做Put。守住 → 轻仓Call反弹。'};
+  }
+  // Below VWAP + below HVL + GEX neg
+  else if (belowVWAP && belowHVL && gex==='neg') {
+    verdict = {cls:'rv-go',status:'可以操作',title:'弱势结构 — VWAP 反抽做空',body:`价格在VWAP（${vwap.toFixed(1)}）和HVL（${hvl.toFixed(1)}）下方，GEX负。弱势盘面，VWAP是阻力不是支撑。做市商追跌。${dex==='pos'?'DEX正说明有反弹买盘，等消耗完毕后做空更佳。':'DEX负确认卖压，方向做空。'}`,action:'操作：等反抽至VWAP附近受阻 → Buy Put。'};
+  }
+  // Above VWAP + above HVL + GEX neg + DEX pos
+  else if (aboveVWAP && aboveHVL && gex==='neg' && dex==='pos') {
+    verdict = {cls:'rv-wait',status:'警戒',title:'强势反弹中 — 但地基不稳',body:`价格在VWAP（${vwap.toFixed(1)}）和HVL（${hvl.toFixed(1)}）上方，GEX负+DEX正。做市商追涨买入推动反弹。但一旦DEX转弱，反转会极其凶猛。关注Call Wall距离。`,action:'操作：不追call。等接近Call Wall + 动量衰减 → Trap Setup做Put。'};
+  }
+  // Above VWAP + GEX pos
+  else if (aboveVWAP && gex==='pos') {
+    verdict = {cls:'rv-go',status:'可以操作',title:'VWAP 上方 + GEX稳定 — 可做Call',body:`价格站稳VWAP（${vwap.toFixed(1)}）上方，GEX正提供支撑。做市商在回调时买入对冲。可以做call，但注意Call Wall（${cw.toFixed(1)}）距离作为利润目标。`,action:'操作：回调不破VWAP时 Buy Call / Call Spread。目标Call Wall。'};
+  }
+  // Below VWAP + GEX pos
+  else if (belowVWAP && gex==='pos') {
+    verdict = {cls:'rv-wait',status:'等待',title:'VWAP 下方但有支撑 — 等企稳',body:`价格在VWAP（${vwap.toFixed(1)}）下方，但GEX正。做市商在下跌时买入对冲，提供缓冲。不会急跌但方向偏弱。`,action:'操作：等价格回到VWAP上方确认再做call。或在Put Wall附近轻仓call。'};
+  }
+  // Generic fallback
+  else {
+    const zone = aboveVWAP ? 'VWAP上方' : 'VWAP下方';
+    const hvlZ = aboveHVL ? 'HVL上方' : 'HVL下方';
+    verdict = {cls:'rv-wait',status:'评估中',title:`${zone} · ${hvlZ} · 综合判断`,body:`价格${price.toFixed(2)}处于${zone}、${hvlZ}。GEX${gex==='pos'?'正（稳定）':'负（放大）'}，DEX${dex==='pos'?'正（买方）':'负（卖方）'}。根据距离关键位的远近和盘面动量综合判断。`,action:'操作：等接近明确关键位后再做决策。'};
+  }
+
+  // Build contextual entry questions
+  // Clear answers if verdict changed
+  if (window._lastVerdictTitle !== verdict.title) {
+    Object.keys(dqState).forEach(k => delete dqState[k]);
+    window._lastVerdictTitle = verdict.title;
+  }
+  const dqCtx = getContextQuestions(verdict, price, pw, cw, vwap, hvl, gex, dex);
+  const dqHtml = buildDQHtml(dqCtx);
+
+  document.getElementById('ref-output').innerHTML = `
+    <div class="ref-verdict ${verdict.cls}">
+      <div class="rv-status">${verdict.status}</div>
+      <div class="rv-title">${verdict.title}</div>
+      <div class="rv-body">${verdict.body}</div>
+      <div class="rv-action">${verdict.action}</div>
+      ${dqHtml}
+    </div>
+  `;
+}
+
+/* ══ Dynamic Entry Flow ══ */
+const dqState = {};
+
+// Contextual questions per verdict type
+function getContextQuestions(verdict, price, pw, cw, vwap, hvl, gex, dex) {
+  const isPut = ['rv-go'].includes(verdict.cls) && verdict.title.includes('Put');
+  const isCall = ['rv-go'].includes(verdict.cls) && verdict.title.includes('Call');
+  const dir = isPut ? 'put' : isCall ? 'call' : null;
+
+  if (!dir) return null; // No questions for wait/stop verdicts
+
+  if (dir === 'put') {
+    const qs = [];
+    // Contextual based on situation
+    if (price < pw) {
+      // Below put wall - broken through
+      qs.push({id:'dq1', q:'价格有反弹过吗？散户在抄底？', key:'bounced'});
+      qs.push({id:'dq2', q:`反弹受阻于 ${pw.toFixed(0)}（前Put Wall）附近？`, key:'wall_resist'});
+      qs.push({id:'dq3', q:'反弹时成交量在收缩？', key:'vol_shrink'});
+      qs.push({id:'dq4', q:'15m MACD 在零轴下方？', key:'macd_below'});
+      qs.push({id:'dq5', q:'DEX 仍然为负 / 没有明显转正？', key:'dex_neg'});
+    } else if (price < vwap && price < hvl) {
+      // Below VWAP, weak structure
+      qs.push({id:'dq1', q:'价格在反弹中 / 有过反弹？', key:'bouncing'});
+      qs.push({id:'dq2', q:`接近 VWAP（${vwap.toFixed(1)}）或日内阻力？`, key:'near_resist'});
+      qs.push({id:'dq3', q:'上涨量能在收缩？', key:'vol_shrink'});
+      qs.push({id:'dq4', q:'K线出现上影线 / 吞没 / 假突破？', key:'rejection'});
+      qs.push({id:'dq5', q:'15m MACD 在零轴下方？', key:'macd_below'});
+    } else {
+      // Near call wall or general put setup
+      qs.push({id:'dq1', q:'开盘后价格有过拉升？MM诱多了？', key:'rallied'});
+      qs.push({id:'dq2', q:`接近 Call Wall（${cw.toFixed(0)}）或阻力位？`, key:'near_cw'});
+      qs.push({id:'dq3', q:'上涨量能在收缩？', key:'vol_shrink'});
+      qs.push({id:'dq4', q:'K线出现拒绝信号？', key:'rejection'});
+      qs.push({id:'dq5', q:'15m MACD 在零轴下方？', key:'macd_below'});
+    }
+    return { dir:'put', qs, threshold: 4 };
+  }
+
+  if (dir === 'call') {
+    const qs = [];
+    if (price > cw) {
+      // Above call wall - broken through
+      qs.push({id:'dq1', q:'价格有过回调？空头在尝试压？', key:'pulled_back'});
+      qs.push({id:'dq2', q:`回调在 ${cw.toFixed(0)}（前Call Wall）获得支撑？`, key:'wall_support'});
+      qs.push({id:'dq3', q:'回调时成交量在收缩？', key:'vol_shrink'});
+      qs.push({id:'dq4', q:'15m MACD 在零轴上方？', key:'macd_above'});
+      qs.push({id:'dq5', q:'DEX 为正 / 买方在增加？', key:'dex_pos'});
+    } else {
+      // General call setup
+      qs.push({id:'dq1', q:'开盘后价格有过回调？弱手被洗出？', key:'dipped'});
+      qs.push({id:'dq2', q:`接近 Put Wall（${pw.toFixed(0)}）或支撑位？`, key:'near_support'});
+      qs.push({id:'dq3', q:'下跌量能在收缩？', key:'vol_shrink'});
+      qs.push({id:'dq4', q:'K线出现支撑信号？下影线/锤子？', key:'support'});
+      qs.push({id:'dq5', q:'15m MACD 在零轴上方？', key:'macd_above'});
+    }
+    return { dir:'call', qs, threshold: 4 };
+  }
+  return null;
+}
+
+function answerDQ(id, val) {
+  dqState[id] = val;
+  renderDQ();
+}
+
+function renderDQ() {
+  const el = document.getElementById('dq-flow');
+  if (!el || !el.dataset.dir) return;
+
+  const dir = el.dataset.dir;
+  const threshold = parseInt(el.dataset.threshold) || 4;
+  const putMode = dir === 'put' ? 'dq-put-mode' : '';
+  const items = el.querySelectorAll('.dq-item');
+
+  let yesCount = 0;
+  let answered = 0;
+
+  items.forEach(item => {
+    const id = item.dataset.id;
+    const state = dqState[id];
+    item.className = 'dq-item';
+    const btns = item.querySelectorAll('.dq-btn');
+
+    if (state === true) {
+      item.classList.add('dq-yes');
+      if (putMode) item.classList.add(putMode);
+      yesCount++;
+      answered++;
+      btns[0].className = `dq-btn dq-btn-yes ${putMode}`;
+      btns[1].className = 'dq-btn';
+    } else if (state === false) {
+      item.classList.add('dq-no');
+      answered++;
+      btns[0].className = 'dq-btn';
+      btns[1].className = 'dq-btn dq-btn-no';
+    } else {
+      btns[0].className = 'dq-btn';
+      btns[1].className = 'dq-btn';
+    }
+  });
+
+  const total = items.length;
+  const resultEl = document.getElementById('dq-result');
+  if (!resultEl) return;
+
+  const dirLabel = dir === 'put' ? 'Put' : 'Call';
+
+  if (answered === 0) {
+    resultEl.className = 'dq-result dqr-idle';
+    resultEl.innerHTML = `<div class="dqr-text">回答上面的问题...</div><div class="dqr-score">${yesCount} / ${total}</div>`;
+  } else if (yesCount >= threshold) {
+    const cls = dir === 'put' ? 'dq-result dqr-go dqr-put' : 'dq-result dqr-go';
+    resultEl.className = cls;
+    resultEl.innerHTML = `<div class="dqr-text">✓ 确认入场 ${dirLabel}</div><div class="dqr-score">${yesCount} / ${total}</div>`;
+  } else if (answered < total) {
+    resultEl.className = 'dq-result dqr-wait';
+    resultEl.innerHTML = `<div class="dqr-text">${yesCount} 项确认 — 继续确认</div><div class="dqr-score">${yesCount} / ${total}</div>`;
+  } else {
+    // All answered but not enough yes
+    resultEl.className = 'dq-result dqr-wait';
+    resultEl.innerHTML = `<div class="dqr-text">条件不足（${yesCount}/${threshold}）— 等待更好时机</div><div class="dqr-score">${yesCount} / ${total}</div>`;
+  }
+}
+
+function buildDQHtml(ctx) {
+  if (!ctx) return '';
+  // Reset state for new questions
+  ctx.qs.forEach(q => { if (!(q.id in dqState)) { /* keep existing */ } });
+
+  const putMode = ctx.dir === 'put' ? 'dq-put-mode' : '';
+  const qsHtml = ctx.qs.map(q => {
+    const state = dqState[q.id];
+    let itemCls = 'dq-item';
+    let btnYesCls = 'dq-btn';
+    let btnNoCls = 'dq-btn';
+    if (state === true) { itemCls += ' dq-yes'; if (putMode) itemCls += ' ' + putMode; btnYesCls += ` dq-btn-yes ${putMode}`; }
+    if (state === false) { itemCls += ' dq-no'; btnNoCls += ' dq-btn-no'; }
+    return `<div class="${itemCls}" data-id="${q.id}">
+      <div class="dq-q">${q.q}</div>
+      <div class="dq-btns">
+        <button class="${btnYesCls}" onclick="answerDQ('${q.id}',true);renderDQ()">是</button>
+        <button class="${btnNoCls}" onclick="answerDQ('${q.id}',false);renderDQ()">否</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  let yesCount = ctx.qs.filter(q => dqState[q.id] === true).length;
+  let answered = ctx.qs.filter(q => dqState[q.id] !== undefined).length;
+  let resultCls = 'dq-result dqr-idle';
+  let resultText = '回答上面的问题...';
+  const dirLabel = ctx.dir === 'put' ? 'Put' : 'Call';
+
+  if (answered > 0 && yesCount >= ctx.threshold) {
+    resultCls = ctx.dir === 'put' ? 'dq-result dqr-go dqr-put' : 'dq-result dqr-go';
+    resultText = `✓ 确认入场 ${dirLabel}`;
+  } else if (answered > 0 && answered < ctx.qs.length) {
+    resultCls = 'dq-result dqr-wait';
+    resultText = `${yesCount} 项确认 — 继续确认`;
+  } else if (answered === ctx.qs.length && yesCount < ctx.threshold) {
+    resultCls = 'dq-result dqr-wait';
+    resultText = `条件不足（${yesCount}/${ctx.threshold}）— 等待更好时机`;
+  }
+
+  return `
+    <div class="dq-wrap" id="dq-flow" data-dir="${ctx.dir}" data-threshold="${ctx.threshold}">
+      <div class="dq-label">入场确认 — 快速核对</div>
+      <div class="dq-list">${qsHtml}</div>
+      <div class="${resultCls}" id="dq-result">
+        <div class="dqr-text">${resultText}</div>
+        <div class="dqr-score">${yesCount} / ${ctx.qs.length}</div>
+      </div>
+    </div>`;
+}
+
+/* ══ Journal System ══ */
+let currentUser = '';
+let starRating = 0;
+
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem('sm_users') || '[]'); } catch { return []; }
+}
+function saveUsers(users) { localStorage.setItem('sm_users', JSON.stringify(users)); }
+function getEntries(user) {
+  try { return JSON.parse(localStorage.getItem('sm_entries_'+user) || '[]'); } catch { return []; }
+}
+function saveEntries(user, entries) { localStorage.setItem('sm_entries_'+user, JSON.stringify(entries)); }
+
+function loadUsers() {
+  const users = getUsers();
+  const sel = document.getElementById('j-user-select');
+  sel.innerHTML = '<option value="">选择交易者...</option>';
+  users.forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u; opt.textContent = u;
+    if (u === currentUser) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function addUser() {
+  const inp = document.getElementById('j-new-user');
+  const name = inp.value.trim();
+  if (!name) return;
+  const users = getUsers();
+  if (users.includes(name)) { currentUser = name; } 
+  else { users.push(name); saveUsers(users); currentUser = name; }
+  inp.value = '';
+  loadUsers();
+  switchUser();
+  document.getElementById('j-user-select').value = name;
+}
+
+function switchUser() {
+  currentUser = document.getElementById('j-user-select').value;
+  const hasUser = !!currentUser;
+  document.getElementById('j-content').style.display = hasUser ? 'block' : 'none';
+  document.getElementById('j-empty').style.display = hasUser ? 'none' : 'block';
+  document.getElementById('j-remove-row').style.display = hasUser ? 'block' : 'none';
+  if (hasUser) { updateJournalDate(); renderEntries(); }
+}
+
+function deleteUser() {
+  if (!currentUser) return;
+  // Remove entries
+  localStorage.removeItem('sm_entries_' + currentUser);
+  // Remove from users list
+  var users = getUsers().filter(function(u) { return u !== currentUser; });
+  saveUsers(users);
+  currentUser = '';
+  loadUsers();
+  document.getElementById('j-user-select').value = '';
+  switchUser();
+}
+
+function updateJournalDate() {
+  const now = new Date();
+  const et = new Date(now.toLocaleString('en-US', {timeZone:'America/New_York'}));
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  document.getElementById('j-date').textContent = et.toLocaleDateString('en-US', opts);
+}
+
+function setStars(n) {
+  starRating = n;
+  document.querySelectorAll('.j-star').forEach((s, i) => {
+    s.textContent = i < n ? '★' : '☆';
+    s.classList.toggle('filled', i < n);
+  });
+}
+
+function saveEntry() {
+  if (!currentUser) return;
+  const setup = document.getElementById('j-setup').value.trim();
+  const exec = document.getElementById('j-exec').value.trim();
+  const result = document.getElementById('j-result').value.trim();
+  const reflect = document.getElementById('j-reflect').value.trim();
+
+  if (!setup && !exec && !reflect) return;
+
+  const now = new Date();
+  const et = new Date(now.toLocaleString('en-US', {timeZone:'America/New_York'}));
+
+  const entry = {
+    id: Date.now().toString(36),
+    date: et.toISOString().split('T')[0],
+    dateDisplay: et.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric', year:'numeric'}),
+    time: et.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}),
+    setup, exec, result, reflect,
+    stars: starRating,
+    user: currentUser,
+    img: pendingImg || null,
+  };
+
+  const entries = getEntries(currentUser);
+  entries.unshift(entry);
+  try {
+    saveEntries(currentUser, entries);
+  } catch(err) {
+    // localStorage quota — retry without image
+    entry.img = null;
+    try { saveEntries(currentUser, entries); alert('存储空间不足，截图未保存（文字已保存）。可删除旧记录释放空间。'); }
+    catch(e2) { entries.shift(); alert('存储空间已满，请删除旧记录。'); return; }
+  }
+
+  // Clear form
+  document.getElementById('j-setup').value = '';
+  document.getElementById('j-exec').value = '';
+  document.getElementById('j-result').value = '';
+  document.getElementById('j-reflect').value = '';
+  setStars(0);
+  clearImg();
+
+  renderEntries();
+}
+
+function deleteEntry(id) {
+  if (!currentUser) return;
+  const entries = getEntries(currentUser).filter(e => e.id !== id);
+  saveEntries(currentUser, entries);
+  renderEntries();
+}
+
+function renderEntries() {
+  if (!currentUser) return;
+  const entries = getEntries(currentUser);
+  const container = document.getElementById('j-entries');
+
+  if (entries.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:40px 0;font-family:var(--cn);font-size:13px;color:var(--ink4);font-weight:300;letter-spacing:0.08em;">还没有记录 — 收盘后写下今天的交易</div>`;
+    return;
+  }
+
+  container.innerHTML = entries.map(e => {
+    const resultClass = e.result.startsWith('+') ? 'positive' : e.result.startsWith('-') ? 'negative' : 'neutral';
+    const starsHtml = e.stars > 0 ? '★'.repeat(e.stars) + '☆'.repeat(5 - e.stars) : '';
+
+    return `<div class="j-entry">
+      <div class="j-entry-del" onclick="deleteEntry('${e.id}')" title="删除">✕</div>
+      <div class="j-entry-head">
+        <div>
+          <div class="j-entry-date">${e.dateDisplay} · ${e.time}</div>
+          ${starsHtml ? `<div class="j-entry-stars">${starsHtml}</div>` : ''}
+        </div>
+        ${e.result ? `<div class="j-entry-result ${resultClass}">${e.result}</div>` : ''}
+      </div>
+      ${e.setup ? `<div class="j-entry-section"><div class="j-entry-label">Setup</div><div class="j-entry-text">${esc(e.setup)}</div></div>` : ''}
+      ${e.exec ? `<div class="j-entry-section"><div class="j-entry-label">执行</div><div class="j-entry-text">${esc(e.exec)}</div></div>` : ''}
+      ${e.reflect ? `<div class="j-entry-section"><div class="j-entry-label">反思</div><div class="j-entry-text">${esc(e.reflect)}</div></div>` : ''}
+      ${e.img ? `<div class="j-entry-img" onclick="toggleZoom(this)"><img src="${e.img}" loading="lazy"></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+// Init journal on load
+loadUsers();
+if (currentUser) switchUser();
+
+/* ══ Journal image attach ══ */
+let pendingImg = null;
+
+function handleImgFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = e => compressImg(e.target.result);
+  reader.readAsDataURL(file);
+}
+
+function compressImg(dataUrl) {
+  const img = new Image();
+  img.onload = () => {
+    const maxW = 1000;
+    const scale = Math.min(1, maxW / img.width);
+    const c = document.createElement('canvas');
+    c.width = img.width * scale;
+    c.height = img.height * scale;
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    pendingImg = c.toDataURL('image/jpeg', 0.72);
+    const prev = document.getElementById('j-imgpreview');
+    prev.src = pendingImg;
+    prev.style.display = 'block';
+    document.getElementById('j-imgdrop-hint').style.display = 'none';
+    document.getElementById('j-imgremove').style.display = 'inline-block';
+  };
+  img.src = dataUrl;
+}
+
+function clearImg() {
+  pendingImg = null;
+  document.getElementById('j-imgpreview').style.display = 'none';
+  document.getElementById('j-imgdrop-hint').style.display = 'inline';
+  document.getElementById('j-imgremove').style.display = 'none';
+  document.getElementById('j-imgfile').value = '';
+}
+
+// Paste support: works when drop zone focused OR anywhere on 盘后 tab
+document.addEventListener('paste', e => {
+  const postActive = document.getElementById('panel-post').classList.contains('active');
+  if (!postActive) return;
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (const it of items) {
+    if (it.type.startsWith('image/')) {
+      handleImgFile(it.getAsFile());
+      e.preventDefault();
+      break;
+    }
+  }
+});
+
+function toggleZoom(el) { el.classList.toggle('zoomed');
+  const img = el.querySelector('img');
+  if (el.classList.contains('zoomed')) { img.style.maxWidth='none'; el.style.overflow='auto'; }
+  else { img.style.maxWidth='100%'; el.style.overflow='hidden'; }
+}
+
+/* ══ 山 — procedural ink-wash mountains (fractal ridges) ══ */
+function drawMountains() {
+  const cv = document.getElementById('ink-canvas');
+  if (!cv) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.ceil(window.innerWidth * 1.25);     // wider than screen for drift
+  const H = Math.ceil(Math.min(window.innerHeight * 0.40, 420));
+  cv.width = W * dpr; cv.height = H * dpr;
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  // Seeded random — same mountains every day, deterministic beauty
+  let seed = 20260609;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+  // Midpoint displacement: real fractal ridgeline
+  function ridge(baseY, amp, rough, segments) {
+    let pts = [ {x:0, y:baseY + (rnd()-0.5)*amp}, {x:W, y:baseY + (rnd()-0.5)*amp} ];
+    for (let i = 0; i < segments; i++) {
+      const next = [];
+      for (let j = 0; j < pts.length - 1; j++) {
+        const a = pts[j], b = pts[j+1];
+        const mid = { x:(a.x+b.x)/2, y:(a.y+b.y)/2 + (rnd()-0.5)*amp };
+        next.push(a, mid);
+      }
+      next.push(pts[pts.length-1]);
+      pts = next; amp *= rough;
+    }
+    return pts;
+  }
+
+  // Layers: far → near. [baseY frac, amplitude, ink color, ridge alpha, fade length]
+  const layers = [
+    [0.42, 64, '#9db2c0', 0.34, 0.95],
+    [0.55, 80, '#7795a8', 0.42, 0.85],
+    [0.68, 92, '#52758c', 0.50, 0.75],
+    [0.82, 96, '#33566b', 0.58, 0.65],
+  ];
+
+  layers.forEach(([f, amp, col, alpha, fade], li) => {
+    const baseY = H * f;
+    const pts = ridge(baseY, amp, 0.52, 7);
+
+    // Ink wash fill: dense at ridge, dissolving to paper below
+    const minY = Math.min(...pts.map(p => p.y));
+    const g = ctx.createLinearGradient(0, minY, 0, minY + (H - minY) * fade);
+    g.addColorStop(0, col + Math.round(alpha*255).toString(16).padStart(2,'0'));
+    g.addColorStop(0.45, col + Math.round(alpha*0.35*255).toString(16).padStart(2,'0'));
+    g.addColorStop(1, col + '00');
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    pts.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+    ctx.fillStyle = g;
+    ctx.fill();
+
+    // Ink-bleed ridge edge: soft dark stroke along silhouette
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    pts.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.strokeStyle = col + Math.round(alpha*0.9*255).toString(16).padStart(2,'0');
+    ctx.lineWidth = 1.4;
+    ctx.shadowColor = col; ctx.shadowBlur = 5; ctx.shadowOffsetY = 2;
+    ctx.stroke();
+    ctx.restore();
+
+    // Mist band: paper-colored gradient eats the layer's base — 留白
+    if (li < layers.length - 1) {
+      const mistY = H * layers[li+1][0] - 26;
+      const mg = ctx.createLinearGradient(0, mistY - 30, 0, mistY + 34);
+      mg.addColorStop(0, 'rgba(246,243,237,0)');
+      mg.addColorStop(0.5, 'rgba(246,243,237,0.82)');
+      mg.addColorStop(1, 'rgba(246,243,237,0)');
+      ctx.fillStyle = mg;
+      ctx.fillRect(0, mistY - 30, W, 64);
+    }
+  });
+
+  // Base fade into paper
+  const bg = ctx.createLinearGradient(0, H - 56, 0, H);
+  bg.addColorStop(0, 'rgba(246,243,237,0)');
+  bg.addColorStop(1, 'rgba(246,243,237,1)');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, H - 56, W, 56);
+}
+drawMountains();
+
+let _rsT; window.addEventListener('resize', () => { clearTimeout(_rsT); _rsT = setTimeout(() => { drawMountains(); _lastSkyMin = -1; const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'})); drawSky(et); }, 200); });
+
+/* ══ 日月 — painted sky, sun by day, moon takes the night shift ══ */
+let _lastSkyMin = -1;
+function drawSky(et) {
+  const cv = document.getElementById('sky-canvas');
+  if (!cv) return;
+  const mins = et.getHours()*60 + et.getMinutes();
+  if (mins === _lastSkyMin && cv.width > 0) return;   // repaint once per minute
+  _lastSkyMin = mins;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = window.innerWidth;
+  const H = Math.ceil(Math.min(window.innerHeight * 0.72, 700));
+  if (!W || !H) return;   // 视口未就绪(innerHeight=0)时别画,下一拍再来,避免 H=0 把透明度算成 Infinity
+  cv.width = W * dpr; cv.height = H * dpr;
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const isNight = (mins >= 1200 || mins < 330);
+
+  let t, body;
+
+  if (isNight) {
+    // 月亮上班: 20:00 东升 → 05:30 西落
+    const elapsed = mins >= 1200 ? mins - 1200 : mins + 240;
+    t = elapsed / 570;
+    body = { core:'#8ba4b8', glowA:0.30, r:15, glowR:46, moon:true };
+  } else {
+    // 太阳: 05:30 → 20:00
+    t = Math.max(0, Math.min(1, (mins - 330) / 870));
+    if (mins < 570)       body = { core:'#c9a14a', glowA:0.34, r:17, glowR:60 };  // 盘前淡金
+    else if (mins < 840)  body = { core:'#bf3a2b', glowA:0.34, r:16, glowR:56 };  // 专注正红
+    else if (mins < 960)  body = { core:'#d2691e', glowA:0.42, r:19, glowR:72 };  // 该收手 夕阳橙
+    else                  body = { core:'#c05518', glowA:0.46, r:22, glowR:86 };  // 暮色深橙
+  }
+
+  // Arc: glow-safe — apex leaves room for the largest halo (86*2.1≈181px)
+  const x = W * 0.06 + t * W * 0.88;
+  const topMargin = 195;
+  const y = topMargin + (H - 50 - topMargin) * Math.pow(2*t - 1, 2);
+
+  // Outer atmospheric halo — wide, breath-soft
+  let g = ctx.createRadialGradient(x, y, 0, x, y, body.glowR * 2.1);
+  g.addColorStop(0, body.core + Math.round(body.glowA*0.45*255).toString(16).padStart(2,'0'));
+  g.addColorStop(1, body.core + '00');
+  ctx.fillStyle = g;
+  ctx.fillRect(x - body.glowR*2.1, y - body.glowR*2.1, body.glowR*4.2, body.glowR*4.2);
+
+  // Inner glow
+  g = ctx.createRadialGradient(x, y, body.r*0.4, x, y, body.glowR);
+  g.addColorStop(0, body.core + Math.round(body.glowA*255).toString(16).padStart(2,'0'));
+  g.addColorStop(1, body.core + '00');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(x, y, body.glowR, 0, Math.PI*2); ctx.fill();
+
+  // Disc — ink pooling: slightly denser at the rim
+  g = ctx.createRadialGradient(x, y, 0, x, y, body.r);
+  g.addColorStop(0, body.core + '4f');
+  g.addColorStop(0.75, body.core + '6e');
+  g.addColorStop(1, body.core + '8c');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(x, y, body.r, 0, Math.PI*2); ctx.fill();
+
+  if (body.moon) {
+    // 上弦影: paper-colored offset disc carves a waxing moon
+    ctx.fillStyle = 'rgba(246,243,237,0.55)';
+    ctx.beginPath(); ctx.arc(x - body.r*0.42, y - body.r*0.30, body.r*0.92, 0, Math.PI*2); ctx.fill();
+  }
+
+  // 晚霞 — horizon wash when the body hangs low (sunset / dawn / moonglow)
+  const lowness = Math.max(0, (y - H*0.42) / (H*0.58));
+  if (lowness > 0.05) {
+    const washA = isNight ? lowness*0.10 : lowness*0.30;
+    ctx.save();
+    ctx.translate(x, Math.min(y + 40, H*0.92));
+    ctx.scale(1, 0.30);
+    const wg = ctx.createRadialGradient(0,0,0, 0,0, W*0.52);
+    wg.addColorStop(0, body.core + Math.round(washA*255).toString(16).padStart(2,'0'));
+    wg.addColorStop(0.6, body.core + Math.round(washA*0.4*255).toString(16).padStart(2,'0'));
+    wg.addColorStop(1, body.core + '00');
+    ctx.fillStyle = wg;
+    ctx.fillRect(-W*0.55, -W*0.55, W*1.1, W*1.1);
+    ctx.restore();
+  }
+
+  // 云 — slow wisps crossing the sky, veiling the sun as they pass
+  let cs = 4242; const cr = () => (cs=(cs*16807)%2147483647)/2147483647;
+  const warm = !isNight && mins >= 840;            // dusk: clouds catch fire
+  for (let b = 0; b < 3; b++) {
+    const baseY = H*(0.26 + b*0.15) + (cr()-0.5)*H*0.05;
+    const speed = 0.35 + b*0.22;                   // px per minute, nearer = faster
+    const span = W + 560;
+    const off = ((mins * speed) % span);
+    for (let i = 0; i < 5; i++) {
+      const ex = -280 + off + (cr()-0.5)*320 + i*120;
+      const ey = baseY + (cr()-0.5)*16;
+      const ew = 110 + cr()*170;
+      const eh = (11 + cr()*9) / ew;
+      ctx.save();
+      ctx.translate(ex, ey);
+      ctx.scale(1, eh);
+      let g2 = ctx.createRadialGradient(0,0,0, 0,0, ew);
+      const cc = isNight ? '#9fb0bf' : '#ccd5dc';
+      g2.addColorStop(0, cc + '34');
+      g2.addColorStop(1, cc + '00');
+      ctx.fillStyle = g2;
+      ctx.beginPath(); ctx.arc(0,0,ew,0,Math.PI*2); ctx.fill();
+      if (warm) {                                   // sunset tint on the belly
+        g2 = ctx.createRadialGradient(0,ew*0.2,0, 0,ew*0.2, ew*0.8);
+        g2.addColorStop(0, body.core + '1e');
+        g2.addColorStop(1, body.core + '00');
+        ctx.fillStyle = g2;
+        ctx.beginPath(); ctx.arc(0,ew*0.2,ew*0.8,0,Math.PI*2); ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+}
+
+/* ══ Logo — one brushstroke, one signal point ══ */
+/* logo is now a static coin PNG in the header */
+
+/* ══ 印 — the seal, signature of the painting ══ */
+function drawSeal() {
+  const cv = document.getElementById('seal-canvas');
+  if (!cv) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const S = 64;
+  cv.width = S*dpr; cv.height = S*dpr;
+  cv.style.width = S+'px'; cv.style.height = S+'px';
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.translate(S/2, S/2);
+  ctx.rotate(-0.045);                      // hand-pressed, never square
+  // Seal paste: uneven vermillion block with ragged edge
+  ctx.fillStyle = '#bf3a2b';
+  const r = 26.5, n = 32;
+  ctx.beginPath();
+  let sd = 77; const sr = () => (sd = (sd*16807)%2147483647)/2147483647;
+  for (let i = 0; i <= n; i++) {
+    const a = (i/n)*Math.PI*2;
+    const rr = r + (sr()-0.5)*3.4;          // ragged ink edge
+    const px = Math.cos(a)*rr, py = Math.sin(a)*rr;
+    i ? ctx.lineTo(px,py) : ctx.moveTo(px,py);
+  }
+  ctx.closePath(); ctx.fill();
+  // Mottled paste texture: paper showing through
+  ctx.globalCompositeOperation = 'destination-out';
+  for (let i = 0; i < 26; i++) {
+    ctx.globalAlpha = 0.10 + sr()*0.16;
+    ctx.beginPath();
+    ctx.arc((sr()-0.5)*42, (sr()-0.5)*42, 0.8+sr()*2.2, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 1;
+  // 白文 "知止" — carved characters, paper color
+  ctx.fillStyle = '#f6f3ed';
+  ctx.font = '600 18px "Noto Serif SC", serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('知', 0, -10.5);
+  ctx.fillText('止', 0, 10.5);
+}
+drawSeal();
+
+/* ══ 雁 — geese cross the sky, rarely ══ */
+let geese = null;
+function maybeLaunchGeese() {
+  if (geese) return;
+  if (Math.random() < 0.25) {              // checked every ~45s → flock every few minutes
+    const W = window.innerWidth;
+    const fromLeft = Math.random() < 0.5;
+    geese = {
+      x: fromLeft ? -60 : W + 60,
+      y: 40 + Math.random() * (window.innerHeight * 0.16),
+      vx: (fromLeft ? 1 : -1) * (0.45 + Math.random()*0.25),
+      n: 3 + Math.floor(Math.random()*3),
+      t: 0,
+    };
+    requestAnimationFrame(geeseFrame);
+  }
+}
+function geeseFrame() {
+  const cv = document.getElementById('geese-canvas');
+  if (!cv || !geese) return;
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  const W = window.innerWidth, H = Math.ceil(window.innerHeight*0.3);
+  if (cv.width !== W*dpr) { cv.width = W*dpr; cv.height = H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px'; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  geese.t += 1;
+  geese.x += geese.vx;
+  const dir = geese.vx > 0 ? 1 : -1;
+  ctx.strokeStyle = 'rgba(28,25,23,0.34)';
+  ctx.lineWidth = 1.1; ctx.lineCap = 'round';
+  for (let i = 0; i < geese.n; i++) {
+    // V formation trailing behind leader
+    const gx = geese.x - dir * i * 17;
+    const gy = geese.y + i * 6.5 + Math.sin(geese.t*0.05 + i)*1.5;
+    const flap = Math.sin(geese.t*0.11 + i*0.8) * 2.6;
+    ctx.beginPath();
+    ctx.moveTo(gx - 5, gy - flap);
+    ctx.quadraticCurveTo(gx - 1.5, gy + 1.5, gx, gy);
+    ctx.quadraticCurveTo(gx + 1.5, gy + 1.5, gx + 5, gy - flap);
+    ctx.stroke();
+  }
+  if (geese.x < -160 || geese.x > W + 160) { geese = null; ctx.clearRect(0,0,W,H); return; }
+  requestAnimationFrame(geeseFrame);
+}
+setInterval(maybeLaunchGeese, 45000);
+setTimeout(maybeLaunchGeese, 8000);        // a chance shortly after open
+
+/* ══ 盘伴 — AI copilot ══ */
+const CH_SYS = `你是一个SPY 0DTE期权交易员的实时盘中助手，名叫盘伴。交易员的框架是做市商对冲机制：GEX正=MM高抛低吸压制波动（突破是陷阱）；GEX负=MM追涨杀跌放大趋势（支撑会失效）；DEX看净Delta资金方向，DEX velocity减速是最早的入场信号。核心setup是Trap Setup：EMA多头+GEX负+DEX正，等散户追高、价格接近Call Wall、量缩+DEX降温后做put。信号出现不等于立即入场，入场是独立的盘中决策。纪律：开盘15分钟不做、每天最多5笔、2PM ET后无持仓不开新仓、GEX拥有否决权、午盘(11-14点)是死区。
+
+重要的数据规则：快照里的GEX/DEX是用户手动设置的二元开关，可能滞后或过期——用户消息里贴的具体数字永远优先于快照开关，两者矛盾时以数字为准并指出开关可能没更新。GEX绝对值在±50M以内视为flip过渡区，既不是正也不是负，按结构不明处理。永远关注1d变化速度：GEX/DEX在快速修复（向正移动）=空头论点地基在融化；在快速恶化=趋势在自我强化。价格跌破HVL但GEX仍正=Negative Transition，支撑在衰减，不是摩擦区。
+
+持仓/出场模式：当用户说他已经在仓里（如"我在745 put里"），切到出场模式，目标只有一个——帮他按信号拿住趋势、别凭恐惧砍盈利。不要问他赚多少或成本：P&L锚定正是他过早平仓的根源。只问三样，并严格用这三个词：①价位（价格相对put/call wall、HVL、VWAP在哪）；②DEX绝对值（TanukiTrade的value字段，符号+量级，50M附近是噪音、400M是真料）；③velocity（1D字段，值朝哪个方向、多快变）。绝对值和velocity是两条独立的轴，必须分开看，冲突时主动点破。
+
+出场规则——分批，不找底、不给抄底价位，只给信号触发：到第一目标（下一道墙/量度跌幅）先平1/3落袋，让那份合理的恐惧闭嘴；剩2/3挂在前一个swing后面跟踪（持put看反弹的lower-high，持call看higher-low）；runner出场触发=velocity滚头（1D不再朝持仓方向加速、或开始反向穿越）或价格收回前高。反弹真假用"绝对值+velocity"一起判：velocity真正把值带过零、进到明确反向（如+400M真料）=真反转/诱空，平掉；velocity只是回血但绝对值还死在对持仓有利的深区（如持put时DEX仍-700M）=派发/诱多死猫跳，反弹是加仓点不是离场点，拿住。两个都是-700M、光看绝对值不够，必须配1D才知道是拿还是跑。
+
+生死线：当信号还支持拿（绝对值深、velocity没滚头）而用户想跑，直接告诉他这是心跳不是盘面、runner该拿着，不要附和他的恐惧。临近收盘按ET时钟收紧——越往尾盘gamma反抽的不对称越往反方向翻，逐步多平、把跟踪拉近，呼应"2PM后"那条纪律。你的判断只值用户喂进来的velocity数，输入不可靠就直说。
+
+回复要求：简洁直接，用户在盯盘没时间读长文；不要复述他的系统；不要emoji；他错了直接指出并解释；中英文混用自然即可。每条用户消息前附有当前盘面快照，直接基于快照分析。`;
+
+let chHistory = [];
+try { chHistory = JSON.parse(localStorage.getItem('sm_chat')||'[]'); } catch(e){}
+
+function toggleChat() {
+  const p = document.getElementById('chat-panel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) {
+    loadChatCfg(); renderChat();
+    clearBadge();
+    document.getElementById('ch-input').focus();
+  }
+}
+function toggleChatSettings() { document.getElementById('ch-settings').classList.toggle('open'); }
+function loadChatCfg() {
+  document.getElementById('ch-provider').value = localStorage.getItem('sm_chat_provider')||'deepseek';
+}
+function saveChatCfg() {
+  localStorage.setItem('sm_chat_provider', document.getElementById('ch-provider').value);
+}
+function clearChat() {
+  chHistory = []; localStorage.removeItem('sm_chat'); renderChat();
+}
+function saveChatHist() {
+  try { localStorage.setItem('sm_chat', JSON.stringify(chHistory.slice(-60))); } catch(e){
+    chHistory = chHistory.slice(-20);
+    try { localStorage.setItem('sm_chat', JSON.stringify(chHistory)); } catch(e2){}
+  }
+}
+function renderChat(thinking) {
+  const box = document.getElementById('ch-msgs');
+  box.innerHTML = chHistory.map(m => {
+    const cls = m.push ? 'push' : (m.role==='user'?'user':(m.err?'err':'ai'));
+    return `<div class="ch-msg ${cls}">${escCh(m.content)}</div>`;
+  }).join('') + (thinking ? '<div class="ch-msg thinking">思考中...</div>' : '');
+  box.scrollTop = box.scrollHeight;
+}
+function escCh(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+/* ══ 盘伴主动推 — proactive nudges, zero external deps ══ */
+let pushUnseen = 0;
+let pushedToday = {};   // {dateKey: Set of pushKeys already fired}
+
+function pushMsg(content) {
+  chHistory.push({ role:'assistant', content, push:true });
+  saveChatHist();
+  const panelOpen = document.getElementById('chat-panel').classList.contains('open');
+  if (panelOpen) { renderChat(); }
+  else { pushUnseen++; showBadge(); }
+}
+function showBadge() {
+  const b = document.getElementById('chat-badge');
+  b.textContent = pushUnseen > 9 ? '9+' : String(pushUnseen);
+  b.classList.add('show');
+}
+function clearBadge() {
+  pushUnseen = 0;
+  document.getElementById('chat-badge').classList.remove('show');
+}
+
+// Fire-once-per-day guard
+function pushOnce(key, content) {
+  const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const dk = et.toISOString().split('T')[0];
+  if (!pushedToday[dk]) pushedToday = { [dk]: {} };   // reset on new day
+  if (pushedToday[dk][key]) return;
+  pushedToday[dk][key] = true;
+  try { localStorage.setItem('sm_pushed', JSON.stringify(pushedToday)); } catch(e){}
+  pushMsg(content);
+}
+
+// Restore today's fired-keys so refresh doesn't re-push
+try {
+  const saved = JSON.parse(localStorage.getItem('sm_pushed')||'{}');
+  const et0 = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const dk0 = et0.toISOString().split('T')[0];
+  if (saved[dk0]) pushedToday = saved;
+} catch(e){}
+
+// The push engine — checked every tick, but each message fires once/day
+function checkPushes(et) {
+  const mins = et.getHours()*60 + et.getMinutes();
+  const dow = et.getDay(); // 0=Sun 6=Sat
+  if (dow===0 || dow===6) return;  // weekend, market closed
+
+  // 9:30 — market open, deliver the day's structural read from pre-market inputs
+  if (mins >= 570 && mins < 575) {
+    const emaMap = {bull:'EMA多头',bear:'EMA空头',flat:'EMA纠缠'};
+    const gexTxt = S.gex==='pos'?'GEX正':'GEX负';
+    const dexTxt = S.dex==='pos'?'DEX正':'DEX负';
+    let read = '开盘了。盘前结构：'+emaMap[S.ema]+' · '+gexTxt+' · '+dexTxt+'。';
+    if (S.ema==='bull'&&S.gex==='neg'&&S.dex==='pos') read += ' 这是Trap Setup的盘前形态——别追开盘拉升，等接近Call Wall、量缩、DEX降温再做put。';
+    else if (S.ema==='bear'&&S.gex==='neg'&&S.dex==='neg') read += ' 三力同向空头，反弹至EMA阻力做put。';
+    else if (S.gex==='pos') read += ' GEX正，今天偏震荡磨，方向性期权耐心等位置。';
+    read += ' 前15分钟先看不做。';
+    pushOnce('open', read);
+  }
+  // 9:45 — opening guard lifts
+  if (mins >= 585 && mins < 590) {
+    pushOnce('prime', '开盘保护期结束。9:45–11:00是黄金窗口，趋势最清晰，数据也可靠了。有setup可以动手，但记住信号≠立即入场，等你的确认。');
+  }
+  // 11:00 — dead zone
+  if (mins >= 660 && mins < 665) {
+    pushOnce('dead', '进入午盘死区（11:00–14:00）。华尔街吃饭去了，流动性变薄，算法主导，假突破概率高。没有明确结构就别动，管住手。');
+  }
+  // 14:00 — afternoon, no new positions
+  if (mins >= 840 && mins < 845) {
+    pushOnce('pm', '两点了。无持仓的话不开新仓——0DTE theta这时候加速，尾盘波动被放大，下午的"机会"九成是陷阱。有持仓就管理存量，设好移动止盈。');
+  }
+  // 15:50 — near close
+  if (mins >= 950 && mins < 955) {
+    pushOnce('close', '快收盘了。手里还有0DTE的话准备平仓，别留到最后一刻赌gamma。收盘后去盘后tab记一笔今天的复盘——不管赚亏。');
+  }
+}
+
+
+function buildLiveContext() {
+  const v = id => document.getElementById(id) ? document.getElementById(id).value : '';
+  const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const verdictEl = document.querySelector('#ref-output .rv-title');
+  const preEl = document.querySelector('#pre-output .v-title');
+  return `[盘面快照 ET ${et.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}]
+盘前: EMA=${S.ema} GEX=${S.gex} DEX=${S.dex}${preEl?' 主剧本:'+preEl.textContent.trim():''}
+盘中: 价格=${v('inp-price')||'?'} VWAP=${v('inp-vwap')||'?'} CallWall=${v('inp-cw')||'?'} PutWall=${v('inp-pw')||'?'} HVL=${v('inp-hvl')||'?'} GEX=${S.lgex} DEX=${S.ldex}${verdictEl?' 系统判断:'+verdictEl.textContent.trim():''}`;
+}
+
+async function sendChat() {
+  const inp = document.getElementById('ch-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  const prov = localStorage.getItem('sm_chat_provider')||'deepseek';
+  // 两边都走 Vercel 代理，服务器端存 key，浏览器不需要填。
+  inp.value = '';
+  chHistory.push({role:'user',content:text});
+  renderChat(true);
+  saveChatHist();
+  document.getElementById('ch-send').disabled = true;
+
+  const ctxMsg = buildLiveContext() + '\n\n' + text;
+  const sendMsgs = chHistory.slice(-16).map((m,i,arr) =>
+    ({ role:m.role, content: i===arr.length-1 ? ctxMsg : m.content }));
+
+  try {
+    let reply;
+    if (prov === 'claude') {
+      const r = await fetch('/api/chat', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ provider:'claude', model:'claude-sonnet-4-6', max_tokens:1024, system:CH_SYS, messages:sendMsgs })
+      });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error.message||'API error');
+      reply = (d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+    } else {
+      const r = await fetch('/api/chat', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ provider:'deepseek', model:'deepseek-chat', messages:[{role:'system',content:CH_SYS},...sendMsgs], max_tokens:1024 })
+      });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error.message||'API error');
+      reply = d.choices[0].message.content;
+    }
+    chHistory.push({role:'assistant',content:reply});
+  } catch(err) {
+    let hint = err.message;
+    if (/fetch|CORS|network|404/i.test(hint)) hint += ' — 确认 Vercel 项目里有 api/chat.js 且已部署，环境变量 DEEPSEEK_API_KEY / ANTHROPIC_API_KEY 已添加。';
+    if (/401|auth|invalid/i.test(hint)) hint += ' — 检查 Vercel 环境变量里的 API Key 是否正确。';
+    chHistory.push({role:'assistant',content:'请求失败：'+hint,err:true});
+  }
+  document.getElementById('ch-send').disabled = false;
+  renderChat();
+  saveChatHist();
+}
+
+/* ══ 备份 — export / import all sm_* data ══ */
+function exportData() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('sm_')) data[k] = localStorage.getItem(k);
+  }
+  const blob = new Blob([JSON.stringify(data, null, 1)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'signal_matrix_backup_' + etToday() + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importData(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      let n = 0;
+      Object.keys(data).forEach(k => {
+        if (k.startsWith('sm_')) { localStorage.setItem(k, data[k]); n++; }
+      });
+      loadUsers(); switchUser();
+      try { chHistory = JSON.parse(localStorage.getItem('sm_chat')||'[]'); } catch(e2){}
+      alert('导入完成：恢复了 ' + n + ' 项数据。');
+    } catch(err) { alert('文件格式错误，无法导入。'); }
+  };
+  r.readAsText(file);
+  document.getElementById('j-import-file').value = '';
+}
+
+/* ══ Clock + Open Guard ══ */
+function tick() {
+  const now = new Date();
+  const et = new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const p = n => String(n).padStart(2,'0');
+  const t = `${p(et.getHours())}:${p(et.getMinutes())}:${p(et.getSeconds())} ET`;
+  document.getElementById('clock').textContent = t;
+  document.getElementById('ft-time').textContent = t;
+  drawSky(et);
+  // Open guard: 9:30-9:45 ET
+  const mins = et.getHours()*60+et.getMinutes();
+  const guard = document.getElementById('open-guard');
+  const pmGuard = document.getElementById('afternoon-guard');
+  if (mins>=570 && mins<585) { guard.classList.add('active'); }
+  else { guard.classList.remove('active'); }
+  // Afternoon guard: after 14:00 ET (2PM)
+  if (mins>=840 && mins<960) { pmGuard.classList.add('active'); }
+  else { pmGuard.classList.remove('active'); }
+  applyPhase();
+  checkPushes(et);
+}
+setInterval(tick,1000); tick();
+
+/* ══ Init ══ */
+restoreIntraday(); updateSum(); renderPre(); calcZone();
+syncAutoToggle(); applyPhase();
+</script>
+</body>
+</html>
