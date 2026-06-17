@@ -992,7 +992,7 @@ body.auto-following .tab-btn.active { opacity:1; }
 .ch-settings.open { display:block; }
 .ch-set-row { display:flex;align-items:center;gap:10px;margin-bottom:8px; }
 .ch-set-label { font-family:var(--cn);font-size:11px;color:var(--ink4);min-width:52px; }
-.ch-select,.ch-key {
+.ch-select {
   flex:1;font-family:var(--ui);font-size:12px;
   padding:7px 10px;border:0.5px solid var(--ink6);border-radius:4px;
   background:var(--card);color:var(--ink);outline:none;
@@ -1445,11 +1445,7 @@ footer {
         <option value="claude">Claude Sonnet（更聪明）</option>
       </select>
     </div>
-    <div class="ch-set-row">
-      <label class="ch-set-label">API Key</label>
-      <input class="ch-key" id="ch-key" type="password" placeholder="仅 Claude 模式需要，DeepSeek 免填" onchange="saveChatCfg()">
-    </div>
-    <div class="ch-set-hint">DeepSeek 已由网站服务器接管，无需填 key，直接聊。切换 Claude 时才需填入自己的 key（仅存本机）。</div>
+    <div class="ch-set-hint">DeepSeek 和 Claude 都已由网站服务器接管，无需填 key，切换模型即可。</div>
   </div>
   <div class="ch-msgs" id="ch-msgs"></div>
   <div class="ch-inputrow">
@@ -2560,13 +2556,9 @@ function toggleChat() {
 function toggleChatSettings() { document.getElementById('ch-settings').classList.toggle('open'); }
 function loadChatCfg() {
   document.getElementById('ch-provider').value = localStorage.getItem('sm_chat_provider')||'deepseek';
-  document.getElementById('ch-key').value = localStorage.getItem('sm_chat_key_'+(localStorage.getItem('sm_chat_provider')||'deepseek'))||'';
 }
 function saveChatCfg() {
-  const prov = document.getElementById('ch-provider').value;
-  localStorage.setItem('sm_chat_provider', prov);
-  localStorage.setItem('sm_chat_key_'+prov, document.getElementById('ch-key').value.trim());
-  loadChatCfg();
+  localStorage.setItem('sm_chat_provider', document.getElementById('ch-provider').value);
 }
 function clearChat() {
   chHistory = []; localStorage.removeItem('sm_chat'); renderChat();
@@ -2679,13 +2671,7 @@ async function sendChat() {
   const text = inp.value.trim();
   if (!text) return;
   const prov = localStorage.getItem('sm_chat_provider')||'deepseek';
-  const key = localStorage.getItem('sm_chat_key_'+prov)||'';
-  // DeepSeek runs through the Vercel proxy — no key needed in browser.
-  if (prov === 'claude' && !key) {
-    document.getElementById('ch-settings').classList.add('open');
-    chHistory.push({role:'assistant',content:'Claude 模式需要在设置里填入你自己的 API Key（只存本机）。DeepSeek 模式无需 key。',err:true});
-    renderChat(); return;
-  }
+  // 两边都走 Vercel 代理，服务器端存 key，浏览器不需要填。
   inp.value = '';
   chHistory.push({role:'user',content:text});
   renderChat(true);
@@ -2699,15 +2685,10 @@ async function sendChat() {
   try {
     let reply;
     if (prov === 'claude') {
-      const r = await fetch('https://api.anthropic.com/v1/messages', {
+      const r = await fetch('/api/chat', {
         method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'x-api-key':key,
-          'anthropic-version':'2023-06-01',
-          'anthropic-dangerous-direct-browser-access':'true'
-        },
-        body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1024, system:CH_SYS, messages:sendMsgs })
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ provider:'claude', model:'claude-sonnet-4-6', max_tokens:1024, system:CH_SYS, messages:sendMsgs })
       });
       const d = await r.json();
       if (d.error) throw new Error(d.error.message||'API error');
@@ -2716,7 +2697,7 @@ async function sendChat() {
       const r = await fetch('/api/chat', {
         method:'POST',
         headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify({ model:'deepseek-chat', messages:[{role:'system',content:CH_SYS},...sendMsgs], max_tokens:1024 })
+        body: JSON.stringify({ provider:'deepseek', model:'deepseek-chat', messages:[{role:'system',content:CH_SYS},...sendMsgs], max_tokens:1024 })
       });
       const d = await r.json();
       if (d.error) throw new Error(d.error.message||'API error');
@@ -2725,8 +2706,8 @@ async function sendChat() {
     chHistory.push({role:'assistant',content:reply});
   } catch(err) {
     let hint = err.message;
-    if (/fetch|CORS|network|404/i.test(hint)) hint += ' — 确认 Vercel 项目里有 api/chat.js 且已部署，环境变量 DEEPSEEK_API_KEY 已添加。';
-    if (/401|auth|invalid/i.test(hint)) hint += ' — 检查API Key是否正确。';
+    if (/fetch|CORS|network|404/i.test(hint)) hint += ' — 确认 Vercel 项目里有 api/chat.js 且已部署，环境变量 DEEPSEEK_API_KEY / ANTHROPIC_API_KEY 已添加。';
+    if (/401|auth|invalid/i.test(hint)) hint += ' — 检查 Vercel 环境变量里的 API Key 是否正确。';
     chHistory.push({role:'assistant',content:'请求失败：'+hint,err:true});
   }
   document.getElementById('ch-send').disabled = false;
