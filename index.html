@@ -445,6 +445,7 @@ body.auto-following .tab-btn.active { opacity:1; }
 .box-hint { font-family:var(--ui);font-size:12px;color:var(--ink4);padding:18px;text-align:center;border:0.5px dashed var(--ink6);border-radius:6px; }
 .box-tier { font-family:var(--ui);font-size:11px;color:var(--ink4);margin-top:8px;letter-spacing:0.04em; }
 .box-dist { font-family:var(--num);font-size:11.5px;color:var(--ink3);margin-top:8px;letter-spacing:0.02em; }
+.box-foot { font-family:var(--ui);font-size:10.5px;line-height:1.6;color:var(--ink4);margin-top:10px;padding-top:8px;border-top:0.5px solid var(--ink6);letter-spacing:0.02em; }
 .box-verdict { font-family:var(--ui);font-size:12.5px;line-height:1.65;color:var(--ink2);margin-top:8px;padding:10px 13px;border:0.5px solid var(--ink6);border-radius:6px;background:var(--card); }
 .box-verdict b { color:var(--ink);font-weight:600; }
 .box-warn { font-family:var(--ui);font-size:12px;line-height:1.65;color:var(--amber);margin-top:8px;padding:10px 13px;border:0.5px solid var(--amber);border-radius:6px;background:var(--amber-dim); }
@@ -1640,13 +1641,14 @@ function renderBox() {
   const dexM = dexV===null?null:dexV*(U.dex==='B'?1000:1);
   const lbl = (v,u)=>f(v)+u;
 
-  // GEX magnitude → wall solidity
-  let strokeW=1.6, dash='', tierTxt='';
+  // GEX 符号 + 量级 → 墙可靠度 + gamma regime（regime 由 GEX 符号定，不靠位置猜）
+  let strokeW=1.6, dash='', tierTxt='', regime='none';
   if(gexM!==null){
     const a=Math.abs(gexM);
-    if(a>=200){ strokeW=3; dash=''; tierTxt='强 ≥200M — 墙硬，盒子可信'; }
-    else if(a>=50){ strokeW=1.6; dash=''; tierTxt='中 50–200M — 方向有效，盯 velocity'; }
-    else { strokeW=1.1; dash='4 3'; tierTxt='弱 <50M — 噪音级，边界不可信'; }
+    if(a<50){ strokeW=1.1; dash='4 3'; tierTxt='弱 <50M — 噪音级，边界不可信，易翻向'; regime='weak'; }
+    else if(gexM<0){ strokeW=1.5; dash='5 4'; tierTxt='负 gamma（'+lbl(gexV,U.gex)+'）— 墙是减速带、易被穿，别反趋势'; regime='neg'; }
+    else if(a>=200){ strokeW=3; dash=''; tierTxt='正强 ≥200M — 墙硬、盒子可信，反趋势有效'; regime='pos'; }
+    else { strokeW=1.7; dash=''; tierTxt='正中 50–200M — 墙中等，确认后再进'; regime='pos'; }
   }
 
   if(cw===null||pw===null||cw<=pw){
@@ -1654,11 +1656,11 @@ function renderBox() {
     return;
   }
 
-  const topY=26, botY=120, x0=70, x1=300, vx=306;
+  const topY=46, botY=130, x0=70, x1=300, vx=306;
   const yFor=p=>topY+(cw-p)/(cw-pw)*(botY-topY);
-  const cl=y=>Math.max(topY-18,Math.min(botY+18,y));
+  const cl=y=>Math.max(topY-32,Math.min(botY+34,y));
 
-  let s='<svg viewBox="0 0 360 146" width="100%" style="display:block;font-family:var(--ui)">';
+  let s='<svg viewBox="0 0 360 176" width="100%" style="display:block;font-family:var(--ui)">';
   s+='<rect x="'+x0+'" y="'+topY+'" width="'+(x1-x0)+'" height="'+(botY-topY)+'" fill="var(--paper2)" rx="4"/>';
   s+='<line x1="'+x0+'" y1="'+topY+'" x2="'+x1+'" y2="'+topY+'" stroke="var(--vermillion)" stroke-width="'+strokeW+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/>';
   s+='<text x="'+(x0-6)+'" y="'+(topY+4)+'" text-anchor="end" font-size="10" fill="var(--ink4)">Call Wall</text>';
@@ -1672,15 +1674,16 @@ function renderBox() {
     s+='<text x="'+(x0-6)+'" y="'+(yh+4)+'" text-anchor="end" font-size="10" fill="var(--indigo)">HVL \u27f2</text>';
     s+='<text x="'+vx+'" y="'+(yh+4)+'" font-size="11" fill="var(--indigo)" style="font-family:var(--num)">'+f(hvl)+'</text>';
   }
-  let pos='';
   if(px!==null){
     const yp=cl(yFor(px));
-    pos = (px<=cw&&px>=pw)?'in':(px>cw?'up':'down');
-    s+='<line x1="'+x0+'" y1="'+yp+'" x2="'+x1+'" y2="'+yp+'" stroke="var(--ink)" stroke-width="1"/>';
+    const tly=Math.max(13,Math.min(168,yp-4));
+    const outside=(px>cw||px<pw);
+    s+='<line x1="'+x0+'" y1="'+yp+'" x2="'+x1+'" y2="'+yp+'" stroke="var(--ink)" stroke-width="1"'+(outside?' stroke-dasharray="3 3"':'')+'/>';
     s+='<circle cx="'+x1+'" cy="'+yp+'" r="3.5" fill="var(--ink)"/>';
-    s+='<text x="'+(x0-6)+'" y="'+(yp-4)+'" text-anchor="end" font-size="10" fill="var(--ink2)" style="font-weight:600">现价</text>';
-    s+='<text x="'+vx+'" y="'+(yp-4)+'" font-size="11" fill="var(--ink)" style="font-family:var(--num);font-weight:600">'+f(px)+'</text>';
-    if(hvl!==null && Math.abs(px-hvl)>1e-9){
+    s+='<text x="'+(x0-6)+'" y="'+tly+'" text-anchor="end" font-size="10" fill="var(--ink2)" style="font-weight:600">现价</text>';
+    s+='<text x="'+vx+'" y="'+tly+'" font-size="11" fill="var(--ink)" style="font-family:var(--num);font-weight:600">'+f(px)+'</text>';
+    // 磁吸：仅正 gamma 才有，朝 HVL（上方→向下、下方→向上）；负/弱 gamma 无单向引力，不画
+    if(regime==='pos' && hvl!==null && Math.abs(px-hvl)>1e-9){
       const ax=x0+15, down=px>hvl;
       const tri = down ? ax+','+(yp+6)+' '+(ax-4)+','+(yp-2)+' '+(ax+4)+','+(yp-2)
                        : ax+','+(yp-6)+' '+(ax-4)+','+(yp+2)+' '+(ax+4)+','+(yp+2);
@@ -1690,10 +1693,11 @@ function renderBox() {
   s+='</svg>';
 
   let v;
-  if(pos==='in') v='现价在盒内 · <b>反趋势模式</b>：撞 Wall 量缩失败就 fade，偏离哪边都等被 HVL 拉回。';
-  else if(pos==='up') v='现价在盒外（上破 Call Wall）· <b>跟随模式</b>：Call Wall 转支撑，跟多别 fade；跌回盒内 = 突破失败。';
-  else if(pos==='down') v='现价在盒外（下破 Put Wall）· <b>跟随模式</b>：Put Wall 转阻力，跟空别抄底；拉回盒内 = 假破。';
-  else v='盒子已画好。填现价判断站位：盒内反趋势 / 盒外跟突破。';
+  if(regime==='pos') v='正 gamma 区 · <b>反趋势区</b>：墙有效，撞 Wall 量缩失败再 fade，价格倾向被拉回 HVL。';
+  else if(regime==='neg') v='负 gamma 区 · <b>放大/趋势区</b>：墙易被穿，别反趋势抄底、跟方向；诱空高发区，真破假破交给盘伴（DEX 值+velocity）。';
+  else if(regime==='weak') v='GEX <50M · <b>临界</b>：regime 不稳、易翻向，别用静态结构下注，等 price action + 宏观。';
+  else v='填 GEX 定今天是正 gamma（反趋势）还是负 gamma（趋势）。';
+  if(px!==null){ if(px>cw) v+=' 现价已上破 Call Wall。'; else if(px<pw) v+=' 现价已下破 Put Wall。'; }
 
   let warn='';
   if(gexM!==null && Math.abs(gexM)<50){
@@ -1712,7 +1716,8 @@ function renderBox() {
     +(dist?'<div class="box-dist">'+dist+'</div>':'')
     +(tierTxt?'<div class="box-tier">GEX 量级：'+tierTxt+'</div>':'')
     +(warn?'<div class="box-warn">'+warn+'</div>':'')
-    +'<div class="box-verdict">'+v+'</div>';
+    +'<div class="box-verdict">'+v+'</div>'
+    +'<div class="box-foot">结构是 setup 不是信号 — MM 会 fake GEX/DEX 诱多诱空，最终看 price action 确认。</div>';
 }
 function updateSum() {
   const el = {bull:['BULL','var(--teal)'],bear:['BEAR','var(--vermillion)'],flat:['FLAT','var(--ink3)']};
