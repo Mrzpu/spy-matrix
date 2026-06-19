@@ -976,6 +976,16 @@ body.auto-following .tab-btn.active { opacity:1; }
   animation:fadeUp .25s var(--ease);
 }
 #chat-panel.open { display:flex; }
+.ch-resize {
+  position:absolute;top:0;left:0;right:0;height:9px;
+  cursor:ns-resize;z-index:5;touch-action:none;
+}
+.ch-resize::after {
+  content:'';position:absolute;top:3px;left:50%;transform:translateX(-50%);
+  width:34px;height:3px;border-radius:2px;background:var(--ink6);
+  opacity:0;transition:opacity .15s;
+}
+.ch-resize:hover::after { opacity:1; }
 .ch-head {
   display:flex;align-items:center;justify-content:space-between;
   padding:12px 16px;border-bottom:0.5px solid var(--ink6);
@@ -1429,6 +1439,7 @@ footer {
   <span id="chat-badge" class="chat-badge"></span>
 </div>
 <div id="chat-panel">
+  <div id="ch-resize" class="ch-resize" title="拖动调整高度"></div>
   <div class="ch-head">
     <span class="ch-title">盘伴</span>
     <div class="ch-head-btns">
@@ -2560,6 +2571,30 @@ function loadChatCfg() {
 function saveChatCfg() {
   localStorage.setItem('sm_chat_provider', document.getElementById('ch-provider').value);
 }
+(function(){
+  const panel = document.getElementById('chat-panel');
+  const handle = document.getElementById('ch-resize');
+  if (!panel || !handle) return;
+  const KEY = 'sm_chat_h', MIN = 280;
+  const maxH = () => Math.max(MIN, window.innerHeight - 120);
+  const saved = parseInt(localStorage.getItem(KEY) || '', 10);
+  if (saved) panel.style.height = Math.min(maxH(), Math.max(MIN, saved)) + 'px';
+  let drag = null;
+  handle.addEventListener('pointerdown', e => {
+    drag = { y: e.clientY, h: panel.offsetHeight };
+    handle.setPointerCapture(e.pointerId);
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+  handle.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const h = Math.min(maxH(), Math.max(MIN, drag.h + (drag.y - e.clientY)));
+    panel.style.height = h + 'px';
+  });
+  const end = () => { if (!drag) return; drag = null; document.body.style.userSelect = ''; localStorage.setItem(KEY, panel.offsetHeight); };
+  handle.addEventListener('pointerup', end);
+  handle.addEventListener('pointercancel', end);
+})();
 function clearChat() {
   chHistory = []; localStorage.removeItem('sm_chat'); renderChat();
 }
