@@ -72,7 +72,8 @@ body::before {
 #sky-tint {
   position:fixed;inset:0;
   z-index:0;pointer-events:none;
-  transition:opacity 2s ease;
+  mix-blend-mode:soft-light;
+  transition:background 2s ease;
 }
 #sky-canvas {
   position:fixed;bottom:0;left:0;
@@ -443,15 +444,29 @@ body.auto-following .tab-btn.active { opacity:1; }
 #box-viz { max-width:500px;margin:14px auto 4px; }
 .box-svg-wrap { border:0.5px solid var(--ink6);border-radius:6px;background:var(--card);padding:12px 10px; }
 .box-hint { font-family:var(--ui);font-size:12px;color:var(--ink4);padding:18px;text-align:center;border:0.5px dashed var(--ink6);border-radius:6px; }
-.box-tier { font-family:var(--ui);font-size:11px;color:var(--ink4);margin-top:8px;letter-spacing:0.04em; }
-.box-dist { font-family:var(--num);font-size:11.5px;color:var(--ink3);margin-top:8px;letter-spacing:0.02em; }
-.box-foot { font-family:var(--ui);font-size:10.5px;line-height:1.6;color:var(--ink4);margin-top:10px;padding-top:8px;border-top:0.5px solid var(--ink6);letter-spacing:0.02em; }
-.box-verdict { font-family:var(--ui);font-size:12.5px;line-height:1.65;color:var(--ink2);margin-top:8px;padding:10px 13px;border:0.5px solid var(--ink6);border-radius:6px;background:var(--card); }
-.box-verdict b { color:var(--ink);font-weight:600; }
-.box-warn { font-family:var(--ui);font-size:12px;line-height:1.65;color:var(--amber);margin-top:8px;padding:10px 13px;border:0.5px solid var(--amber);border-radius:6px;background:var(--amber-dim); }
-.pre-out-head { cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px; }
-.pre-out-caret { font-size:10px;color:var(--ink4); }
-#pre-output.folded { display:none; }
+.box-dist { font-family:var(--num);font-size:11.5px;color:var(--ink3);margin-top:9px;text-align:center;letter-spacing:0.04em; }
+
+/* 今日策略 — 一块连续的阅读面板，靠层级与留白分区，不再用碎卡片 */
+.box-read { margin-top:16px;padding:17px 19px;border:0.5px solid var(--ink6);border-radius:8px;background:var(--card); }
+.read-kicker { font-family:var(--cn);font-size:10.5px;font-weight:300;letter-spacing:0.24em;color:var(--ink5);margin-bottom:8px; }
+.read-bias { font-family:var(--cn);font-size:15px;font-weight:500;line-height:1.5;letter-spacing:0.03em;color:var(--ink3); }
+.read-bias.b-call { color:var(--teal); }
+.read-bias.b-put { color:var(--vermillion); }
+.read-bias.b-range { color:var(--indigo); }
+.read-why { font-family:var(--ui);font-size:12px;line-height:1.7;color:var(--ink3);margin-top:7px; }
+.read-why.warn { color:var(--amber); }
+.read-sep { height:0.5px;background:linear-gradient(90deg,transparent,var(--ink6) 25%,var(--ink6) 75%,transparent);margin:16px 0; }
+.read-play { display:flex;flex-direction:column;gap:12px; }
+.play-row { display:flex;gap:13px;align-items:baseline; }
+.play-tag { flex:0 0 50px;font-family:var(--num);font-size:11px;font-weight:600;letter-spacing:0.02em; }
+.play-tag.t-cw { color:var(--vermillion); }
+.play-tag.t-pw { color:var(--teal); }
+.play-tag.t-in { color:var(--ink4); }
+.play-txt { flex:1;font-family:var(--ui);font-size:12px;line-height:1.65;color:var(--ink2); }
+.read-ema { font-family:var(--ui);font-size:11.5px;line-height:1.7;color:var(--ink4);margin-top:15px; }
+.read-ema b { color:var(--ink2);font-weight:600; }
+.box-foot { font-family:var(--ui);font-size:10.5px;line-height:1.65;color:var(--ink5);margin-top:15px;padding-top:11px;border-top:0.5px solid var(--ink6);letter-spacing:0.02em; }
+.aux-kicker { font-family:var(--cn);font-size:11px;font-weight:300;letter-spacing:0.2em;color:var(--ink5);margin:20px 0 11px; }
 
 /* ── Analysis Output (Pre-market) ── */
 .verdict-card {
@@ -1295,16 +1310,7 @@ footer {
     <div class="sum-item"><span class="sum-k">DEX</span><span class="sum-v" id="s-dex" style="color:var(--teal)">+ POS</span></div>
   </div>
 
-  <div class="sec-label">今日盒子 · 边界与引力</div>
-  <div class="box-grid">
-    <div><label class="box-in-label">Call Wall（上沿）</label><input class="box-in" id="box-cw" type="number" step="0.01" placeholder="745" oninput="renderBox()"></div>
-    <div><label class="box-in-label">Put Wall（下沿）</label><input class="box-in" id="box-pw" type="number" step="0.01" placeholder="738" oninput="renderBox()"></div>
-    <div><label class="box-in-label">HVL（引力锚）</label><input class="box-in" id="box-hvl" type="number" step="0.01" placeholder="742" oninput="renderBox()"></div>
-    <div><label class="box-in-label">现价（可选）</label><input class="box-in" id="box-px" type="number" step="0.01" placeholder="开盘价" oninput="renderBox()"></div>
-  </div>
-  <div id="box-viz"></div>
-
-  <div class="sec-label">辅助信号</div>
+  <div class="aux-kicker">辅助信号</div>
   <div class="aux-grid">
     <div class="aux-tile" onclick="toggleAux(this,'hvl')"><div class="aux-name">Price vs HVL</div><div class="aux-val">Below HVL ↓</div></div>
     <div class="aux-tile" onclick="toggleAux(this,'vix')"><div class="aux-name">VIX / IVR</div><div class="aux-val">High &gt; 20</div></div>
@@ -1314,8 +1320,14 @@ footer {
     <div class="aux-tile" onclick="toggleAux(this,'macro')"><div class="aux-name">Macro Event</div><div class="aux-val">CPI / FOMC / NFP</div></div>
   </div>
 
-  <div class="sec-label pre-out-head" onclick="togglePreOut()">分析输出 · 12 组合脚本<span class="pre-out-caret" id="pre-out-caret">▸</span></div>
-  <div id="pre-output" class="folded"></div>
+  <div class="sec-label">今日盒子</div>
+  <div class="box-grid">
+    <div><label class="box-in-label">Call Wall（上沿）</label><input class="box-in" id="box-cw" type="number" step="0.01" placeholder="745" oninput="renderBox()"></div>
+    <div><label class="box-in-label">Put Wall（下沿）</label><input class="box-in" id="box-pw" type="number" step="0.01" placeholder="738" oninput="renderBox()"></div>
+    <div><label class="box-in-label">HVL（引力锚）</label><input class="box-in" id="box-hvl" type="number" step="0.01" placeholder="742" oninput="renderBox()"></div>
+    <div><label class="box-in-label">现价（可选）</label><input class="box-in" id="box-px" type="number" step="0.01" placeholder="开盘价" oninput="renderBox()"></div>
+  </div>
+  <div id="box-viz"></div>
 
 </div>
 
@@ -1605,29 +1617,24 @@ function setSig(g, v, btn) {
   document.querySelectorAll(`[data-g="${g}"]`).forEach(b => b.className='sig-btn');
   const cls = {bull:'on-bull',bear:'on-bear',flat:'on-flat',pos:'on-bull',neg:'on-bear'}[v]||'on-flat';
   btn.classList.add(cls);
-  if (['ema','gex','dex'].includes(g)) { updateSum(); renderPre(); }
+  if (['ema','gex','dex'].includes(g)) { updateSum(); renderBox(); }
   if (['lgex','ldex'].includes(g)) calcZone();
 }
 function toggleAux(el, key) {
   S.aux[key] = !S.aux[key];
   el.classList.toggle('on', S.aux[key]);
-  renderPre();
+  renderBox();
 }
 function toggleUnit(which){
   U[which] = U[which]==='M' ? 'B' : 'M';
   const el=document.getElementById(which+'-unit'); if(el) el.textContent=U[which];
   renderBox();
 }
-function togglePreOut(){
-  const o=document.getElementById('pre-output'); if(!o) return;
-  o.classList.toggle('folded');
-  const c=document.getElementById('pre-out-caret'); if(c) c.textContent=o.classList.contains('folded')?'\u25b8':'\u25be';
-}
 function onMag(which){
   const el=document.getElementById(which+'-mag'); if(!el) return;
   const v=parseFloat(el.value);
   if(!isNaN(v)) S[which] = v<0 ? 'neg' : 'pos';
-  updateSum(); renderPre(); renderBox();
+  updateSum(); renderBox();
 }
 function renderBox() {
   const num = id => { const el=document.getElementById(id); if(!el) return null; const v=parseFloat(el.value); return isNaN(v)?null:v; };
@@ -1692,32 +1699,93 @@ function renderBox() {
   }
   s+='</svg>';
 
-  let v;
-  if(regime==='pos') v='正 gamma 区 · <b>反趋势区</b>：墙有效，撞 Wall 量缩失败再 fade，价格倾向被拉回 HVL。';
-  else if(regime==='neg') v='负 gamma 区 · <b>放大/趋势区</b>：墙易被穿，别反趋势抄底、跟方向；诱空高发区，真破假破交给盘伴（DEX 值+velocity）。';
-  else if(regime==='weak') v='GEX <50M · <b>临界</b>：regime 不稳、易翻向，别用静态结构下注，等 price action + 宏观。';
-  else v='填 GEX 定今天是正 gamma（反趋势）还是负 gamma（趋势）。';
-  if(px!==null){ if(px>cw) v+=' 现价已上破 Call Wall。'; else if(px<pw) v+=' 现价已下破 Put Wall。'; }
-
-  let warn='';
-  if(gexM!==null && Math.abs(gexM)<50){
-    warn='GEX 量级噪音级（'+lbl(gexV,U.gex)+'），边界不可信，开盘易翻向——别用静态结构下重注。';
-    if(dexM!==null && Math.abs(dexM)<50) warn='GEX/DEX 双弱（'+lbl(gexV,U.gex)+' / '+lbl(dexV,U.dex)+'），开盘极易翻正，即使 −DEX 也别追空、容易被买回去。等 volume + 宏观定方向。';
-  }
-
+  // ── 距离 ──
   let dist='';
   if(px!==null){
     const dCW=cw-px, dPW=px-pw;
-    dist='\u2191 Call Wall '+f(Math.abs(dCW))+(dCW<0?'（已破）':'')+' \u00b7 \u2193 Put Wall '+f(Math.abs(dPW))+(dPW<0?'（已破）':'');
-    if(hvl!==null){ const dH=px-hvl; dist+=' \u00b7 HVL '+(dH>=0?'+':'\u2212')+f(Math.abs(dH)); }
+    dist='\u2191 CW '+f(Math.abs(dCW))+(dCW<0?'(破)':'')+'  \u00b7  \u2193 PW '+f(Math.abs(dPW))+(dPW<0?'(破)':'');
+    if(hvl!==null){ const dH=px-hvl; dist+='  \u00b7  HVL '+(dH>=0?'+':'\u2212')+f(Math.abs(dH)); }
   }
 
-  wrap.innerHTML='<div class="box-svg-wrap">'+s+'</div>'
-    +(dist?'<div class="box-dist">'+dist+'</div>':'')
-    +(tierTxt?'<div class="box-tier">GEX 量级：'+tierTxt+'</div>':'')
-    +(warn?'<div class="box-warn">'+warn+'</div>':'')
-    +'<div class="box-verdict">'+v+'</div>'
-    +'<div class="box-foot">结构是 setup 不是信号 — MM 会 fake GEX/DEX 诱多诱空，最终看 price action 确认。</div>';
+  // ── 综合：regime(GEX符号×量级) × 燃料(DEX符号×量级) × EMA → 今日策略 ──
+  const aG=gexM===null?null:Math.abs(gexM), aD=dexM===null?null:Math.abs(dexM);
+  const fuelDir = dexM===null?0:(dexM>0?1:-1);
+  const fuelStrong = aD!==null && aD>=400;
+  const fuelWeak   = aD!==null && aD<50;
+  const wallHard   = regime==='pos' && aG!==null && aG>=200;
+  const emaMap={bull:'EMA 多头',bear:'EMA 空头',flat:'EMA 纠缠'};
+  const dexLbl = aD===null ? '未填 DEX' : lbl(dexV,U.dex);
+
+  // 基调
+  let biasLabel='填 GEX / DEX，读今日基调', biasCls='', why='';
+  if(regime==='weak'){
+    biasLabel='不下注 · 等确认';
+    why='GEX <50M 噪音级，结构不可信、开盘易翻向。等 price action + 宏观定方向再说。';
+  } else if(regime==='neg'){
+    if(fuelWeak||aD===null){ biasLabel='趋势待定 · 等突破'; why='负 gamma 会放大，但燃料不足，方向未定。破哪边跟哪边，别在盒内反复挨刀。'; }
+    else if(fuelDir>0){ biasLabel='趋势多日 · 顺势'; biasCls='b-call'; why='负 gamma 放大 + '+(fuelStrong?'强':'')+'正燃料（'+dexLbl+'），易走单边上行。跟方向、别 fade 抄顶，DEX 转负再撤。'; }
+    else { biasLabel='趋势空日 · 顺势'; biasCls='b-put'; why='负 gamma 放大 + '+(fuelStrong?'强':'')+'负燃料（'+dexLbl+'），单边下行风险。跟方向、别接刀抄底，DEX 转正再撤。'; }
+  } else if(regime==='pos'){
+    if(fuelStrong&&fuelDir>0){ biasLabel='顺势 call 日 · 骑多'; biasCls='b-call'; why='正 gamma 稳步上磨 + 强正燃料（'+dexLbl+'），'+(wallHard?'墙硬、':'')+'有支撑往上推。骑多到超买 / 触 CW 量能背离再减，别 fade。'; }
+    else if(fuelStrong&&fuelDir<0){ biasLabel='慢空日 · spread'; biasCls='b-put'; why='正 gamma 压波动 + 强负燃料（'+dexLbl+'），慢磨向下。用 spread 别裸，反弹到 EMA / HVL 进。'; }
+    else { biasLabel='区间 fade 日'; biasCls='b-range'; why='正 gamma + 燃料不足（'+dexLbl+'），'+(wallHard?'墙硬、':'')+'边界守得住。近墙量缩失败再 fade 回 HVL，中间不追。'; }
+  }
+
+  // 开盘剧本（按 regime + 燃料 解析当条动作）
+  let play=[];
+  if(regime==='neg'||regime==='pos'){
+    let cwT,pwT,inT;
+    if(regime==='neg'){
+      cwT = (fuelDir>0&&!fuelWeak) ? '顺势别做空抄顶，放大行情会碾；DEX 转负才考虑见顶。' : '假突破风险，别追；等回落站不稳再说。';
+      pwT = (fuelDir<0&&!fuelWeak) ? '真破，跟着下别接刀；DEX 转正才反转。' : '假破风险，别抄底；等企稳确认再做反弹。';
+      inT = '等突破：破哪边跟哪边，盒内别反复挨刀。';
+    } else {
+      cwT = (fuelStrong&&fuelDir>0) ? '真燃料，正 gamma 稳推，骑多别 fade；超买 / 触 CW 量能背离再减。' : '诱多概率大，撞 CW 量缩 + 上影再 fade 做 put，拉回 HVL。';
+      pwT = (fuelStrong&&fuelDir<0) ? '真空头燃料，慢磨向下，spread 跟；别接刀抄底。' : '诱空洗盘概率大（MM 防守洗散户），企稳止跌再 fade 做 call，弹回 HVL。';
+      inT = fuelStrong ? ('区间偏'+(fuelDir>0?'上':'下')+'，先到燃料方向那条边；近墙量缩失败 fade 回 HVL。') : '区间日，近 CW / PW 量缩失败 fade 回 HVL，中间不追。';
+    }
+    play=[['t-cw','\u2191 CW',cwT],['t-pw','\u2193 PW',pwT],['t-in','\u25a1 内',inT]];
+  }
+
+  // EMA 修正
+  let emaNote='';
+  if(biasCls==='b-call') emaNote = S.ema==='bull' ? '<b>'+emaMap[S.ema]+'</b> 与多向同向，信心加、可正常仓。' : S.ema==='bear' ? '<b>'+emaMap[S.ema]+'</b> 逆多向，趋势没站队，缩仓、只做确认后。' : '<b>EMA 纠缠</b>，趋势未定，等 9:45 后排列清晰。';
+  else if(biasCls==='b-put') emaNote = S.ema==='bear' ? '<b>'+emaMap[S.ema]+'</b> 与空向同向，信心加、可正常仓。' : S.ema==='bull' ? '<b>'+emaMap[S.ema]+'</b> 逆空向，接刀风险，缩仓、只做确认后。' : '<b>EMA 纠缠</b>，趋势未定，等 9:45 后排列清晰。';
+  else if(biasCls==='b-range') emaNote = S.ema==='flat' ? '<b>EMA 纠缠</b>，最干净的区间日，两边都能 fade。' : '<b>'+emaMap[S.ema]+'</b> 有方向，顺势那条边的墙更易破，fade 那一侧要轻、留好止损。';
+
+  // aux 修正（只列触发的）
+  const auxNotes=[];
+  if(S.aux.hvl) auxNotes.push('价格低于 HVL：Negative Transition，做多谨慎');
+  if(S.aux.vix) auxNotes.push('VIX / IVR 偏高：期权贵，prefer spreads');
+  if(S.aux.vol) auxNotes.push('成交量异常：止损放宽、仓位缩小');
+  if(S.aux.opex) auxNotes.push('OPEX 周：Max Pain 引力强，注意 pin risk');
+  if(S.aux.dexvel) auxNotes.push('DEX 减速：买方动能衰减，put timing 临近');
+  if(S.aux.macro) auxNotes.push('\u26a0 宏观事件日：不交易或大幅缩仓');
+
+  // 噪音警告
+  let warn='';
+  if(gexM!==null && Math.abs(gexM)<50){
+    warn='GEX 噪音级（'+lbl(gexV,U.gex)+'），边界不可信、开盘易翻向，别用静态结构下重注。';
+    if(dexM!==null && Math.abs(dexM)<50) warn='GEX / DEX 双弱（'+lbl(gexV,U.gex)+' / '+lbl(dexV,U.dex)+'），开盘极易翻向，即使 \u2212DEX 也别追空、容易被买回去。等 volume + 宏观。';
+  }
+
+  // ── 渲染：一块连续面板 ──
+  let panel='<div class="box-read">';
+  panel+='<div class="read-kicker">今日基调</div>';
+  panel+='<div class="read-bias '+biasCls+'" id="pre-bias">'+biasLabel+'</div>';
+  if(why) panel+='<div class="read-why">'+why+'</div>';
+  if(warn) panel+='<div class="read-why warn">'+warn+'</div>';
+  if(play.length){
+    panel+='<div class="read-sep"></div><div class="read-kicker">开盘剧本</div><div class="read-play">';
+    play.forEach(p=>{ panel+='<div class="play-row"><div class="play-tag '+p[0]+'">'+p[1]+'</div><div class="play-txt">'+p[2]+'</div></div>'; });
+    panel+='</div>';
+  }
+  if(emaNote) panel+='<div class="read-ema">'+emaNote+'</div>';
+  if(auxNotes.length) panel+='<div class="read-ema">'+auxNotes.map(n=>'\u00b7 '+n).join('<br>')+'</div>';
+  panel+='<div class="box-foot">结构是 setup 不是信号 — 真假破最终看 price action + 盘伴（DEX velocity）确认。</div>';
+  panel+='</div>';
+
+  wrap.innerHTML='<div class="box-svg-wrap">'+s+'</div>'+(dist?'<div class="box-dist">'+dist+'</div>':'')+panel;
 }
 function updateSum() {
   const el = {bull:['BULL','var(--teal)'],bear:['BEAR','var(--vermillion)'],flat:['FLAT','var(--ink3)']};
@@ -1728,69 +1796,6 @@ function updateSum() {
   document.getElementById('s-dex').style.color = S.dex==='pos'?'var(--teal)':'var(--vermillion)';
 }
 
-/* ══ Pre-Market Combos ══ */
-const C = {
-  bull_pos_pos:{d:'call',q:'high',t:'📈 三力同向多头 — Buy Call',b:'EMA多头 + GEX正 + DEX正。MMs对冲买入支撑上涨，趋势自我强化。做call，止损20EMA下方。',tr:['call','call_spread'],no:['put','iron_condor'],tm:'全天有效，午盘回测EMA加仓',en:'回调至20EMA/9EMA支撑',ex:'Call Wall或日内高点',ab:'跌破20EMA + DEX翻负'},
-  bull_neg_pos:{d:'put',q:'high',t:'⚡ Trap Setup — Buy Put',b:'EMA多头给散户信心追多；GEX负MMs不压制波动；DEX正净买入旺盛。开盘拉升但支撑虚假。接近call wall + DEX降温时做put。',tr:['put','put_spread'],no:['call','iron_condor'],tm:'等拉升后 9:45–11:00 或午后反弹失败',en:'Call Wall附近缩量 + 上影线/吞没',ex:'Put Wall或EMA支撑',ab:'价格突破Call Wall不回头 + 放量 → 止损'},
-  bull_pos_neg:{d:'put',q:'mid',t:'📉 多头分化 — 轻仓 Put Spread',b:'GEX正压制波动，DEX负资金净流出。慢速向下回归均值。用spread不用裸put。',tr:['put_spread','butterfly'],no:['naked_call','naked_put'],tm:'午盘后效果更好',en:'反弹至EMA阻力位',ex:'日内低点或支撑',ab:'站上9EMA + DEX翻正'},
-  bull_neg_neg:{d:'put',q:'mid',t:'🔄 资金撤退 — Put',b:'EMA多头但聪明钱减仓，GEX负放大下行。趋势末段信号。',tr:['put','put_spread'],no:['iron_condor'],tm:'等EMA向下弯曲后入场',en:'跌破9EMA回测失败',ex:'20EMA或50EMA',ab:'回收9EMA + DEX转正'},
-  bear_neg_neg:{d:'put',q:'high',t:'🔻 三力同向空头 — Buy Put',b:'EMA空头 + GEX负 + DEX负。MMs放大下跌，结构性熊市。0DTE快进快出。',tr:['put','put_spread'],no:['call','iron_condor'],tm:'开盘观察，反弹至EMA阻力后入场',en:'反弹至20EMA被压 / 破关键支撑',ex:'Put Wall或次级支撑',ab:'强势收复20EMA + GEX转正'},
-  bear_pos_neg:{d:'put',q:'mid',t:'📌 空头 + GEX压制慢跌',b:'方向做空，但GEX正导致慢磨。Put spread或butterfly。',tr:['put_spread','butterfly'],no:['naked_put','iron_condor'],tm:'全天均可，慢跌适合稍长持有',en:'反弹至EMA阻力',ex:'次级支撑或日内低点',ab:'突破EMA + DEX翻正'},
-  bear_neg_pos:{d:'call',q:'mid',t:'🔄 资金接盘 — 等反转 Call',b:'DEX正有人买Delta，GEX负放大反弹。反转早期信号。突破20EMA做call。',tr:['call','call_spread'],no:['put'],tm:'观望为主，等EMA反转确认',en:'突破20EMA + DEX持续正',ex:'次级阻力或前高',ab:'DEX转负 + 跌回均线下'},
-  bear_pos_pos:{d:'neutral',q:'low',t:'🤔 信号分歧 — 观望',b:'EMA空头但GEX/DEX偏多。信号矛盾，不适合0DTE。',tr:['iron_condor'],no:['naked_call','naked_put'],tm:'观望，等确认',en:'不建议入场',ex:'—',ab:'—'},
-  flat_neg_pos:{d:'neutral',q:'low',t:'🌀 压缩 + 方向未定',b:'EMA纠缠，GEX负放大突破，DEX正散户偏多。最危险setup。',tr:['iron_condor'],no:['naked_call','naked_put'],tm:'等EMA明确后再用系统',en:'EMA排列完成后评估',ex:'—',ab:'直接观望'},
-  flat_pos_neg:{d:'neutral',q:'low',t:'📌 低波整理 — Iron Condor',b:'GEX正压制 + DEX负。窄幅震荡，0DTE方向性不适合。',tr:['iron_condor'],no:['naked_call','naked_put'],tm:'全天，注意收盘前gamma spike',en:'Call Wall卖call / Put Wall卖put',ex:'收盘前1小时平仓',ab:'任意一侧突破'},
-  flat_pos_pos:{d:'call',q:'low',t:'📈 低波偏多 — Call Spread',b:'资金偏多但无突破，GEX正压制。Call spread控损。',tr:['call_spread','iron_condor'],no:['naked_put'],tm:'午盘后偏多更明显',en:'回调不破支撑',ex:'Call Wall',ab:'EMA下行 + DEX翻负'},
-  flat_neg_neg:{d:'put',q:'mid',t:'⬇️ 压缩偏空 — 等突破 Put',b:'DEX负资金做空，GEX负一旦突破放大。小仓put等突破。',tr:['put','put_spread'],no:['call','iron_condor'],tm:'等向下突破压缩区',en:'跌破压缩区下沿',ex:'次级支撑或Put Wall',ab:'重回压缩区上沿 + DEX转正'},
-};
-const TL = {
-  call:{l:'Buy Call',c:'chip-call'},put:{l:'Buy Put',c:'chip-put'},
-  call_spread:{l:'Call Spread',c:'chip-spread'},put_spread:{l:'Put Spread',c:'chip-spread'},
-  iron_condor:{l:'Iron Condor',c:'chip-condor'},butterfly:{l:'Butterfly',c:'chip-butterfly'},
-  naked_call:{l:'Naked Call',c:'chip-no'},naked_put:{l:'Naked Put',c:'chip-no'},
-};
-
-function renderPre() {
-  const k = `${S.ema}_${S.gex}_${S.dex}`;
-  const c = C[k]; if(!c) return;
-  const dc = {call:'vc-call',put:'vc-put',neutral:'vc-neutral'}[c.d]||'vc-wait';
-  const qc = {high:'q-hi',mid:'q-mid',low:'q-lo'}[c.q];
-  const ql = {high:'高信号',mid:'中等',low:'低'}[c.q];
-  const chips = c.tr.map(t=>`<div class="chip ${TL[t].c}">✓ ${TL[t].l}</div>`).join('');
-  const nochips = c.no.map(t=>`<div class="chip chip-no">✗ ${TL[t].l}</div>`).join('');
-
-  const auxNotes = [];
-  if(S.aux.hvl) auxNotes.push('价格低于HVL：Negative Transition Zone，做多谨慎');
-  if(S.aux.vix) auxNotes.push('VIX/IVR偏高：期权贵，prefer spreads');
-  if(S.aux.vol) auxNotes.push('成交量异常：止损要宽，仓位要小');
-  if(S.aux.opex) auxNotes.push('OPEX周：Max Pain引力强，注意pin risk');
-  if(S.aux.dexvel) auxNotes.push('DEX减速：买方动能衰减，put最佳timing');
-  if(S.aux.macro) auxNotes.push('⚠ 宏观事件日：建议不交易或大幅缩仓');
-
-  document.getElementById('pre-output').innerHTML = `
-    <div class="verdict-card ${dc}">
-      <div class="v-head">
-        <div class="v-title">${c.t}</div>
-        <div class="q-badge ${qc}">${ql}</div>
-      </div>
-      <div class="v-body">${c.b}</div>
-      <div class="trade-row">${chips}${nochips?'<span style="width:1px;background:var(--ink5);margin:0 2px"></span>'+nochips:''}</div>
-    </div>
-    <div class="info-grid">
-      <div class="info-card">
-        <div class="info-card-title">时机与入场</div>
-        <div class="info-row"><span class="info-k">最佳时段</span><span class="info-v">${c.tm}</span></div>
-        <div class="info-row"><span class="info-k">入场触发</span><span class="info-v">${c.en}</span></div>
-        <div class="info-row"><span class="info-k c-amber">目标出场</span><span class="info-v c-amber">${c.ex}</span></div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-title">中止条件</div>
-        <div class="abort-item">${c.ab}</div>
-      </div>
-    </div>
-    ${auxNotes.length?`<div class="abort-box"><div class="abort-title">辅助信号修正</div>${auxNotes.map(n=>`<div class="abort-item">${n}</div>`).join('')}</div>`:''}
-  `;
-}
 
 /* ══ Intraday Referee ══ */
 const REF_IDS = ['inp-price','inp-vwap','inp-cw','inp-pw','inp-hvl'];
@@ -1949,9 +1954,9 @@ function calcZone() {
   else if (belowVWAP && belowHVL && gex==='neg') {
     verdict = {cls:'rv-go',status:'可以操作',title:'弱势结构 — VWAP 反抽做空',body:`价格在VWAP（${vwap.toFixed(1)}）和HVL（${hvl.toFixed(1)}）下方，GEX负。弱势盘面，VWAP是阻力不是支撑。做市商追跌。${dex==='pos'?'DEX正说明有反弹买盘，等消耗完毕后做空更佳。':'DEX负确认卖压，方向做空。'}`,action:'操作：等反抽至VWAP附近受阻 → Buy Put。'};
   }
-  // Above VWAP + above HVL + GEX neg + DEX pos
+  // Above VWAP + above HVL + GEX neg + DEX pos — 顺势上行有真实买盘，别逆势fade
   else if (aboveVWAP && aboveHVL && gex==='neg' && dex==='pos') {
-    verdict = {cls:'rv-wait',status:'警戒',title:'强势反弹中 — 但地基不稳',body:`价格在VWAP（${vwap.toFixed(1)}）和HVL（${hvl.toFixed(1)}）上方，GEX负+DEX正。做市商追涨买入推动反弹。但一旦DEX转弱，反转会极其凶猛。关注Call Wall距离。`,action:'操作：不追call。等接近Call Wall + 动量衰减 → Trap Setup做Put。'};
+    verdict = {cls:'rv-wait',status:'警戒',title:'顺势上行 · 有真实买盘 — 别逆势 fade',body:`价格在VWAP（${vwap.toFixed(1)}）和HVL（${hvl.toFixed(1)}）上方，GEX负 + DEX正——负gamma放大趋势、有真实Delta买盘在推。这是顺势方向，不是做空的位置。头顶阻力是Call Wall（${cw.toFixed(1)}）。`,action:`操作：别用put逆势fade这波。已在多头 → 结构支持持有、骑向Call Wall（${cw.toFixed(0)}），接近CW分批减。掉头做put只在Call Wall附近动量衰竭才成立——那步的DEX velocity判断交给盘伴，不是现在的固定动作。`};
   }
   // Above VWAP + GEX pos
   else if (aboveVWAP && gex==='pos') {
@@ -2418,23 +2423,26 @@ function drawMountains() {
     return pts;
   }
 
-  // Layers: far → near. [baseY frac, amplitude, ink color, ridge alpha, fade length]
+  // Layers: far → near. Atmospheric perspective — far ridges pale & low-contrast,
+  // near ridges deep & crisp; mist eats every base so each ridge floats above the next.
   const layers = [
-    [0.42, 64, '#9db2c0', 0.34, 0.95],
-    [0.55, 80, '#7795a8', 0.42, 0.85],
-    [0.68, 92, '#52758c', 0.50, 0.75],
-    [0.82, 96, '#33566b', 0.58, 0.65],
+    [0.30, 40, '#b3c2cc', 0.20, 1.10],   // 极远
+    [0.39, 52, '#9fb4c2', 0.27, 1.00],
+    [0.49, 64, '#86a2b4', 0.35, 0.90],   // 中景
+    [0.60, 78, '#6889a0', 0.45, 0.80],
+    [0.71, 90, '#4f7088', 0.54, 0.70],
+    [0.83, 96, '#33566b', 0.62, 0.60],   // 最近
   ];
 
   layers.forEach(([f, amp, col, alpha, fade], li) => {
     const baseY = H * f;
-    const pts = ridge(baseY, amp, 0.52, 7);
+    const pts = ridge(baseY, amp, 0.52, 8);
 
     // Ink wash fill: dense at ridge, dissolving to paper below
     const minY = Math.min(...pts.map(p => p.y));
     const g = ctx.createLinearGradient(0, minY, 0, minY + (H - minY) * fade);
     g.addColorStop(0, col + Math.round(alpha*255).toString(16).padStart(2,'0'));
-    g.addColorStop(0.45, col + Math.round(alpha*0.35*255).toString(16).padStart(2,'0'));
+    g.addColorStop(0.42, col + Math.round(alpha*0.34*255).toString(16).padStart(2,'0'));
     g.addColorStop(1, col + '00');
 
     ctx.beginPath();
@@ -2444,28 +2452,44 @@ function drawMountains() {
     ctx.fillStyle = g;
     ctx.fill();
 
-    // Ink-bleed ridge edge: soft dark stroke along silhouette
+    // Ink-bleed silhouette — crisper & darker on near ridges, soft on far ones
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(pts[0].x, pts[0].y);
     pts.forEach(p => ctx.lineTo(p.x, p.y));
     ctx.strokeStyle = col + Math.round(alpha*0.9*255).toString(16).padStart(2,'0');
-    ctx.lineWidth = 1.4;
-    ctx.shadowColor = col; ctx.shadowBlur = 5; ctx.shadowOffsetY = 2;
+    ctx.lineWidth = 0.8 + li*0.22;
+    ctx.shadowColor = col; ctx.shadowBlur = 6 - li*0.6; ctx.shadowOffsetY = 2;
     ctx.stroke();
     ctx.restore();
 
-    // Mist band: paper-colored gradient eats the layer's base — 留白
+    // Mist band: paper veil eating this layer's base, revealing the next ridge's crest — 留白
     if (li < layers.length - 1) {
-      const mistY = H * layers[li+1][0] - 26;
-      const mg = ctx.createLinearGradient(0, mistY - 30, 0, mistY + 34);
+      const mistY = H * layers[li+1][0] - 22;
+      const h = 58 + li*10;
+      const mg = ctx.createLinearGradient(0, mistY - h*0.5, 0, mistY + h*0.55);
       mg.addColorStop(0, 'rgba(246,243,237,0)');
-      mg.addColorStop(0.5, 'rgba(246,243,237,0.82)');
+      mg.addColorStop(0.5, 'rgba(246,243,237,' + (0.70 + li*0.04).toFixed(2) + ')');
       mg.addColorStop(1, 'rgba(246,243,237,0)');
       ctx.fillStyle = mg;
-      ctx.fillRect(0, mistY - 30, W, 64);
+      ctx.fillRect(0, mistY - h*0.5, W, h);
     }
   });
+
+  // 谷雾 — soft mist pooling through the mid-scene, deepening the layering
+  const vg = ctx.createLinearGradient(0, H*0.50, 0, H*0.92);
+  vg.addColorStop(0, 'rgba(246,243,237,0)');
+  vg.addColorStop(0.55, 'rgba(246,243,237,0.20)');
+  vg.addColorStop(1, 'rgba(246,243,237,0)');
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, H*0.50, W, H*0.42);
+
+  // 天际薄霭 — pale sky haze melting the farthest ridges into paper at the top
+  const sg = ctx.createLinearGradient(0, 0, 0, H*0.34);
+  sg.addColorStop(0, 'rgba(246,243,237,0.55)');
+  sg.addColorStop(1, 'rgba(246,243,237,0)');
+  ctx.fillStyle = sg;
+  ctx.fillRect(0, 0, W, H*0.34);
 
   // Base fade into paper
   const bg = ctx.createLinearGradient(0, H - 56, 0, H);
@@ -2693,7 +2717,7 @@ setInterval(maybeLaunchGeese, 45000);
 setTimeout(maybeLaunchGeese, 8000);        // a chance shortly after open
 
 /* ══ 盘伴 — AI copilot ══ */
-const CH_SYS = `你是一个SPY 0DTE期权交易员的实时盘中助手，名叫盘伴。交易员的框架是做市商对冲机制：GEX正=MM高抛低吸压制波动（突破是陷阱）；GEX负=MM追涨杀跌放大趋势（支撑会失效）；DEX看净Delta资金方向，DEX velocity减速是最早的入场信号。核心setup是Trap Setup：EMA多头+GEX负+DEX正，等散户追高、价格接近Call Wall、量缩+DEX降温后做put。信号出现不等于立即入场，入场是独立的盘中决策。纪律：开盘15分钟不做、每天最多5笔、2PM ET后无持仓不开新仓、GEX拥有否决权、午盘(11-14点)是死区。
+const CH_SYS = `你是一个SPY 0DTE期权交易员的实时盘中助手，名叫盘伴。交易员的框架是做市商对冲机制：GEX正=MM高抛低吸压制波动（突破是陷阱）；GEX负=MM追涨杀跌放大趋势（支撑会失效）；DEX看净Delta资金方向，DEX velocity减速是最早的转向信号。方向由GEX×DEX共同决定，不预设只做空：GEX负+DEX正+价格上行=顺势方向，可骑call往Call Wall、接近墙分批减，此时别逆势fade做put；只有价格到Call Wall附近、DEX velocity降温/量缩，才翻成Trap Setup做put。Trap只是工具箱里的一个setup，不是唯一核心——下跌顺势(做put)、上行顺势(做call)、区间fade，都是选项，方向跟着GEX×DEX走。信号出现不等于立即入场，入场是独立的盘中决策。纪律：开盘15分钟不做、每天最多5笔、2PM ET后无持仓不开新仓、GEX拥有否决权、午盘(11-14点)是死区。
 
 重要的数据规则：快照里的GEX/DEX是用户手动设置的二元开关，可能滞后或过期——用户消息里贴的具体数字永远优先于快照开关，两者矛盾时以数字为准并指出开关可能没更新。GEX绝对值在±50M以内视为flip过渡区，既不是正也不是负，按结构不明处理。永远关注1d变化速度：GEX/DEX在快速修复（向正移动）=空头论点地基在融化；在快速恶化=趋势在自我强化。价格跌破HVL但GEX仍正=Negative Transition，支撑在衰减，不是摩擦区。
 
@@ -2848,7 +2872,7 @@ function buildLiveContext() {
   const v = id => document.getElementById(id) ? document.getElementById(id).value : '';
   const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
   const verdictEl = document.querySelector('#ref-output .rv-title');
-  const preEl = document.querySelector('#pre-output .v-title');
+  const preEl = document.getElementById('pre-bias');
   return `[盘面快照 ET ${et.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}]
 盘前: EMA=${S.ema} GEX=${S.gex} DEX=${S.dex}${preEl?' 主剧本:'+preEl.textContent.trim():''}
 盘中: 价格=${v('inp-price')||'?'} VWAP=${v('inp-vwap')||'?'} CallWall=${v('inp-cw')||'?'} PutWall=${v('inp-pw')||'?'} HVL=${v('inp-hvl')||'?'} GEX=${S.lgex} DEX=${S.ldex}${verdictEl?' 系统判断:'+verdictEl.textContent.trim():''}`;
@@ -2936,6 +2960,20 @@ function importData(file) {
   document.getElementById('j-import-file').value = '';
 }
 
+/* ══ 天色 — 跟 ET 时钟呼吸：清晨偏冷、正午提亮、黄昏转暖、入夜压暗 ══ */
+function tintSky(mins){
+  const tn = document.getElementById('sky-tint');
+  if (!tn) return;
+  let tint;
+  const night = (mins >= 1200 || mins < 330);
+  if (night)            { tint='rgba(28,48,96,0.30)'; }   // 入夜：冷蓝
+  else if (mins < 570)  { tint='rgba(70,100,140,0.16)'; } // 盘前清晨：偏冷
+  else if (mins < 840)  { tint='rgba(235,205,150,0.12)'; }// 专注时段：暖回一点
+  else if (mins < 960)  { tint='rgba(214,120,42,0.16)'; } // 黄昏：转暖
+  else                  { tint='rgba(150,66,28,0.18)'; }  // 暮色：暖 → 渐暗
+  tn.style.background = tint;
+}
+
 /* ══ Clock + Open Guard ══ */
 function tick() {
   const now = new Date();
@@ -2945,6 +2983,7 @@ function tick() {
   document.getElementById('clock').textContent = t;
   document.getElementById('ft-time').textContent = t;
   drawSky(et);
+  tintSky(et.getHours()*60 + et.getMinutes());
   // Open guard: 9:30-9:45 ET
   const mins = et.getHours()*60+et.getMinutes();
   const guard = document.getElementById('open-guard');
@@ -2960,8 +2999,9 @@ function tick() {
 setInterval(tick,1000); tick();
 
 /* ══ Init ══ */
-restoreIntraday(); updateSum(); renderPre(); calcZone();
+restoreIntraday(); updateSum(); renderBox(); calcZone();
 syncAutoToggle(); applyPhase(); renderBox();
+
 </script>
 </body>
 </html>
