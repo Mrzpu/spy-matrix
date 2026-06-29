@@ -79,6 +79,10 @@ body::before {
   position:fixed;bottom:0;left:0;
   z-index:0;pointer-events:none;
 }
+#cloud-canvas {
+  position:fixed;inset:0;
+  z-index:0;pointer-events:none;
+}
 #geese-canvas {
   position:fixed;top:0;left:0;
   z-index:0;pointer-events:none;
@@ -1151,6 +1155,7 @@ footer {
 <!-- Ink wash mountain landscape -->
 <div id="sky-tint"></div>
 <canvas id="sky-canvas"></canvas>
+<canvas id="cloud-canvas"></canvas>
 <canvas id="seal-canvas" width="0" height="0"></canvas>
 <canvas id="geese-canvas"></canvas>
 <canvas id="ink-canvas"></canvas>
@@ -2484,12 +2489,13 @@ function drawMountains() {
   ctx.fillStyle = vg;
   ctx.fillRect(0, H*0.50, W, H*0.42);
 
-  // 天际薄霭 — pale sky haze melting the farthest ridges into paper at the top
-  const sg = ctx.createLinearGradient(0, 0, 0, H*0.34);
-  sg.addColorStop(0, 'rgba(246,243,237,0.55)');
-  sg.addColorStop(1, 'rgba(246,243,237,0)');
+  // 天际薄霭 — veil the farthest ridges into paper; 0 at the canvas top edge so no hard seam shows
+  const sg = ctx.createLinearGradient(0, 0, 0, H*0.44);
+  sg.addColorStop(0,    'rgba(246,243,237,0)');
+  sg.addColorStop(0.5,  'rgba(246,243,237,0.42)');
+  sg.addColorStop(1,    'rgba(246,243,237,0)');
   ctx.fillStyle = sg;
-  ctx.fillRect(0, 0, W, H*0.34);
+  ctx.fillRect(0, 0, W, H*0.44);
 
   // Base fade into paper
   const bg = ctx.createLinearGradient(0, H - 56, 0, H);
@@ -2500,7 +2506,7 @@ function drawMountains() {
 }
 drawMountains();
 
-let _rsT; window.addEventListener('resize', () => { clearTimeout(_rsT); _rsT = setTimeout(() => { drawMountains(); _lastSkyMin = -1; const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'})); drawSky(et); }, 200); });
+let _rsT; window.addEventListener('resize', () => { clearTimeout(_rsT); _rsT = setTimeout(() => { drawMountains(); _lastSkyMin = -1; const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'})); drawSky(et); if (typeof initClouds==='function') initClouds(); }, 200); });
 
 /* ══ 日月 — painted sky, sun by day, moon takes the night shift ══ */
 let _lastSkyMin = -1;
@@ -2588,38 +2594,8 @@ function drawSky(et) {
     ctx.restore();
   }
 
-  // 云 — slow wisps crossing the sky, veiling the sun as they pass
-  let cs = 4242; const cr = () => (cs=(cs*16807)%2147483647)/2147483647;
-  const warm = !isNight && mins >= 840;            // dusk: clouds catch fire
-  for (let b = 0; b < 3; b++) {
-    const baseY = H*(0.26 + b*0.15) + (cr()-0.5)*H*0.05;
-    const speed = 0.35 + b*0.22;                   // px per minute, nearer = faster
-    const span = W + 560;
-    const off = ((mins * speed) % span);
-    for (let i = 0; i < 5; i++) {
-      const ex = -280 + off + (cr()-0.5)*320 + i*120;
-      const ey = baseY + (cr()-0.5)*16;
-      const ew = 110 + cr()*170;
-      const eh = (11 + cr()*9) / ew;
-      ctx.save();
-      ctx.translate(ex, ey);
-      ctx.scale(1, eh);
-      let g2 = ctx.createRadialGradient(0,0,0, 0,0, ew);
-      const cc = isNight ? '#9fb0bf' : '#ccd5dc';
-      g2.addColorStop(0, cc + '34');
-      g2.addColorStop(1, cc + '00');
-      ctx.fillStyle = g2;
-      ctx.beginPath(); ctx.arc(0,0,ew,0,Math.PI*2); ctx.fill();
-      if (warm) {                                   // sunset tint on the belly
-        g2 = ctx.createRadialGradient(0,ew*0.2,0, 0,ew*0.2, ew*0.8);
-        g2.addColorStop(0, body.core + '1e');
-        g2.addColorStop(1, body.core + '00');
-        ctx.fillStyle = g2;
-        ctx.beginPath(); ctx.arc(0,ew*0.2,ew*0.8,0,Math.PI*2); ctx.fill();
-      }
-      ctx.restore();
-    }
-  }
+  // 记录日月当前位置与色温，供云层贴近、包裹、染光
+  _sky = { x, y, r: body.r, core: body.core, isNight, warm: (!isNight && mins >= 840) };
 }
 
 /* ══ Logo — one brushstroke, one signal point ══ */
@@ -2715,6 +2691,120 @@ function geeseFrame() {
 }
 setInterval(maybeLaunchGeese, 45000);
 setTimeout(maybeLaunchGeese, 8000);        // a chance shortly after open
+
+/* ══ 云 — soft volumes drifting on the wind, veiling & wrapping sun/moon ══ */
+let _sky = { x: window.innerWidth*0.5, y: 240, r:17, core:'#c9a14a', isNight:false, warm:false };
+let clouds = null;
+const _cloudReduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+function _skyBandH(){ return Math.ceil(Math.min(window.innerHeight*0.72, 700)); }   // sky-canvas drawing band
+function _bodyViewY(){ return (window.innerHeight - _skyBandH()) + _sky.y; }        // sun/moon Y in full-viewport space
+function _hex2rgb(h){ h=h.replace('#',''); const n=parseInt(h,16); return ((n>>16)&255)+','+((n>>8)&255)+','+(n&255); }
+
+function makeCloud(W, atBodyBand){
+  let sd = (Math.floor(Math.random()*1e9)||7); const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647;
+  const scale = 0.72 + rnd()*0.85;
+  const lobeN = 4 + Math.floor(rnd()*3);
+  const baseR = 28 + rnd()*16;
+  const lobes = []; let ext = 0;
+  for (let i=0;i<lobeN;i++){
+    const t = (lobeN===1)?0:(i/(lobeN-1) - 0.5);                 // -0.5..0.5 across the width
+    const r = baseR * (0.5 + (1-Math.abs(t)*1.4)*0.72 + rnd()*0.16);  // fuller in the middle
+    const dx = t * baseR * 2.5;
+    const dy = -Math.max(0,(1-Math.abs(t)*1.7))*baseR*0.5 + (rnd()-0.5)*baseR*0.16;  // arched top, flattish base
+    lobes.push({dx,dy,r});
+    ext = Math.max(ext, Math.abs(dx)+r);
+  }
+  const by = _bodyViewY();
+  // all clouds loosely hug the sun/moon band; one sits right on it
+  const y = atBodyBand ? by + (rnd()-0.5)*46
+                       : Math.max(70, by + (rnd()-0.5)*240);
+  const depth = 0.55 + rnd()*0.5;                                 // parallax + opacity
+  return { x:-ext*scale-20, y, scale, lobes, halfW:ext, depth,
+           vx:(0.04 + rnd()*0.045)*(0.7+depth*0.5), bodyBand:atBodyBand };  // slow wind, nearer a touch faster
+}
+
+function initClouds(){
+  const cv = document.getElementById('cloud-canvas');
+  if (!cv) return;
+  const W = window.innerWidth, H = window.innerHeight;
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  cv.width = W*dpr; cv.height = H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px';
+  clouds = [ makeCloud(W,true), makeCloud(W,false), makeCloud(W,false) ];   // one hugs the sun/moon
+  clouds.forEach((c,i)=>{ c.x = (i/clouds.length)*(W+c.halfW*2) - c.halfW + (Math.random()-0.5)*120; });
+  if (_cloudReduce) drawClouds();           // static single paint, no loop
+}
+
+function drawClouds(){
+  const cv = document.getElementById('cloud-canvas');
+  if (!cv || !clouds) return;
+  const W = window.innerWidth, H = window.innerHeight;
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  if (cv.width !== W*dpr){ cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px'; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  const night = _sky.isNight;
+  const core = _hex2rgb(_sky.core).split(',').map(Number);     // sun/moon color [r,g,b]
+  const neu = night ? [159,176,191] : [204,213,220];           // neutral 水墨 grey-blue (#9fb0bf / #ccd5dc)
+  const sbH = _skyBandH();
+  const lowness = Math.max(0, Math.min(1, (_sky.y - sbH*0.42)/(sbH*0.58)));  // 0 = high noon, 1 = at the horizon
+  const tintK = night ? (0.10 + 0.16*lowness) : (0.10 + 0.45*lowness);       // low sun → clouds soak up its color
+  const cc = [0,1,2].map(i => Math.round(neu[i]*(1-tintK) + core[i]*tintK)).join(',');
+  const shadow = night ? '40,54,74' : '120,140,158';
+  const bodyRGB = _hex2rgb(_sky.core);
+  const bx = _sky.x, by = _bodyViewY();
+  for (const c of clouds){
+    const reach = c.halfW*c.scale + _sky.r + 90;
+    const near = Math.max(0, 1 - Math.hypot(c.x-bx, c.y-by)/reach);   // overlap with sun/moon
+    ctx.save();
+    ctx.translate(c.x, c.y);
+    ctx.scale(c.scale, c.scale);
+    // under-belly shadow → volume
+    for (const lo of c.lobes){
+      const g = ctx.createRadialGradient(lo.dx, lo.dy+lo.r*0.45, 0, lo.dx, lo.dy+lo.r*0.45, lo.r*1.05);
+      g.addColorStop(0, 'rgba('+shadow+','+(0.09*c.depth).toFixed(3)+')');
+      g.addColorStop(1, 'rgba('+shadow+',0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(lo.dx, lo.dy+lo.r*0.45, lo.r*1.05,0,Math.PI*2); ctx.fill();
+    }
+    // body lobes — overlapping soft volumes
+    for (const lo of c.lobes){
+      const a = 0.15 + 0.17*c.depth;
+      const g = ctx.createRadialGradient(lo.dx, lo.dy, 0, lo.dx, lo.dy, lo.r);
+      g.addColorStop(0,   'rgba('+cc+','+a.toFixed(3)+')');
+      g.addColorStop(0.7, 'rgba('+cc+','+(a*0.5).toFixed(3)+')');
+      g.addColorStop(1,   'rgba('+cc+',0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(lo.dx, lo.dy, lo.r,0,Math.PI*2); ctx.fill();
+    }
+    // wrapping the sun/moon → catch its light on the facing lobes
+    if (near > 0.02){
+      for (const lo of c.lobes){
+        const g = ctx.createRadialGradient(lo.dx, lo.dy, 0, lo.dx, lo.dy, lo.r*0.9);
+        g.addColorStop(0, 'rgba('+bodyRGB+','+(0.30*near).toFixed(3)+')');
+        g.addColorStop(1, 'rgba('+bodyRGB+',0)');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(lo.dx, lo.dy, lo.r*0.9,0,Math.PI*2); ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+}
+
+function cloudFrame(){
+  if (!clouds){ return; }
+  const W = window.innerWidth;
+  for (const c of clouds){
+    c.x += c.vx;
+    if (c.x - c.halfW*c.scale > W + 40){               // exited right → recycle from the left
+      const fresh = makeCloud(W, c.bodyBand);
+      Object.assign(c, fresh);
+      c.x = -c.halfW*c.scale - 20;
+    }
+  }
+  drawClouds();
+  requestAnimationFrame(cloudFrame);
+}
+
+initClouds();
+if (!_cloudReduce) requestAnimationFrame(cloudFrame);
 
 /* ══ 盘伴 — AI copilot ══ */
 const CH_SYS = `你是一个SPY 0DTE期权交易员的实时盘中助手，名叫盘伴。交易员的框架是做市商对冲机制：GEX正=MM高抛低吸压制波动（突破是陷阱）；GEX负=MM追涨杀跌放大趋势（支撑会失效）；DEX看净Delta资金方向，DEX velocity减速是最早的转向信号。方向由GEX×DEX共同决定，不预设只做空：GEX负+DEX正+价格上行=顺势方向，可骑call往Call Wall、接近墙分批减，此时别逆势fade做put；只有价格到Call Wall附近、DEX velocity降温/量缩，才翻成Trap Setup做put。Trap只是工具箱里的一个setup，不是唯一核心——下跌顺势(做put)、上行顺势(做call)、区间fade，都是选项，方向跟着GEX×DEX走。信号出现不等于立即入场，入场是独立的盘中决策。纪律：开盘15分钟不做、每天最多5笔、2PM ET后无持仓不开新仓、GEX拥有否决权、午盘(11-14点)是死区。
